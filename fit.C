@@ -43,6 +43,7 @@ void fit(int fittype = 2){
 
 
 	for (int i=0; i<22; i++){
+
 		RooFitResult* fitresult;
 		RooFitResult* fitresult1;
 
@@ -52,17 +53,23 @@ void fit(int fittype = 2){
 		frame = x->frame(RooFit::Title("Z mass fit"));
 		framecheck = x->frame(RooFit::Title("Background"));
 
-		roodataarray[i]->plotOn(frame,RooFit::Name("roodata"),RooFit::Binning(60),RooFit::MarkerColor(kBlack),RooFit::MarkerSize(0.1));
+		roodataarray[i]->plotOn(frame,RooFit::Name("datahistogram"),RooFit::Binning(60),RooFit::MarkerColor(kBlack),RooFit::MarkerSize(0.1));
 		if (fittype == 1){
-			newconvpdf->plotOn(frame,RooFit::Name("fit"),RooFit::LineWidth(1));
+			newconvpdf->plotOn(frame,RooFit::Name("fitcurve"),RooFit::LineWidth(1));
 			newconvpdf->paramOn(frame,RooFit::Format("NEU",RooFit::AutoPrecision(3)),RooFit::Layout(0.6,1,0.9),RooFit::ShowConstants(kTRUE));
 		}
 		if (fittype == 2){
-			purepdf->plotOn(frame,RooFit::Name("fit"),RooFit::LineWidth(1));
+			purepdf->plotOn(frame,RooFit::Name("fitcurve"),RooFit::LineWidth(1));
 			purepdf->paramOn(frame,RooFit::Format("NEU",RooFit::AutoPrecision(3)),RooFit::Layout(0.6,1,0.9),RooFit::ShowConstants(kTRUE));
 			purepdf->plotOn(framecheck,RooFit::Components(*expo), RooFit::LineStyle(kDashed),RooFit::LineColor(kRed));
 		}
-		residuals = frame->residHist("roodata","fit",true,false); //true = pull, false = center of the bin
+		residuals = frame->residHist("datahistogram","fitcurve",true,false); //true = pull, false = center of the bin
+
+		//Calculate Chi2/ndf
+		int nParams = fitresult->floatParsFinal().getSize();
+		double chi2ndf = frame->chiSquare("datahistogram","fitcurve",nParams);
+
+		cout << "The chi2/ndf is " << chi2ndf << endl;
 
 		pullFrame = x->frame();
 		pullFrame->addPlotable(residuals, "P");
