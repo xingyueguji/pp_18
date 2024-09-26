@@ -147,6 +147,8 @@ public :
    virtual void     Loop();
    virtual bool     Notify();
    virtual void     Show(Long64_t entry = -1);
+   virtual void     ToggleBranches();
+   virtual Bool_t   CheckTrigBit(ULong64_t num, int bitPosition);
 };
 
 #endif
@@ -157,13 +159,9 @@ SkimNew::SkimNew(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("root://eoshome-z.cern.ch//eos/user/z/zheng/Oniatree_ppData2018D_miniAOD_pass1_cernbox.root");
-      if (!f || !f->IsOpen()) {
-         f = new TFile("root://eoshome-z.cern.ch//eos/user/z/zheng/Oniatree_ppData2018D_miniAOD_pass1_cernbox.root");
-      }
-      TDirectory * dir = (TDirectory*)f->Get("root://eoshome-z.cern.ch//eos/user/z/zheng/Oniatree_ppData2018D_miniAOD_pass1_cernbox.root:/hionia");
+      TFile* f = TFile::Open("root://eoshome-z.cern.ch//eos/user/z/zheng/Oniatree_ppData2018D_miniAOD_pass1_cernbox.root");
+      TDirectory * dir = (TDirectory*)f->Get("hionia");
       dir->GetObject("myTree",tree);
-
    }
    Init(tree);
 }
@@ -296,5 +294,33 @@ Int_t SkimNew::Cut(Long64_t entry)
 // returns  1 if entry is accepted.
 // returns -1 otherwise.
    return 1;
+}
+void SkimNew::ToggleBranches()
+{
+   fChain->SetBranchStatus("*",0);
+   fChain->SetBranchStatus("zVtx",1);
+   fChain->SetBranchStatus("Reco_QQ_size",1);
+   fChain->SetBranchStatus("Reco_QQ_sign",1);
+   fChain->SetBranchStatus("Reco_QQ_4mom",1);
+   fChain->SetBranchStatus("Reco_QQ_mupl_idx",1);
+   fChain->SetBranchStatus("Reco_QQ_mumi_idx",1);
+   fChain->SetBranchStatus("Reco_QQ_trig",1);
+   fChain->SetBranchStatus("Reco_QQ_VtxProb",1);
+   fChain->SetBranchStatus("Reco_mu_size",1);
+   fChain->SetBranchStatus("Reco_mu_charge",1);
+   fChain->SetBranchStatus("Reco_mu_4mom",1);
+   fChain->SetBranchStatus("Reco_mu_trig",1);
+   fChain->SetBranchStatus("HLTriggers",1);
+   fChain->SetBranchStatus("runNb",1);
+   /*fChain->SetBranchStatus("",1);
+   fChain->SetBranchStatus("",1);
+   fChain->SetBranchStatus("",1);*/
+}
+Bool_t SkimNew::CheckTrigBit(ULong64_t num, int bitPosition)
+{
+   int bit = (num >> bitPosition) & 1;
+   if (bit == 1) return true;
+   if (bit == 0) return false;
+   else return false;
 }
 #endif // #ifdef SkimNew_cxx
