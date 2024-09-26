@@ -2,7 +2,7 @@
 
 void setupfitvariable()
 {
-	x = (RooRealVar *)roodataarray[0]->get()->find("x");
+	x = (RooRealVar *)mass_array_raw_inclusive->get()->find("x");
 	x->setBinning(RooBinning(5000, 60, 120), "cache");
 	bwmean = new RooRealVar("bwmean", "bwmean", 90.8513, 80, 100);
 	width = new RooRealVar("width", "width", 2.911, 0, 10);
@@ -22,7 +22,7 @@ void setupfitvariable()
 	purepdf = new RooAddPdf("purepdf", "cbconbw+exp", RooArgList(*newconvpdf, *expo), *fsig);
 }
 
-void dofit(RooDataSet *dataset, int iteration, const char *type)
+void dofit(RooDataSet *dataset, int iteration, string type)
 {
 	// if iteration == -99 means fit the inclusive and without dM dWidth TGraphError filling.
 
@@ -53,7 +53,7 @@ void dofit(RooDataSet *dataset, int iteration, const char *type)
 
 	// Calculate Chi2/ndf
 	int nParams = fitresult->floatParsFinal().getSize();
-	double chi2ndf = frame->chiSquare("datahistogram", "fitcurve", nParams);
+	double chi2ndf = frame->chiSquare(nParams);
 
 	cout << "The chi2/ndf is " << chi2ndf << endl;
 
@@ -73,7 +73,14 @@ void dofit(RooDataSet *dataset, int iteration, const char *type)
 	double meanerrorofBW = bwmean->getError();
 	double widthofBW = width->getVal() - 2.4955;
 	double widtherrorofBW = width->getError();
-	Int_t numEntries = roodataarray[i]->numEntries();
+	Int_t numEntries = dataset->numEntries();
+
+	Double_t alpha = cbalpha->getVal();
+	Double_t alpha_err = cbalpha->getError();
+	Double_t n = cbn->getVal();
+	Double_t n_err = cbn->getError();
+	Double_t sigma = cbsigma->getVal();
+	Double_t sigma_err = cbsigma->getError();
 
 	textBox = new TPaveText(0.1, 0.5, 0.3, 0.8, "NDC");
 	textBox->SetFillColor(0);
@@ -81,13 +88,38 @@ void dofit(RooDataSet *dataset, int iteration, const char *type)
 	textBox->AddText(Form("Mean value: %.2f", meanofBW));
 	textBox->AddText(Form("Width value: %.2f", widthofBW));
 	textBox->AddText(Form("# of Entries: %i", numEntries));
-	textBox->AddText(Form("chi2/ndf: %i", chi2ndf));
-	textBox->AddText("Raw,Asym");
+	textBox->AddText(Form("chi2/ndf: %f", chi2ndf));
 	textBox->Draw();
 	c1->cd(2);
 	pullFrame->Draw();
 	c1->cd(3);
 	framecheck->Draw();
+
+	if (iteration == -99)
+	{
+		if (fittype == 1)
+		{
+			if (type == "raw")
+			{
+				c1->SaveAs(Form("./fit/raw/run_period_%i.png", iteration));
+			}
+			else
+			{
+				c1->SaveAs(Form("./fit/eta/run_period_%i.png", iteration));
+			}
+		}
+		if (fittype == 2)
+		{
+			if (type == "raw")
+			{
+				c1->SaveAs(Form("./fit/raw/run_period_exp_%i.png", iteration));
+			}
+			else
+			{
+				c1->SaveAs(Form("./fit/eta/run_period_exp_%i.png", iteration));
+			}
+		}
+	}
 
 	if (iteration != -99)
 	{
@@ -97,6 +129,12 @@ void dofit(RooDataSet *dataset, int iteration, const char *type)
 			dMass_Err_raw[iteration] = meanerrorofBW;
 			dWidth_raw[iteration] = widthofBW;
 			dWidth_Err_raw[iteration] = widtherrorofBW;
+			Alpha_raw[iteration] = alpha;
+			Alpha_Err_raw[iteration] = alpha_err;
+			N_raw[iteration] = n;
+			N_Err_raw[iteration] = n_err;
+			Std_raw[iteration] = sigma;
+			Std_Err_raw[iteration] = sigma_err;
 		}
 		if (type == "eta")
 		{
@@ -104,6 +142,12 @@ void dofit(RooDataSet *dataset, int iteration, const char *type)
 			dMass_Err_eta[iteration] = meanerrorofBW;
 			dWidth_eta[iteration] = widthofBW;
 			dWidth_Err_eta[iteration] = widtherrorofBW;
+			Alpha_eta[iteration] = alpha;
+			Alpha_Err_eta[iteration] = alpha_err;
+			N_eta[iteration] = n;
+			N_Err_eta[iteration] = n_err;
+			Std_eta[iteration] = sigma;
+			Std_Err_eta[iteration] = sigma_err;
 		}
 
 		if (fittype == 1)
@@ -119,6 +163,7 @@ void dofit(RooDataSet *dataset, int iteration, const char *type)
 		}
 
 		if (fittype == 2)
+		{
 			if (type == "raw")
 			{
 				c1->SaveAs(Form("./fit/raw/run_period_exp_%i.png", iteration));
@@ -127,36 +172,15 @@ void dofit(RooDataSet *dataset, int iteration, const char *type)
 			{
 				c1->SaveAs(Form("./fit/eta/run_period_exp_%i.png", iteration));
 			}
+		}
 	}
 }
 
-void fit(int fittype = 2)
+void fit(int nobkorexp = 2)
 {
+	fittype = nobkorexp;
 
-	TFile *f1 = new TFile("pp_data_file_stability.root", "READ");
-
-	RooDataSet *mass_array_eta[22];
-	RooDataSet *mass_array_raw[22];
-	TH1D *h_mass_array_raw[22];
-	TH1D *h_mass_array_eta[22];
-
-	TH1D *h_mass_array_raw_inclusive;
-	RooDataSet *mass_array_raw_inclusive;
-	TH1D *h_mass_array_eta_inclusive;
-	RooDataSet *mass_array_eta_inclusive;
-
-	Double_t dMass_raw[22];
-	Double_t dMass_Err_raw[22];
-	Double_t dWidth_raw[22];
-	Double_t dWidth_Err_raw[22];
-
-	Double_t dMass_eta[22];
-	Double_t dMass_Err_eta[22];
-	Double_t dWidth_eta[22];
-	Double_t dWidth_Err_eta[22];
-
-	Double_t xposition[22];
-	Double_t xposition_err[22];
+	TFile *f1 = new TFile("new_pp_data_file_stability_readonly.root", "READ");
 
 	h_mass_array_raw_inclusive = (TH1D *)f1->Get("h_mass_array_raw_inclusive");
 	h_mass_array_eta_inclusive = (TH1D *)f1->Get("h_mass_array_eta_inclusive");
@@ -175,19 +199,36 @@ void fit(int fittype = 2)
 
 	setupfitvariable();
 
-	dofit(mass_array_raw_inclusive, -99, "raw");
-	dofit(mass_array_eta_inclusive, -99, "eta");
+	// This arrangement ensure that the inclusive uses the initial parameters from previous period fit
 
 	for (int i = 0; i < 22; i++)
 	{
 		dofit(mass_array_raw[i], i, "raw");
+	}
+
+	dofit(mass_array_raw_inclusive, -99, "raw");
+
+	for (int i = 0; i < 22; i++)
+	{
 		dofit(mass_array_eta[i], i, "eta");
 	}
 
-	TGraphErrors *g_1 = new TGraphErrors(22, xposition, dMass_raw, xposition_err_raw, dMass_Err_raw);
-	TGraphErrors *g_2 = new TGraphErrors(22, xposition, dMass_eta, xposition_err_eta, dMass_Err_eta);
-	TGraphErrors *g_3 = new TGraphErrors(22, xposition, dWidth_raw, xposition_err_raw, dWidth_Err_raw);
-	TGraphErrors *g_4 = new TGraphErrors(22, xposition, dWidth_eta, xposition_err_eta, dWidth_Err_eta);
+	dofit(mass_array_eta_inclusive, -99, "eta");
+
+	TGraphErrors *g_1 = new TGraphErrors(22, xposition, dMass_raw, xposition_err, dMass_Err_raw);
+	TGraphErrors *g_2 = new TGraphErrors(22, xposition, dMass_eta, xposition_err, dMass_Err_eta);
+
+	TGraphErrors *g_3 = new TGraphErrors(22, xposition, dWidth_raw, xposition_err, dWidth_Err_raw);
+	TGraphErrors *g_4 = new TGraphErrors(22, xposition, dWidth_eta, xposition_err, dWidth_Err_eta);
+
+	TGraphErrors *g_5 = new TGraphErrors(22, xposition, Alpha_raw, xposition_err, Alpha_Err_raw);
+	TGraphErrors *g_6 = new TGraphErrors(22, xposition, Alpha_eta, xposition_err, Alpha_Err_raw);
+
+	TGraphErrors *g_7 = new TGraphErrors(22, xposition, N_raw, xposition_err, N_Err_raw);
+	TGraphErrors *g_8 = new TGraphErrors(22, xposition, N_eta, xposition_err, N_Err_eta);
+
+	TGraphErrors *g_9 = new TGraphErrors(22, xposition, Std_raw, xposition_err, Std_Err_raw);
+	TGraphErrors *g_10 = new TGraphErrors(22, xposition, Std_eta, xposition_err, Std_Err_eta);
 
 	TFile *f2 = new TFile("./All_plots.root", "UPDATE");
 
@@ -196,15 +237,35 @@ void fit(int fittype = 2)
 	{
 		g_1->Write("pp_raw_dM", 2);
 		g_2->Write("pp_eta_dM", 2);
+
 		g_3->Write("pp_raw_dW", 2);
 		g_4->Write("pp_eta_dW", 2);
+
+		g_5->Write("pp_raw_alpha", 2);
+		g_6->Write("pp_eta_alpha", 2);
+
+		g_7->Write("pp_raw_N", 2);
+		g_8->Write("pp_eta_N", 2);
+
+		g_9->Write("pp_raw_sigma", 2);
+		g_10->Write("pp_eta_sigma", 2);
 	}
 	if (fittype == 2)
 	{
 		g_1->Write("pp_raw_dM_exp", 2);
 		g_2->Write("pp_eta_dM_exp", 2);
+
 		g_3->Write("pp_raw_dW_exp", 2);
 		g_4->Write("pp_eta_dW_exp", 2);
+
+		g_5->Write("pp_raw_alpha_exp", 2);
+		g_6->Write("pp_eta_alpha_exp", 2);
+
+		g_7->Write("pp_raw_N_exp", 2);
+		g_8->Write("pp_eta_N_exp", 2);
+
+		g_9->Write("pp_raw_sigma_exp", 2);
+		g_10->Write("pp_eta_sigma_exp", 2);
 	}
 	f2->Close();
 	f1->Close();
