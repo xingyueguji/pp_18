@@ -17,8 +17,16 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	x1->GetXaxis()->CenterTitle();
 	x1->GetYaxis()->CenterTitle();
 
-	// if (type == 1) x1->GetYaxis()->SetRangeUser(-0.2,0.1);
-	// if (type == 2) x1->GetYaxis()->SetRangeUser(-0.2,0.1);
+	if (axistype == 1)
+		x1->GetYaxis()->SetRangeUser(-0.6, 0);
+	if (axistype == 2)
+		x1->GetYaxis()->SetRangeUser(-0.5, 1);
+	if (axistype == 3)
+		x1->GetYaxis()->SetRangeUser(1.6, 2.2);
+	if (axistype == 4)
+		x1->GetYaxis()->SetRangeUser(0.7, 1.2);
+	if (axistype == 5)
+		x1->GetYaxis()->SetRangeUser(0, 1.4);
 
 	x1->GetXaxis()->SetLimits(0, 30);
 	x1->GetXaxis()->SetNdivisions(30, 0, 0, kFALSE);
@@ -51,8 +59,6 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	Combined_chi2_dm->SetMarkerStyle(4);
 	Combined_chi2_dm->SetMarkerSize(1);*/
 
-	x1->GetYaxis()->SetRangeUser(-5, 5);
-
 	x1->Draw("AP");
 	// Combined_hist_dm->Draw("PSAME");
 	// Combined_chi2_dm->Draw("PSAME");
@@ -76,11 +82,11 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	//  Combined_hist_dm->Fit(fit_pp_hist, "QR", "", 0.5, 22.5);
 	//  Combined_chi2_dm->Fit(fit_pp_chi2, "QR", "", 0.5, 22.5);
 
-	// x1->Fit(fit_HI_fit, "QR", "", 22.6, 28.5);
+	x1->Fit(fit_HI_fit, "QR", "", 23.6, 28.5);
 	//  Combined_hist_dm->Fit(fit_HI_hist, "QR", "", 22.6, 28.5);
 	//  Combined_chi2_dm->Fit(fit_HI_chi2, "QR", "", 22.6, 28.5);
 
-	// x1->Draw("SAME");
+	fit_pp_fit->Draw("SAME");
 	//  fit_pp_hist->Draw("SAME");
 	//  fit_pp_chi2->Draw("SAME");
 
@@ -114,12 +120,12 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 
 	legend->Draw();
 
-	TPaveText *pt = new TPaveText(0.2, 0.65, 0.55, 0.9, "brNDC"); // normalized coordinates
+	TPaveText *pt = new TPaveText(0.2, 0.8, 0.55, 0.9, "brNDC"); // normalized coordinates
 	pt->SetBorderSize(0);
 	pt->SetFillColor(0);
 	pt->SetTextAlign(12); // Align left and vertically centered
 	pt->SetTextFont(42);
-	pt->SetTextSize(0.03);
+	pt->SetTextSize(0.02);
 	pt->SetMargin(0.01);
 	pt->AddText(Form("pp_fit fit = %.4f #pm %.4f", fit_pp_fit->GetParameter(0), fit_pp_fit->GetParError(0)));
 	pt->AddText(Form("HI_fit fit = %.4f #pm %.4f", fit_HI_fit->GetParameter(0), fit_HI_fit->GetParError(0)));

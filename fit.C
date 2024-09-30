@@ -176,7 +176,7 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	}
 }
 
-void fit(int nobkorexp = 2)
+void fit(int nobkorexp = 1)
 {
 	fittype = nobkorexp;
 
@@ -206,14 +206,14 @@ void fit(int nobkorexp = 2)
 		dofit(mass_array_raw[i], i, "raw");
 	}
 
-	dofit(mass_array_raw_inclusive, -99, "raw");
+	// dofit(mass_array_raw_inclusive, -99, "raw");
 
 	for (int i = 0; i < 22; i++)
 	{
 		dofit(mass_array_eta[i], i, "eta");
 	}
 
-	dofit(mass_array_eta_inclusive, -99, "eta");
+	// dofit(mass_array_eta_inclusive, -99, "eta");
 
 	TGraphErrors *g_1 = new TGraphErrors(22, xposition, dMass_raw, xposition_err, dMass_Err_raw);
 	TGraphErrors *g_2 = new TGraphErrors(22, xposition, dMass_eta, xposition_err, dMass_Err_eta);

@@ -1,6 +1,6 @@
 #include "fit.h"
 
-void setupfitvariable(bool isfix, bool isbksub, bool isetacut)
+void setupfitvariable()
 {
 	x = (RooRealVar *)HI_mass_array_raw[0]->get()->find("roomass");
 	x->setBinning(RooBinning(10000, 60, 120), "cache");
@@ -10,45 +10,44 @@ void setupfitvariable(bool isfix, bool isbksub, bool isetacut)
 	cbmean = new RooRealVar("mean", "mean", 0);
 	decayVar = new RooRealVar("decayVar", "decayVar", -0.11, -5, +5);
 	expo = new RooExponential("expo", "Exponential PDF", *x, *decayVar);
+}
+void setupfitvariableHI(bool isfix, bool isbksub, bool isetacut)
+{
 	if (isfix)
 	{
 		if (isbksub)
 		{
 			if (isetacut)
 			{
-				cbsigma = new RooRealVar("sigma", "sigma", 1.0797);
-				cbalpha = new RooRealVar("alpha", "alpha", 1.8164);
-				cbn = new RooRealVar("n", "n", 1.0446);
+				cbalpha = new RooRealVar("alpha", "alpha", 1.8012); // Combined_alpha_exp_eta
+				cbn = new RooRealVar("n", "n", 0.9523);				// Combined_n_exp_eta
 			}
 			else
 			{
-				cbsigma = new RooRealVar("sigma", "sigma", 1.1104);
-				cbalpha = new RooRealVar("alpha", "alpha", 1.8202);
-				cbn = new RooRealVar("n", "n", 1.0352);
+				cbalpha = new RooRealVar("alpha", "alpha", 1.8202); // Combined_alpha_exp_raw
+				cbn = new RooRealVar("n", "n", 1.0352);				// Combined_n_exp_raw
 			}
 		}
 		else
 		{
 			if (isetacut)
 			{
-				cbsigma = new RooRealVar("sigma", "sigma", 1.0805);
-				cbalpha = new RooRealVar("alpha", "alpha", 1.8927);
-				cbn = new RooRealVar("n", "n", 0.9353);
+				cbalpha = new RooRealVar("alpha", "alpha", 1.9404); // Combined_alpha_eta
+				cbn = new RooRealVar("n", "n", 0.8015);				// Combined_n_eta
 			}
 			else
 			{
-				cbsigma = new RooRealVar("sigma", "sigma", 1.0805);
-				cbalpha = new RooRealVar("alpha", "alpha", 1.8927);
-				cbn = new RooRealVar("n", "n", 0.9353);
+				cbalpha = new RooRealVar("alpha", "alpha", 1.8927); // Combined_alpha_raw
+				cbn = new RooRealVar("n", "n", 0.9353);				// Combined_n_raw
 			}
 		}
 	}
 	else
 	{
-		cbsigma = new RooRealVar("sigma", "sigma", 1.1104, 0, 10);
 		cbalpha = new RooRealVar("alpha", "alpha", 1.8, -5, 5);
 		cbn = new RooRealVar("n", "n", 0.972, -5, 5);
 	}
+	cbsigma = new RooRealVar("sigma", "sigma", 1.1104, 0, 10);
 	cb = new RooCBShape("cb", "cb", *x, *cbmean, *cbsigma, *cbalpha, *cbn);
 	newconvpdf = new RooFFTConvPdf("newconvpdf", "newconvpdf", *x, *bw, *cb);
 	fsig = new RooRealVar("fsig", "signal fraction", 0.99, 0, 1);
@@ -176,7 +175,7 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	}
 }
 
-void fit_HI(int nobkorexp = 2)
+void fit_HI(int nobkorexp = 2, bool isfix = 1)
 {
 	fittype = nobkorexp;
 	TFile *f1 = new TFile("data_file.root", "READ");
@@ -195,11 +194,31 @@ void fit_HI(int nobkorexp = 2)
 		HI_xposition_err[i] = 0;
 	}
 
+	bool isbksub;
+
+	if (nobkorexp == 1)
+		isbksub = false;
+	if (nobkorexp == 2)
+		isbksub = true;
+
 	setupfitvariable();
+
+	if (!isfix)
+	{
+		setupfitvariableHI(isfix, isbksub, 0); // Here the iseta does not matter
+	}
 
 	for (int i = 0; i < 6; i++)
 	{
+		if (isfix)
+		{
+			setupfitvariableHI(isfix, isbksub, 0);
+		}
 		dofit(HI_mass_array_raw[i], i, "raw");
+		if (isfix)
+		{
+			setupfitvariableHI(isfix, isbksub, 1);
+		}
 		dofit(HI_mass_array_eta[i], i, "eta");
 	}
 
