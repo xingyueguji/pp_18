@@ -21,24 +21,29 @@ void setupfitvariableHI(bool isfix, bool isbksub, bool isetacut)
 			{
 				cbalpha = new RooRealVar("alpha", "alpha", 1.8012); // Combined_alpha_exp_eta
 				cbn = new RooRealVar("n", "n", 0.9523);				// Combined_n_exp_eta
+																	// cbsigma = new RooRealVar("sigma", "sigma", 0.8281); // Combined_STD_exp_eta
 			}
 			else
 			{
 				cbalpha = new RooRealVar("alpha", "alpha", 1.8202); // Combined_alpha_exp_raw
 				cbn = new RooRealVar("n", "n", 1.0352);				// Combined_n_exp_raw
+																	// cbsigma = new RooRealVar("sigma", "sigma", 1.0787); // Combined_STD_exp_raw
 			}
 		}
+
 		else
 		{
 			if (isetacut)
 			{
 				cbalpha = new RooRealVar("alpha", "alpha", 1.9404); // Combined_alpha_eta
 				cbn = new RooRealVar("n", "n", 0.8015);				// Combined_n_eta
+																	// cbsigma = new RooRealVar("sigma", "sigma", 0.8010); // Combined_STD_eta
 			}
 			else
 			{
 				cbalpha = new RooRealVar("alpha", "alpha", 1.8927); // Combined_alpha_raw
 				cbn = new RooRealVar("n", "n", 0.9353);				// Combined_n_raw
+																	// cbsigma = new RooRealVar("sigma", "sigma", 1.0805); // Combined_STD_raw
 			}
 		}
 	}

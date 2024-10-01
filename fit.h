@@ -36,6 +36,10 @@ RooFFTConvPdf *newconvpdf;
 RooRealVar *fsig;
 RooAddPdf *purepdf;
 
+// This is for hist stat
+RooRealVar *nEvents;
+RooExtendPdf *expExtended;
+
 RooPlot *frame;
 RooPlot *framecheck;
 
@@ -51,6 +55,12 @@ RooDataSet *mass_array_eta[22];
 RooDataSet *mass_array_raw[22];
 TH1D *h_mass_array_raw[22];
 TH1D *h_mass_array_eta[22];
+TH1D *bksub_hist_pp_raw[22];
+TH1D *bksub_hist_pp_eta[22];
+RooDataHist *dataHistarray_raw[22];
+RooDataHist *dataHistarray_eta[22];
+TH1 *fitHist_pp_raw[22];
+TH1 *fitHist_pp_eta[22];
 
 TH1D *h_mass_array_raw_inclusive;
 RooDataSet *mass_array_raw_inclusive;
@@ -86,6 +96,15 @@ Double_t xposition_err[22];
 
 RooDataSet *HI_mass_array_raw[6];
 RooDataSet *HI_mass_array_eta[6];
+TH1D *h_HI_mass_array_raw[6];
+TH1D *h_HI_mass_array_eta[6];
+RooDataHist *HI_dataHistarray[6];
+TH1D *bksub_hist_HI_raw[6];
+TH1D *bksub_hist_HI_eta[6];
+RooDataHist *HI_dataHistarray_raw[6];
+RooDataHist *HI_dataHistarray_eta[6];
+TH1 *fitHist_HI_raw[6];
+TH1 *fitHist_HI_eta[6];
 
 Double_t HI_dMass_raw[6];
 Double_t HI_dMass_Err_raw[6];

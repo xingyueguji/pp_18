@@ -1,11 +1,26 @@
 {
     "editor.formatOnSave": true,
+    "C_Cpp.intelliSenseEngine": "Default",
+    "C_Cpp.autocomplete": "Default",
     "files.associations": {
         "fit.C": "cpp",
         "MeanfromHist_HI.C": "cpp",
         "fit_HI.C": "cpp",
         "MeanfromHist.C": "cpp",
         "get_tgraph.C": "cpp",
-        "SkimNew.C": "cpp"
-    }
+        "SkimNew.C": "cpp",
+        "new": "cpp",
+        "__locale": "cpp",
+        "ostream": "cpp",
+        "__hash_table": "cpp",
+        "__tree": "cpp",
+        "array": "cpp",
+        "type_traits": "cpp",
+        "forward_list": "cpp",
+        "limits": "cpp",
+        "ratio": "cpp",
+        "tuple": "cpp",
+        "variant": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

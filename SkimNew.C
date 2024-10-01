@@ -104,7 +104,7 @@ void SkimNew::Loop()
             continue;
          if (Reco_QQ_VtxProb[znum] < 0.001)
             continue;
-         if (Z_momentum->Rapidity() > 2.4)
+         if (abs(Z_momentum->Rapidity()) > 2.4)
             continue;
 
          // Cut on Muons
