@@ -71,10 +71,9 @@ void SkimNew::Loop()
       nbytes += nb;
       // if (Cut(ientry) < 0) continue;
 
-      double progress = (static_cast<double>(jentry) / nentries) * 100;
-
+      double percentage = 100.0 * jentry / nentries;
       if (jentry % 100000 == 0)
-         cout << "We are at event " << jentry << " Percentage done: " << progress << "%" << endl;
+      std::cout << "Progress: " << percentage << "% completed\r" << std::flush;
 
       // Event selection:
 
@@ -128,9 +127,9 @@ void SkimNew::Loop()
          }
 
          // Aco cut
-         Float_t acoplanarity = 1 - TMath::Abs(TMath::ACos(TMath::Cos(muonplus_momentum->Phi() - muonminus_momentum->Phi()))) / TMath::Pi();
-         if (acoplanarity < 0.001)
-            continue;
+         // Float_t acoplanarity = 1 - TMath::Abs(TMath::ACos(TMath::Cos(muonplus_momentum->Phi() - muonminus_momentum->Phi()))) / TMath::Pi();
+         // if (acoplanarity < 0.001)
+         // continue;
 
          // Eta < 1 cut I will apply this later when filling
          Bool_t isEtacutPassed = abs(muonplus_momentum->Eta()) < 1 && abs(muonminus_momentum->Eta()) < 1;
