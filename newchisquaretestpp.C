@@ -1,6 +1,7 @@
 #include "chisquaretest.h"
 
-void newchisquaretestpp(int datatype = 1, bool isbk = 1){
+void newchisquaretestpp(bool iseta = 1, bool isbk = 1)
+{
 
 	gStyle->SetOptFit(0);
 	gStyle->SetOptStat(0);
@@ -11,18 +12,22 @@ void newchisquaretestpp(int datatype = 1, bool isbk = 1){
 	TString datafile;
 	TString bkfile;
 
-	bkfile = "../ZBoson_18/rootfile/normalized/etacut_eff_file.root";
+	if (iseta)
+	{
+		bkfile = "etacut_file.root";
+	}
+	if (!iseta)
+	{
+		bkfile = "rawfile.root";
+	}
 
-	datafile = "./pp_data_file_stability.root";
-	mcfile = "../ZBoson_18/rootfile/modified_signal.root";
+	datafile = "./new_pp_data_file_stability_readonly.root";
+	mcfile = "modified_signal_test.root";
 
-	chisquaretest* ovo = new chisquaretest(mcfile,datafile,bkfile);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, iseta);
 
-
-
-	//ovo->bincontentcheck(isbk);
-	//ovo->RebinAllpp(4);
+	// ovo->bincontentcheck(isbk);
+	// ovo->RebinAllpp(4);
 	ovo->calculatechisqpp(isbk);
-	ovo->plottingandformattingpp(isbk);
-
+	ovo->plottingandformattingpp(iseta, isbk);
 }

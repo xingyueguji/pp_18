@@ -1,7 +1,8 @@
 #include "chisquaretest.h"
 
-void newchisquaretest(int datatype = 1, int type = 1, bool isbk = 0){
-// Type never == 0!!!!!!!!!!!!!!
+void newchisquaretest(int type = 1, bool isbk = 1)
+{
+	// type 0 == raw , 1 == eta
 	gStyle->SetOptFit(0);
 	gStyle->SetOptStat(0);
 
@@ -11,19 +12,18 @@ void newchisquaretest(int datatype = 1, int type = 1, bool isbk = 0){
 	TString datafile;
 	TString bkfile;
 
-	if (type == 0) bkfile = "./rootfile/normalized/efffile.root";
-	if (type == 1) bkfile = "../ZBoson_18/rootfile/normalized/etacut_eff_file.root";
+	if (type == 0)
+		bkfile = "rawfile.root";
+	if (type == 1)
+		bkfile = "etacut_file.root";
 
-	datafile = "../ZBoson_18/rootfile/data_file.root";
-	mcfile = "../ZBoson_18/rootfile/modified_signal.root";
+	datafile = "data_file.root";
+	mcfile = "modified_signal_test.root";
 
-	chisquaretest* ovo = new chisquaretest(mcfile,datafile,bkfile,type);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type);
 
-
-
-	//ovo->bincontentcheck(isbk);
+	// ovo->bincontentcheck(isbk);
 	ovo->RebinAll(4);
 	ovo->calculatechisq(isbk);
-	ovo->plottingandformatting(type,isbk);
-
+	ovo->plottingandformatting(type, isbk);
 }

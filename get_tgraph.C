@@ -12,7 +12,7 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	if (axistype == 1)
 	{
 		yaxistitle = "dM(GeV)";
-		yaxisupperlimit = 0.5;
+		yaxisupperlimit = 0.7;
 		yaxislowerlimit = -1.5;
 	}
 
@@ -66,6 +66,7 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	x1->SetLineColor(2);
 	x1->SetMarkerStyle(20);
 	x1->SetMarkerSize(1);
+	x1->SetFillColorAlpha(2, 0.5);
 
 	if (hist != nullptr)
 	{
@@ -73,59 +74,79 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 		hist->SetLineColor(4);
 		hist->SetMarkerStyle(21);
 		hist->SetMarkerSize(1);
+		hist->SetFillColorAlpha(4, 0.5);
 	}
 
-	/*Combined_chi2_dm->SetMarkerColor(3);
-	Combined_chi2_dm->SetLineColor(3);
-	Combined_chi2_dm->SetMarkerStyle(4);
-	Combined_chi2_dm->SetMarkerSize(1);*/
+	if (chi2 != nullptr)
+	{
+		chi2->SetMarkerColor(kGreen+3);
+		chi2->SetLineColor(kGreen+3);
+		chi2->SetFillColorAlpha(kGreen+3, 0.35);
+		chi2->SetMarkerStyle(4);
+		chi2->SetMarkerSize(1);
+	}
 
-	x1->Draw("AP");
+	x1->Draw("A3");
+	x1->Draw("P SAME");
+	x1->SetFillStyle(3001); 
+
 	if (hist != nullptr)
 	{
-		hist->Draw("PSAME");
+		hist->SetFillStyle(3001); 
+		hist->Draw("3 SAME");
+		hist->Draw("P SAME");
 	}
-
-	// Combined_chi2_dm->Draw("PSAME");
+	if (chi2 != nullptr)
+	{
+		chi2->SetFillStyle(3005); 
+		chi2->Draw("3 SAME");
+		chi2->Draw("P SAME");
+	}
 
 	TF1 *fit_pp_fit = new TF1("fit_pp_fit", "[0]", 0, 22.5);
 	TF1 *fit_pp_hist = new TF1("fit_pp_hist", "[0]", 0, 22.5);
-	// TF1 *fit_pp_chi2 = new TF1("fit_pp_chi2", "[0]", 0, 22.5);
+	TF1 *fit_pp_chi2 = new TF1("fit_pp_template", "[0]", 0, 22.5);
 
 	TF1 *fit_HI_fit = new TF1("fit_HI_fit", "[0]", 0, 80);
 	TF1 *fit_HI_hist = new TF1("fit_HI_hist", "[0]", 0, 80);
-	// TF1 *fit_HI_chi2 = new TF1("fit_HI_chi2", "[0]", 0, 80);
+	TF1 *fit_HI_chi2 = new TF1("fit_HI_template", "[0]", 0, 80);
 
 	fit_pp_fit->SetLineColor(2);
 	fit_pp_hist->SetLineColor(4);
-	// fit_pp_chi2->SetLineColor(3);
+	fit_pp_chi2->SetLineColor(kGreen+3);
 	fit_HI_fit->SetLineColor(2);
 	fit_HI_hist->SetLineColor(4);
-	// fit_HI_chi2->SetLineColor(3);
+	fit_HI_chi2->SetLineColor(kGreen+3);
 
 	x1->Fit(fit_pp_fit, "QR", "", 0.5, 22.5);
 	if (hist != nullptr)
 	{
 		hist->Fit(fit_pp_hist, "QR", "", 0.5, 22.5);
 	}
-
-	//  Combined_chi2_dm->Fit(fit_pp_chi2, "QR", "", 0.5, 22.5);
+	if (chi2 != nullptr)
+	{
+		chi2->Fit(fit_pp_chi2, "QR", "", 0.5, 22.5);
+	}
 
 	x1->Fit(fit_HI_fit, "QR", "", 23.6, 28.5);
 	if (hist != nullptr)
 	{
 		hist->Fit(fit_HI_hist, "QR", "", 23.6, 28.5);
 	}
-
-	//  Combined_chi2_dm->Fit(fit_HI_chi2, "QR", "", 22.6, 28.5);
+	if (chi2 != nullptr)
+	{
+		chi2->Fit(fit_HI_chi2, "QR", "", 23.6, 28.5);
+	}
 
 	fit_pp_fit->Draw("SAME");
 	if (hist != nullptr)
 	{
 		fit_pp_hist->Draw("SAME");
 	}
-
-	//  fit_pp_chi2->Draw("SAME");
+	if (chi2 != nullptr)
+	{
+		fit_pp_chi2->Draw("SAME");
+	}
 
 	// Create a TLine to draw on the graph
 	TLine *line = new TLine(22.5, yaxislowerlimit, 22.5, yaxisupperlimit); // Define the start (1, 4.0) and end (5, 4.0) points of the line
@@ -138,7 +159,10 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	// Draw the line on the canvas
 	line->Draw("same"); // "same" ensures the line is drawn on the current canvas
 
-	TLegend *legend = new TLegend(0.6, 0.75, 0.75, 0.9);
+	TLegend *legend;
+
+	if (bktype == 1)legend = new TLegend(0.6, 0.75, 0.75, 0.9);
+	if (bktype == 2)legend = new TLegend(0.6, 0.75, 0.85, 0.9);
 	legend->SetTextFont(40);
 	legend->SetBorderSize(0);
 	if (bktype == 1)
@@ -149,15 +173,15 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 		legend->AddEntry(hist, "hist_stat", "lep");
 	if (bktype == 2 && hist != nullptr)
 		legend->AddEntry(hist, "hist_stat_exp_bk", "lep");
-	/*if (type == 1)
-		 legend->AddEntry(Combined_chi2_dm, "chi2", "lep");
-		if (type == 2)
-			 legend->AddEntry(Combined_chi2_dm, "chi2_bksub", "lep");*/
+	if (bktype == 1 && chi2 != nullptr)
+		legend->AddEntry(chi2, "template_fit", "lep");
+	if (bktype == 2 && chi2 != nullptr)
+		legend->AddEntry(chi2, "template_fit - template background", "lep");
 	legend->SetFillColor(0);
 
 	legend->Draw();
 
-	TPaveText *pt = new TPaveText(0.2, 0.8, 0.55, 0.9, "brNDC"); // normalized coordinates
+	TPaveText *pt = new TPaveText(0.2, 0.7, 0.55, 0.9, "brNDC"); // normalized coordinates
 	pt->SetBorderSize(0);
 	pt->SetFillColor(0);
 	pt->SetTextAlign(12); // Align left and vertically centered
@@ -171,17 +195,20 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 		pt->AddText(Form("pp_hist fit = %.4f #pm %.4f", fit_pp_hist->GetParameter(0), fit_pp_hist->GetParError(0)));
 		pt->AddText(Form("HI_hist fit = %.4f #pm %.4f", fit_HI_hist->GetParameter(0), fit_HI_hist->GetParError(0)));
 	}
-	// pt->AddText(Form("pp_chi2 fit = %.4f #pm %.4f", fit_pp_chi2->GetParameter(0), fit_pp_chi2->GetParError(0)));
-	// pt->AddText(Form("HI_chi2 fit = %.4f #pm %.4f", fit_HI_chi2->GetParameter(0), fit_HI_chi2->GetParError(0)));
+	if (chi2 != nullptr)
+	{
+		pt->AddText(Form("pp_template fit = %.4f #pm %.4f", fit_pp_chi2->GetParameter(0), fit_pp_chi2->GetParError(0)));
+		pt->AddText(Form("HI_template fit = %.4f #pm %.4f", fit_HI_chi2->GetParameter(0), fit_HI_chi2->GetParError(0)));
+	}
+
 	pt->Draw();
 }
 
-void get_tgraph(int type = 1)
+void get_tgraph(int type = 2)
 {
 
 	// type == 1 means no bk sub
 	// Type == 2 means bk sub
-
 	TFile *f1 = new TFile("All_plots.root", "READ");
 
 	TGraphErrors *HI_dm_raw;
@@ -201,8 +228,10 @@ void get_tgraph(int type = 1)
 	TGraphErrors *HI_hist_dw_raw;
 	TGraphErrors *HI_hist_dw_eta;
 
-	TGraphErrors *HI_chi2_dm;
-	TGraphErrors *HI_chi2_dw;
+	TGraphErrors *HI_chi2_dm_raw;
+	TGraphErrors *HI_chi2_dw_raw;
+	TGraphErrors *HI_chi2_dm_eta;
+	TGraphErrors *HI_chi2_dw_eta;
 
 	TGraphErrors *pp_dm_raw;
 	TGraphErrors *pp_dwidth_raw;
@@ -221,8 +250,10 @@ void get_tgraph(int type = 1)
 	TGraphErrors *pp_hist_dw_raw;
 	TGraphErrors *pp_hist_dw_eta;
 
-	TGraphErrors *pp_chi2_dm;
-	TGraphErrors *pp_chi2_dw;
+	TGraphErrors *pp_chi2_dm_raw;
+	TGraphErrors *pp_chi2_dw_raw;
+	TGraphErrors *pp_chi2_dm_eta;
+	TGraphErrors *pp_chi2_dw_eta;
 
 	if (type == 1)
 	{
@@ -245,10 +276,13 @@ void get_tgraph(int type = 1)
 		HI_hist_dm_eta = (TGraphErrors *)f1->Get("hist_HI_dM_eta_nobksub");
 		HI_hist_dw_raw = (TGraphErrors *)f1->Get("hist_HI_dWidth_raw_nobksub");
 		HI_hist_dw_eta = (TGraphErrors *)f1->Get("hist_HI_dWidth_eta_nobksub");
-		/*HI_hist_dm = (TGraphErrors *)f1->Get("HI_dM_hist");
-		HI_hist_dw = (TGraphErrors *)f1->Get("HI_dWidth_hist");
-		HI_chi2_dm = (TGraphErrors *)f1->Get("HI_dM_chi2");
-		HI_chi2_dw = (TGraphErrors *)f1->Get("HI_dWidth_chi2");*/
+
+		// Here's HI chi2 raw and eta
+
+		HI_chi2_dm_raw = (TGraphErrors *)f1->Get("HI_dM_chi2_raw");
+		HI_chi2_dw_raw = (TGraphErrors *)f1->Get("HI_dWidth_chi2_raw");
+		HI_chi2_dm_eta = (TGraphErrors *)f1->Get("HI_dM_chi2_eta");
+		HI_chi2_dw_eta = (TGraphErrors *)f1->Get("HI_dWidth_chi2_eta");
 
 		// Here's pp_fit_raw and eta
 		pp_dm_raw = (TGraphErrors *)f1->Get("pp_raw_dM");
@@ -267,6 +301,11 @@ void get_tgraph(int type = 1)
 		pp_hist_dm_eta = (TGraphErrors *)f1->Get("hist_pp_dM_eta_nobksub");
 		pp_hist_dw_raw = (TGraphErrors *)f1->Get("hist_pp_dWidth_raw_nobksub");
 		pp_hist_dw_eta = (TGraphErrors *)f1->Get("hist_pp_dWidth_eta_nobksub");
+
+		pp_chi2_dm_raw = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_nobksub");
+		pp_chi2_dw_raw = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_nobksub");
+		pp_chi2_dm_eta = (TGraphErrors *)f1->Get("pp_dM_chi2_eta_nobksub");
+		pp_chi2_dw_eta = (TGraphErrors *)f1->Get("pp_dWidth_chi2_eta_nobksub");
 		/*pp_hist_dm = (TGraphErrors *)f1->Get("run_period_dM_hist");
 		pp_hist_dw = (TGraphErrors *)f1->Get("run_period_dWidth_hist");
 		pp_chi2_dm = (TGraphErrors *)f1->Get("run_period_dM_chi2");
@@ -291,10 +330,14 @@ void get_tgraph(int type = 1)
 		HI_hist_dw_raw = (TGraphErrors *)f1->Get("hist_HI_dWidth_raw_bksub");
 		HI_hist_dw_eta = (TGraphErrors *)f1->Get("hist_HI_dWidth_eta_bksub");
 
-		/*HI_hist_dm = (TGraphErrors *)f1->Get("HI_dM_bksub_hist");
-		HI_hist_dw = (TGraphErrors *)f1->Get("HI_dWidth_bksub_hist");
-		HI_chi2_dm = (TGraphErrors *)f1->Get("HI_dM_chi2_bksub");
-		HI_chi2_dw = (TGraphErrors *)f1->Get("HI_dWidth_chi2_bksub");*/
+		// Here's HI chi2 raw and eta
+
+		HI_chi2_dm_raw = (TGraphErrors *)f1->Get("HI_dM_chi2_raw_bksub");
+		HI_chi2_dw_raw = (TGraphErrors *)f1->Get("HI_dWidth_chi2_raw_bksub");
+		HI_chi2_dm_eta = (TGraphErrors *)f1->Get("HI_dM_chi2_eta_bksub");
+		HI_chi2_dw_eta = (TGraphErrors *)f1->Get("HI_dWidth_chi2_eta_bksub");
+
+		// Below are pp
 
 		pp_dm_raw = (TGraphErrors *)f1->Get("pp_raw_dM_exp");
 		pp_dwidth_raw = (TGraphErrors *)f1->Get("pp_raw_dW_exp");
@@ -313,10 +356,10 @@ void get_tgraph(int type = 1)
 		pp_hist_dw_raw = (TGraphErrors *)f1->Get("hist_pp_dWidth_raw_bksub");
 		pp_hist_dw_eta = (TGraphErrors *)f1->Get("hist_pp_dWidth_eta_bksub");
 
-		/*pp_hist_dm = (TGraphErrors *)f1->Get("run_period_dM_hist_bksub");
-		pp_hist_dw = (TGraphErrors *)f1->Get("run_period_dWidth_hist_bksub");
-		pp_chi2_dm = (TGraphErrors *)f1->Get("run_period_dM_chi2_bksub");
-		pp_chi2_dw = (TGraphErrors *)f1->Get("run_period_dWidth_chi2_bksub");*/
+		pp_chi2_dm_raw = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_bksub");
+		pp_chi2_dw_raw = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_bksub");
+		pp_chi2_dm_eta = (TGraphErrors *)f1->Get("pp_dM_chi2_eta_bksub");
+		pp_chi2_dw_eta = (TGraphErrors *)f1->Get("pp_dWidth_chi2_eta_bksub");
 	}
 
 	TGraphErrors *Combined_fit_dm_raw = new TGraphErrors(pp_dm_raw->GetN() + HI_dm_raw->GetN());
@@ -337,10 +380,10 @@ void get_tgraph(int type = 1)
 	TGraphErrors *Combined_hist_dm_eta = new TGraphErrors(pp_dm_raw->GetN() + HI_dm_raw->GetN());
 	TGraphErrors *Combined_hist_dwidth_eta = new TGraphErrors(pp_dm_raw->GetN() + HI_dm_raw->GetN());
 
-	// TGraphErrors *Combined_hist_dwidth = new TGraphErrors(HI_dw->GetN() + pp_dw->GetN());
-	// TGraphErrors *Combined_chi2_dwidth = new TGraphErrors(HI_dw->GetN() + pp_dw->GetN());
-	// TGraphErrors *Combined_hist_dm = new TGraphErrors(pp_dm->GetN() + HI_dm->GetN());
-	// TGraphErrors *Combined_chi2_dm = new TGraphErrors(pp_dm->GetN() + HI_dm->GetN());
+	TGraphErrors *Combined_chi2_dm_raw = new TGraphErrors(pp_dm_raw->GetN() + HI_dm_raw->GetN());
+	TGraphErrors *Combined_chi2_dwidth_raw = new TGraphErrors(pp_dm_raw->GetN() + HI_dm_raw->GetN());
+	TGraphErrors *Combined_chi2_dm_eta = new TGraphErrors(pp_dm_raw->GetN() + HI_dm_raw->GetN());
+	TGraphErrors *Combined_chi2_dwidth_eta = new TGraphErrors(pp_dm_raw->GetN() + HI_dm_raw->GetN());
 
 	for (int i = 0; i < pp_dm_raw->GetN(); ++i)
 	{
@@ -380,23 +423,18 @@ void get_tgraph(int type = 1)
 		Combined_hist_dm_eta->SetPointError(i, pp_hist_dm_eta->GetErrorX(i), pp_hist_dm_eta->GetErrorY(i));
 		Combined_hist_dwidth_eta->SetPointError(i, pp_hist_dw_eta->GetErrorX(i), pp_hist_dw_eta->GetErrorY(i));
 
-		/*Combined_fit_dm->SetPoint(i, pp_dm->GetX()[i], pp_dm->GetY()[i]);
-		Combined_fit_dm->SetPointError(i, pp_dm->GetErrorX(i), pp_dm->GetErrorY(i));
+		Combined_chi2_dm_raw->SetPoint(i, pp_chi2_dm_raw->GetX()[i], pp_chi2_dm_raw->GetY()[i]);
+		Combined_chi2_dwidth_raw->SetPoint(i, pp_chi2_dw_raw->GetX()[i], pp_chi2_dw_raw->GetY()[i]);
 
-		Combined_hist_dm->SetPoint(i, pp_hist_dm->GetX()[i], pp_hist_dm->GetY()[i]);
-		Combined_hist_dm->SetPointError(i, pp_hist_dm->GetErrorX(i), pp_hist_dm->GetErrorY(i));
 
-		Combined_chi2_dm->SetPoint(i, pp_chi2_dm->GetX()[i], pp_chi2_dm->GetY()[i]);
-		Combined_chi2_dm->SetPointError(i, pp_chi2_dm->GetErrorX(i), pp_chi2_dm->GetErrorY(i));
+		Combined_chi2_dm_raw->SetPointError(i, pp_chi2_dm_raw->GetErrorX(i), pp_chi2_dm_raw->GetErrorY(i));
+		Combined_chi2_dwidth_raw->SetPointError(i, pp_chi2_dw_raw->GetErrorX(i), pp_chi2_dw_raw->GetErrorY(i));
 
-		Combined_fit_dwidth->SetPoint(i, pp_dw->GetX()[i], pp_dw->GetY()[i]);
-		Combined_fit_dwidth->SetPointError(i, pp_dw->GetErrorX(i), pp_dw->GetErrorY(i));
+		Combined_chi2_dm_eta->SetPoint(i, pp_chi2_dm_eta->GetX()[i], pp_chi2_dm_eta->GetY()[i]);
+		Combined_chi2_dwidth_eta->SetPoint(i, pp_chi2_dw_eta->GetX()[i], pp_chi2_dw_eta->GetY()[i]);
 
-		Combined_hist_dwidth->SetPoint(i, pp_hist_dw->GetX()[i], pp_hist_dw->GetY()[i]);
-		Combined_hist_dwidth->SetPointError(i, pp_hist_dw->GetErrorX(i), pp_hist_dw->GetErrorY(i));
-
-		Combined_chi2_dwidth->SetPoint(i, pp_chi2_dw->GetX()[i], pp_chi2_dw->GetY()[i]);
-		Combined_chi2_dwidth->SetPointError(i, pp_chi2_dw->GetErrorX(i), pp_chi2_dw->GetErrorY(i));*/
+		Combined_chi2_dm_eta->SetPointError(i, pp_chi2_dm_eta->GetErrorX(i), pp_chi2_dm_eta->GetErrorY(i));
+		Combined_chi2_dwidth_eta->SetPointError(i, pp_chi2_dw_eta->GetErrorX(i), pp_chi2_dw_eta->GetErrorY(i));
 	}
 	for (int i = 0; i < HI_dm_raw->GetN(); ++i)
 	{
@@ -437,23 +475,17 @@ void get_tgraph(int type = 1)
 		Combined_hist_dm_eta->SetPointError(i + pp_dm_raw->GetN(), HI_hist_dm_eta->GetErrorX(i), HI_hist_dm_eta->GetErrorY(i));
 		Combined_hist_dwidth_eta->SetPointError(i + pp_dm_raw->GetN(), HI_hist_dw_eta->GetErrorX(i), HI_hist_dw_eta->GetErrorY(i));
 
-		/*Combined_fit_dm->SetPoint(i + pp_dm->GetN(), HI_dm->GetX()[i] + 22, HI_dm->GetY()[i]);
-		Combined_fit_dm->SetPointError(i + pp_dm->GetN(), HI_dm->GetErrorX(i), HI_dm->GetErrorY(i));
+		Combined_chi2_dm_raw->SetPoint(i + pp_dm_raw->GetN(), HI_chi2_dm_raw->GetX()[i] + 22, HI_chi2_dm_raw->GetY()[i]);
+		Combined_chi2_dwidth_raw->SetPoint(i + pp_dm_raw->GetN(), HI_chi2_dw_raw->GetX()[i] + 22, HI_chi2_dw_raw->GetY()[i]);
 
-		Combined_hist_dm->SetPoint(i + pp_hist_dm->GetN(), HI_hist_dm->GetX()[i] + 22, HI_hist_dm->GetY()[i]);
-		Combined_hist_dm->SetPointError(i + pp_hist_dm->GetN(), HI_hist_dm->GetErrorX(i), HI_hist_dm->GetErrorY(i));
+		Combined_chi2_dm_raw->SetPointError(i + pp_dm_raw->GetN(), HI_chi2_dm_raw->GetErrorX(i), HI_chi2_dm_raw->GetErrorY(i));
+		Combined_chi2_dwidth_raw->SetPointError(i + pp_dm_raw->GetN(), HI_chi2_dw_raw->GetErrorX(i), HI_chi2_dw_raw->GetErrorY(i));
 
-		Combined_chi2_dm->SetPoint(i + pp_chi2_dm->GetN(), HI_chi2_dm->GetX()[i] + 22, HI_chi2_dm->GetY()[i]);
-		Combined_chi2_dm->SetPointError(i + pp_chi2_dm->GetN(), HI_chi2_dm->GetErrorX(i), HI_chi2_dm->GetErrorY(i));
+		Combined_chi2_dm_eta->SetPoint(i + pp_dm_raw->GetN(), HI_chi2_dm_eta->GetX()[i] + 22, HI_chi2_dm_eta->GetY()[i]);
+		Combined_chi2_dwidth_eta->SetPoint(i + pp_dm_raw->GetN(), HI_chi2_dw_eta->GetX()[i] + 22, HI_chi2_dw_eta->GetY()[i]);
 
-		Combined_fit_dwidth->SetPoint(i + pp_dw->GetN(), HI_dw->GetX()[i] + 22, HI_dw->GetY()[i]);
-		Combined_fit_dwidth->SetPointError(i + pp_dw->GetN(), HI_dw->GetErrorX(i), HI_dw->GetErrorY(i));
-
-		Combined_hist_dwidth->SetPoint(i + pp_hist_dw->GetN(), HI_hist_dw->GetX()[i] + 22, HI_hist_dw->GetY()[i]);
-		Combined_hist_dwidth->SetPointError(i + pp_hist_dw->GetN(), HI_hist_dw->GetErrorX(i), HI_hist_dw->GetErrorY(i));
-
-		Combined_chi2_dwidth->SetPoint(i + pp_chi2_dw->GetN(), HI_chi2_dw->GetX()[i] + 22, HI_chi2_dw->GetY()[i]);
-		Combined_chi2_dwidth->SetPointError(i + pp_chi2_dw->GetN(), HI_chi2_dw->GetErrorX(i), HI_chi2_dw->GetErrorY(i));*/
+		Combined_chi2_dm_eta->SetPointError(i + pp_dm_raw->GetN(), HI_chi2_dm_eta->GetErrorX(i), HI_chi2_dm_eta->GetErrorY(i));
+		Combined_chi2_dwidth_eta->SetPointError(i + pp_dm_raw->GetN(), HI_chi2_dw_eta->GetErrorX(i), HI_chi2_dw_eta->GetErrorY(i));
 	}
 
 	gStyle->SetEndErrorSize(4);
@@ -485,14 +517,14 @@ void get_tgraph(int type = 1)
 	TCanvas *c_n_eta = new TCanvas("c_n_eta", "", 1600, 800);
 	TCanvas *c_STD_eta = new TCanvas("c_STD_eta", "", 1600, 800);
 
-	changecosmetic(c_dm_raw, Combined_fit_dm_raw, 1, type, Combined_hist_dm_raw);
-	changecosmetic(c_dwidth_raw, Combined_fit_dwidth_raw, 2, type, Combined_hist_dwidth_raw);
+	changecosmetic(c_dm_raw, Combined_fit_dm_raw, 1, type, Combined_hist_dm_raw, Combined_chi2_dm_raw);
+	changecosmetic(c_dwidth_raw, Combined_fit_dwidth_raw, 2, type, Combined_hist_dwidth_raw, Combined_chi2_dwidth_raw);
 	changecosmetic(c_alpha_raw, Combined_fit_alpha_raw, 3, type);
 	changecosmetic(c_n_raw, Combined_fit_n_raw, 4, type);
 	changecosmetic(c_STD_raw, Combined_fit_STD_raw, 5, type);
 
-	changecosmetic(c_dm_eta, Combined_fit_dm_eta, 1, type, Combined_hist_dm_eta);
-	changecosmetic(c_dwidth_eta, Combined_fit_dwidth_eta, 2, type, Combined_hist_dwidth_eta);
+	changecosmetic(c_dm_eta, Combined_fit_dm_eta, 1, type, Combined_hist_dm_eta, Combined_chi2_dm_eta);
+	changecosmetic(c_dwidth_eta, Combined_fit_dwidth_eta, 2, type, Combined_hist_dwidth_eta, Combined_chi2_dwidth_eta);
 	changecosmetic(c_alpha_eta, Combined_fit_alpha_eta, 3, type);
 	changecosmetic(c_n_eta, Combined_fit_n_eta, 4, type);
 	changecosmetic(c_STD_eta, Combined_fit_STD_eta, 5, type);
