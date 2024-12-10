@@ -1,4 +1,6 @@
 #include "fit.h"
+#include "tdrStyle.C"
+#include "CMS_lumi.C"
 
 void setupfitvariable()
 {
@@ -20,6 +22,7 @@ void setupfitvariable()
 
 	fsig = new RooRealVar("fsig", "signal fraction", 0.99, 0, 1);
 	purepdf = new RooAddPdf("purepdf", "cbconbw+exp", RooArgList(*newconvpdf, *expo), *fsig);
+	newconvpdf->setBufferFraction(0.5);
 }
 
 void dofit(RooDataSet *dataset, int iteration, string type)
@@ -34,40 +37,53 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	if (fittype == 2)
 		fitresult = purepdf->fitTo(*dataset, RooFit::Save(true), RooFit::NumCPU(8), RooFit::SumW2Error(true), RooFit::Minimizer("Minuit2", "migrad"));
 
-	frame = x->frame(RooFit::Title("Z mass fit"));
-	framecheck = x->frame(RooFit::Title("Background"));
+	frame = x->frame(RooFit::Title(""));
+	framecheck = x->frame(RooFit::Title(""));
 
-	dataset->plotOn(frame, RooFit::Name("datahistogram"), RooFit::Binning(60), RooFit::MarkerColor(kBlack), RooFit::MarkerSize(0.1));
+	dataset->plotOn(frame, RooFit::Name("datahistogram"), RooFit::Binning(60), RooFit::MarkerColor(kBlack), RooFit::MarkerSize(1));
 	if (fittype == 1)
 	{
 		newconvpdf->plotOn(frame, RooFit::Name("fitcurve"), RooFit::LineWidth(1));
-		newconvpdf->paramOn(frame, RooFit::Format("NEU", RooFit::AutoPrecision(3)), RooFit::Layout(0.6, 1, 0.9), RooFit::ShowConstants(kTRUE));
+		// newconvpdf->paramOn(frame, RooFit::Format("NEU", RooFit::AutoPrecision(3)), RooFit::Layout(0.6, 1, 0.9), RooFit::ShowConstants(kTRUE));
 	}
 	if (fittype == 2)
 	{
 		purepdf->plotOn(frame, RooFit::Name("fitcurve"), RooFit::LineWidth(1));
-		purepdf->paramOn(frame, RooFit::Format("NEU", RooFit::AutoPrecision(3)), RooFit::Layout(0.6, 1, 0.9), RooFit::ShowConstants(kTRUE));
-		purepdf->plotOn(framecheck, RooFit::Components(*expo), RooFit::LineStyle(kDashed), RooFit::LineColor(kRed));
+		// purepdf->paramOn(frame, RooFit::Format("NEU", RooFit::AutoPrecision(3)), RooFit::Layout(0.6, 1, 0.9), RooFit::ShowConstants(kTRUE));
+		purepdf->plotOn(frame, RooFit::Name("backgroundcurve"), RooFit::Components(*expo), RooFit::LineStyle(kDashed), RooFit::LineColor(kRed));
 	}
 	residuals = frame->residHist("datahistogram", "fitcurve", true, false); // true = pull, false = center of the bin
 
 	// Calculate Chi2/ndf
 	int nParams = fitresult->floatParsFinal().getSize();
-	double chi2ndf = frame->chiSquare(nParams);
+	cout << "nParams is " << nParams << endl;
+	double chi2ndf = frame->chiSquare("fitcurve", "datahistogram", nParams);
 
-	cout << "The chi2/ndf is " << chi2ndf << endl;
+	// cout << "The chi2/ndf is " << chi2ndf << endl;
 
 	pullFrame = x->frame();
 	pullFrame->addPlotable(residuals, "P");
 	pullFrame->SetTitle("");
 	pullFrame->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV)");
+
 	frame->SetTitle("");
+	frame->GetYaxis()->SetTitle("Events / 1.0 GeV");
 	frame->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV)");
 
-	c1 = new TCanvas("c1", "", 1600, 1200);
-	c1->Divide(2, 2);
+	c1 = new TCanvas("c1", "", 2000, 1000);
+	c1->Divide(2, 1);
 	c1->cd(1);
+
+	TLine *line = new TLine(91.1876, frame->GetMinimum(), 91.1896, frame->GetMaximum());
+	line->SetLineStyle(2); // 2 corresponds to a dashed line
+	line->SetLineWidth(2); // Set the line width (optional)
+	line->SetLineColor(kBlack);
+	frame->addObject(line);
 	frame->Draw();
+
+	TPad *pad = (TPad *)gPad;
+	pad->SetLogy();
+	CMS_lumi(pad, 13, 10);
 
 	double meanofBW = bwmean->getVal() - 91.1876;
 	double meanerrorofBW = bwmean->getError();
@@ -82,18 +98,38 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	Double_t sigma = cbsigma->getVal();
 	Double_t sigma_err = cbsigma->getError();
 
-	textBox = new TPaveText(0.1, 0.5, 0.3, 0.8, "NDC");
+	textBox = new TPaveText(0.25, 0.6, 0.4, 0.8, "NDC");
+	textBox->SetBorderSize(0);
 	textBox->SetFillColor(0);
-	textBox->SetTextSize(0.03);
-	textBox->AddText(Form("Mean value: %.2f", meanofBW));
-	textBox->AddText(Form("Width value: %.2f", widthofBW));
+	textBox->SetTextSize(0.02);
+	textBox->AddText(Form("d(Mean) value: %.2f GeV", meanofBW));
+	textBox->AddText(Form("d(Width) value: %.2f GeV", widthofBW));
 	textBox->AddText(Form("# of Entries: %i", numEntries));
-	textBox->AddText(Form("chi2/ndf: %f", chi2ndf));
+	textBox->AddText(Form("#chi^{2}/ndf: %f", chi2ndf));
+	if (type == "raw")
+		textBox->AddText("|#eta| < 2.4");
+	if (type == "eta")
+		textBox->AddText("|#eta| < 1");
 	textBox->Draw();
+
+	textBoxparam = new TPaveText(0.7, 0.7, 0.9, 0.9, "NDC");
+	textBoxparam->SetBorderSize(0);
+	textBoxparam->SetFillColor(0);
+	textBoxparam->SetTextSize(0.02);
+	textBoxparam->AddText(Form("#mu_{BW}: %.3f #pm %.3f", bwmean->getVal(), bwmean->getError()));
+	textBoxparam->AddText(Form("#Gamma_{BW}: %.3f #pm %.3f", width->getVal(), width->getError()));
+	textBoxparam->AddText(Form("#sigma_{CB}: %.3f #pm %.3f", cbsigma->getVal(), cbsigma->getError()));
+	textBoxparam->AddText(Form("#alpha_{CB}: %.3f #pm %.3f", cbalpha->getVal(), cbalpha->getError()));
+	textBoxparam->AddText(Form("n_{CB}: %.3f #pm %.3f", cbn->getVal(), cbn->getError()));
+	if (fittype == 2)
+	{
+		textBoxparam->AddText(Form("#tau_{exp}: %.3f #pm %.3f", decayVar->getVal(), decayVar->getError()));
+	}
+
+	textBoxparam->Draw();
+
 	c1->cd(2);
 	pullFrame->Draw();
-	c1->cd(3);
-	framecheck->Draw();
 
 	if (iteration == -99)
 	{
@@ -178,6 +214,7 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 
 void fit(int nobkorexp = 1)
 {
+	setTDRStyle();
 	fittype = nobkorexp;
 
 	TFile *f1 = new TFile("new_pp_data_file_stability_readonly.root", "READ");
@@ -206,14 +243,14 @@ void fit(int nobkorexp = 1)
 		dofit(mass_array_raw[i], i, "raw");
 	}
 
-	// dofit(mass_array_raw_inclusive, -99, "raw");
+	dofit(mass_array_raw_inclusive, -99, "raw");
 
 	for (int i = 0; i < 22; i++)
 	{
 		dofit(mass_array_eta[i], i, "eta");
 	}
 
-	// dofit(mass_array_eta_inclusive, -99, "eta");
+	dofit(mass_array_eta_inclusive, -99, "eta");
 
 	TGraphErrors *g_1 = new TGraphErrors(22, xposition, dMass_raw, xposition_err, dMass_Err_raw);
 	TGraphErrors *g_2 = new TGraphErrors(22, xposition, dMass_eta, xposition_err, dMass_Err_eta);
@@ -222,7 +259,7 @@ void fit(int nobkorexp = 1)
 	TGraphErrors *g_4 = new TGraphErrors(22, xposition, dWidth_eta, xposition_err, dWidth_Err_eta);
 
 	TGraphErrors *g_5 = new TGraphErrors(22, xposition, Alpha_raw, xposition_err, Alpha_Err_raw);
-	TGraphErrors *g_6 = new TGraphErrors(22, xposition, Alpha_eta, xposition_err, Alpha_Err_raw);
+	TGraphErrors *g_6 = new TGraphErrors(22, xposition, Alpha_eta, xposition_err, Alpha_Err_eta);
 
 	TGraphErrors *g_7 = new TGraphErrors(22, xposition, N_raw, xposition_err, N_Err_raw);
 	TGraphErrors *g_8 = new TGraphErrors(22, xposition, N_eta, xposition_err, N_Err_eta);

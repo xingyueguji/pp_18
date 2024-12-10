@@ -1,6 +1,4 @@
-#include "chisquaretest.h"
-
-void newchisquaretestpp(bool iseta = 1, bool isbk = 1)
+void newchisquaretestpp(bool iseta = 1, bool isbk = 1, bool isNew = 1)
 {
 
 	gStyle->SetOptFit(0);
@@ -22,9 +20,10 @@ void newchisquaretestpp(bool iseta = 1, bool isbk = 1)
 	}
 
 	datafile = "./new_pp_data_file_stability_readonly.root";
-	mcfile = "modified_signal_test.root";
+	//mcfile = Form("../ZBoson_18/rootfile/shift_%.1f_%.1f_smear_%.1f_%.3f_modified_signal_%i_%i_%i.root", shiftlowbin, shifthighbin, smearlowbin, smearhighbin, nbins_mass_shift, nbins_smear, numberofsamples);
+	mcfile = "../ZBoson_18/rootfile/pp_shift_-0.15_-0.1_smear_0.006_0.012_modified_signal_21_21_100.root";
 
-	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, iseta);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, iseta, isNew);
 
 	// ovo->bincontentcheck(isbk);
 	// ovo->RebinAllpp(4);

@@ -1,9 +1,75 @@
 #include "TH1.h"
 #include "TCanvas.h"
-void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGraphErrors *hist = nullptr, TGraphErrors *chi2 = nullptr)
+#include "tdrStyle.C"
+#include "CMS_lumi.C"
+
+void getdiffcosmetic(TCanvas *c1, Double_t *arr, Double_t *arrerr, bool isdM)
+{
+	c1->cd();
+	setTDRStyle();
+
+	double y[3] = {1, 2, 3};
+	double y_err[3] = {0, 0, 0};
+
+	TGraphErrors *g1 = new TGraphErrors(3, arr, y, arrerr, y_err);
+
+	c1->SetTitle("");
+	g1->SetTitle("");
+
+	if (isdM)
+		g1->GetXaxis()->SetTitle("#DeltaM (MeV)");
+	else
+		g1->GetXaxis()->SetTitle("#DeltaWidth (MeV)");
+
+	if (isdM) g1->GetXaxis()->SetLimits(-130,10);
+
+	// g1->GetXaxis()->CenterTitle();
+	g1->GetYaxis()->SetLimits(0, 5);
+	g1->GetYaxis()->SetRangeUser(0, 4);
+	g1->GetYaxis()->SetNdivisions(4, 0, 0, kFALSE);
+
+	for (int i = 1; i <= 5; ++i)
+	{
+		g1->GetYaxis()->ChangeLabel(i, -1, 0, -1, -1, -1, "");
+	}
+
+	g1->GetYaxis()->ChangeLabel(2, -1, 0.03, -1, -1, -1, "Fit");
+	g1->GetYaxis()->ChangeLabel(3, -1, 0.03, -1, -1, -1, "Hist");
+	g1->GetYaxis()->ChangeLabel(4, -1, 0.03, -1, -1, -1, "Template");
+
+	g1->SetMarkerColor(kBlack);
+	g1->SetLineColor(kBlack);
+	g1->SetMarkerStyle(20);
+	g1->SetMarkerSize(1);
+
+	g1->Draw("AP");
+
+	TLine *line = new TLine(0, 0, 0, 4); // Define the start (1, 4.0) and end (5, 4.0) points of the line
+
+	// Set the line style to dashed
+	line->SetLineStyle(2);		// 2 corresponds to a dashed line style
+	line->SetLineColor(kBlack); // Optional: Set the color of the line
+	line->SetLineWidth(2);		// Optional: Set the width of the line
+
+	// Draw the line on the canvas
+	line->Draw("same");
+
+	TPaveText *pave = new TPaveText(0.65, 0.75, 0.9, 0.9, "NDC");
+	pave->AddText("Inclusive HI - Fitted pp");
+	pave->SetTextFont(42);
+	pave->SetTextSize(0.04);
+	pave->SetFillColor(0);
+	pave->SetBorderSize(0);
+	pave->Draw("same");
+
+	CMS_lumi(c1, 13, 11);
+}
+void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGraphErrors *hist = nullptr, TGraphErrors *chi2 = nullptr, Double_t *arr = nullptr, Double_t *arrerr = nullptr)
 {
 	c1->cd();
 	x1->SetTitle("");
+	gStyle->SetOptFit(0);
+	gStyle->SetOptStat(0);
 
 	TString yaxistitle;
 	Double_t yaxisupperlimit;
@@ -11,14 +77,14 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 
 	if (axistype == 1)
 	{
-		yaxistitle = "dM(GeV)";
+		yaxistitle = "#DeltaM (GeV)";
 		yaxisupperlimit = 0.7;
 		yaxislowerlimit = -1.5;
 	}
 
 	if (axistype == 2)
 	{
-		yaxistitle = "dWidth(GeV)";
+		yaxistitle = "#DeltaWidth (GeV)";
 		yaxisupperlimit = 2;
 		yaxislowerlimit = -1;
 	}
@@ -55,12 +121,13 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	}
 	x1->GetXaxis()->ChangeLabel(2, -1, 0.03, -1, -1, -1, "2018-07-30");
 	x1->GetXaxis()->ChangeLabel(21, -1, 0.03, -1, -1, -1, "2018-10");
-	x1->GetXaxis()->ChangeLabel(24, 45, 0.03, -1, -1, -1, "inclusive");
+	x1->GetXaxis()->ChangeLabel(24, 45, 0.03, -1, -1, -1, "0-100%");
 	x1->GetXaxis()->ChangeLabel(25, 45, 0.03, -1, -1, -1, "0-10%");
 	x1->GetXaxis()->ChangeLabel(26, 45, 0.03, -1, -1, -1, "10-20%");
 	x1->GetXaxis()->ChangeLabel(27, 45, 0.03, -1, -1, -1, "20-30%");
-	x1->GetXaxis()->ChangeLabel(28, 45, 0.03, -1, -1, -1, "30-50%");
-	x1->GetXaxis()->ChangeLabel(29, 45, 0.03, -1, -1, -1, "50-100%");
+	x1->GetXaxis()->ChangeLabel(28, 45, 0.03, -1, -1, -1, "30-100%");
+	x1->GetXaxis()->SetLabelOffset(0.03);
+	// x1->GetXaxis()->ChangeLabel(29, 45, 0.03, -1, -1, -1, "50-100%");
 
 	x1->SetMarkerColor(2);
 	x1->SetLineColor(2);
@@ -79,28 +146,28 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 
 	if (chi2 != nullptr)
 	{
-		chi2->SetMarkerColor(kGreen+3);
-		chi2->SetLineColor(kGreen+3);
-		chi2->SetFillColorAlpha(kGreen+3, 0.35);
+		chi2->SetMarkerColor(kGreen + 3);
+		chi2->SetLineColor(kGreen + 3);
+		chi2->SetFillColorAlpha(kGreen + 3, 0.35);
 		chi2->SetMarkerStyle(4);
 		chi2->SetMarkerSize(1);
 	}
 
-	x1->Draw("A3");
-	x1->Draw("P SAME");
-	x1->SetFillStyle(3001); 
+	x1->Draw("AP");
+	//x1->Draw("P SAME");
+	//x1->SetFillStyle(3001);
 
 	if (hist != nullptr)
 	{
-		hist->SetFillStyle(3001); 
-		hist->Draw("3 SAME");
+		//hist->SetFillStyle(3001);
 		hist->Draw("P SAME");
+		//hist->Draw("P SAME");
 	}
 	if (chi2 != nullptr)
 	{
-		chi2->SetFillStyle(3005); 
-		chi2->Draw("3 SAME");
+		//chi2->SetFillStyle(3005);
 		chi2->Draw("P SAME");
+		//chi2->Draw("P SAME");
 	}
 
 	TF1 *fit_pp_fit = new TF1("fit_pp_fit", "[0]", 0, 22.5);
@@ -113,10 +180,10 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 
 	fit_pp_fit->SetLineColor(2);
 	fit_pp_hist->SetLineColor(4);
-	fit_pp_chi2->SetLineColor(kGreen+3);
+	fit_pp_chi2->SetLineColor(kGreen + 3);
 	fit_HI_fit->SetLineColor(2);
 	fit_HI_hist->SetLineColor(4);
-	fit_HI_chi2->SetLineColor(kGreen+3);
+	fit_HI_chi2->SetLineColor(kGreen + 3);
 
 	x1->Fit(fit_pp_fit, "QR", "", 0.5, 22.5);
 	if (hist != nullptr)
@@ -161,8 +228,10 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 
 	TLegend *legend;
 
-	if (bktype == 1)legend = new TLegend(0.6, 0.75, 0.75, 0.9);
-	if (bktype == 2)legend = new TLegend(0.6, 0.75, 0.85, 0.9);
+	if (bktype == 1)
+		legend = new TLegend(0.6, 0.75, 0.75, 0.9);
+	if (bktype == 2)
+		legend = new TLegend(0.6, 0.75, 0.85, 0.9);
 	legend->SetTextFont(40);
 	legend->SetBorderSize(0);
 	if (bktype == 1)
@@ -190,6 +259,56 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	pt->SetMargin(0.01);
 	pt->AddText(Form("pp_fit fit = %.4f #pm %.4f", fit_pp_fit->GetParameter(0), fit_pp_fit->GetParError(0)));
 	pt->AddText(Form("HI_fit fit = %.4f #pm %.4f", fit_HI_fit->GetParameter(0), fit_HI_fit->GetParError(0)));
+
+	if (arr != nullptr && arrerr != nullptr)
+	{
+		double pp_result_fit = fit_pp_fit->GetParameter(0);
+		double pp_result_fit_err = fit_pp_fit->GetParError(0);
+
+		double pp_result_temp = fit_pp_chi2->GetParameter(0);
+		double pp_result_temp_err = fit_pp_chi2->GetParError(0);
+
+		double pp_result_hist = fit_pp_hist->GetParameter(0);
+		double pp_result_hist_err = fit_pp_hist->GetParError(0);
+
+		double HI_inclusive_fit_x;
+		double HI_inclusive_fit_y;
+		double HI_inclusive_hist_x;
+		double HI_inclusive_hist_y;
+		double HI_inclusive_temp_x;
+		double HI_inclusive_temp_y;
+
+		x1->GetPoint(22, HI_inclusive_fit_x, HI_inclusive_fit_y);
+		hist->GetPoint(22, HI_inclusive_hist_x, HI_inclusive_hist_y);
+		chi2->GetPoint(22, HI_inclusive_temp_x, HI_inclusive_temp_y);
+
+		if (HI_inclusive_fit_x != 23)
+			cout << "You selected the wrong point for inclusive" << endl;
+
+		double HI_inclusive_fit_err = x1->GetErrorY(22);
+		double HI_inclusive_hist_err = hist->GetErrorY(22);
+		double HI_inclusive_temp_err = chi2->GetErrorY(22);
+
+		double fit_diff = HI_inclusive_fit_y - pp_result_fit;
+		double fit_diff_err = sqrt(TMath::Power(HI_inclusive_fit_err, 2) + TMath::Power(pp_result_fit_err, 2));
+		double hist_diff = HI_inclusive_hist_y - pp_result_hist;
+		double hist_diff_err = sqrt(TMath::Power(HI_inclusive_hist_err, 2) + TMath::Power(pp_result_hist_err, 2));
+		double temp_diff = HI_inclusive_temp_y - pp_result_temp;
+		double temp_diff_err = sqrt(TMath::Power(HI_inclusive_temp_err, 2) + TMath::Power(pp_result_temp_err, 2));
+
+		arr[0] = fit_diff * 1000;
+		arr[1] = hist_diff * 1000;
+		arr[2] = temp_diff * 1000;
+
+		arrerr[0] = fit_diff_err * 1000;
+		arrerr[1] = hist_diff_err * 1000;
+		arrerr[2] = temp_diff_err * 1000;
+
+		cout << "The shifted diff for fit is " << fit_diff << " Error is " << fit_diff_err << endl;
+		cout << "The shifted diff for hist is " << hist_diff << " Error is " << hist_diff_err << endl;
+		cout << "The shifted diff for temp is " << temp_diff << " Error is " << temp_diff_err << endl;
+	}
+
 	if (hist != nullptr)
 	{
 		pt->AddText(Form("pp_hist fit = %.4f #pm %.4f", fit_pp_hist->GetParameter(0), fit_pp_hist->GetParError(0)));
@@ -207,9 +326,29 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 void get_tgraph(int type = 2)
 {
 
+	// setTDRStyle();
+
 	// type == 1 means no bk sub
 	// Type == 2 means bk sub
 	TFile *f1 = new TFile("All_plots.root", "READ");
+
+	TGraphErrors *Diff_dM_raw;
+	TGraphErrors *Diff_dW_raw;
+
+	TGraphErrors *Diff_dM_eta;
+	TGraphErrors *Diff_dW_eta;
+
+	Double_t Diff_dM_array_raw[3];
+	Double_t Diff_dM_array_err_raw[3];
+
+	Double_t Diff_dWidth_array_raw[3];
+	Double_t Diff_dWidth_array_err_raw[3];
+
+	Double_t Diff_dM_array_eta[3];
+	Double_t Diff_dM_array_err_eta[3];
+
+	Double_t Diff_dWidth_array_eta[3];
+	Double_t Diff_dWidth_array_err_eta[3];
 
 	TGraphErrors *HI_dm_raw;
 	TGraphErrors *HI_dwidth_raw;
@@ -426,7 +565,6 @@ void get_tgraph(int type = 2)
 		Combined_chi2_dm_raw->SetPoint(i, pp_chi2_dm_raw->GetX()[i], pp_chi2_dm_raw->GetY()[i]);
 		Combined_chi2_dwidth_raw->SetPoint(i, pp_chi2_dw_raw->GetX()[i], pp_chi2_dw_raw->GetY()[i]);
 
-
 		Combined_chi2_dm_raw->SetPointError(i, pp_chi2_dm_raw->GetErrorX(i), pp_chi2_dm_raw->GetErrorY(i));
 		Combined_chi2_dwidth_raw->SetPointError(i, pp_chi2_dw_raw->GetErrorX(i), pp_chi2_dw_raw->GetErrorY(i));
 
@@ -510,130 +648,33 @@ void get_tgraph(int type = 2)
 	TCanvas *c_alpha_raw = new TCanvas("c_alpha_raw", "", 1600, 800);
 	TCanvas *c_n_raw = new TCanvas("c_n_raw", "", 1600, 800);
 	TCanvas *c_STD_raw = new TCanvas("c_STD_raw", "", 1600, 800);
+	TCanvas *c_diff_dm_raw = new TCanvas("c_diff_dm_raw", "", 800, 800);
+	TCanvas *c_diff_dwidth_raw = new TCanvas("c_diff_dwidth_raw", "", 800, 800);
 
 	TCanvas *c_dm_eta = new TCanvas("c_dm_eta", "", 1600, 800);
 	TCanvas *c_dwidth_eta = new TCanvas("c_dwidth_eta", "", 1600, 800);
 	TCanvas *c_alpha_eta = new TCanvas("c_alpha_eta", "", 1600, 800);
 	TCanvas *c_n_eta = new TCanvas("c_n_eta", "", 1600, 800);
 	TCanvas *c_STD_eta = new TCanvas("c_STD_eta", "", 1600, 800);
+	TCanvas *c_diff_dm_eta = new TCanvas("c_diff_dm_eta", "", 800, 800);
+	TCanvas *c_diff_dwidth_eta = new TCanvas("c_diff_dwidth_eta", "", 800, 800);
 
-	changecosmetic(c_dm_raw, Combined_fit_dm_raw, 1, type, Combined_hist_dm_raw, Combined_chi2_dm_raw);
-	changecosmetic(c_dwidth_raw, Combined_fit_dwidth_raw, 2, type, Combined_hist_dwidth_raw, Combined_chi2_dwidth_raw);
+	changecosmetic(c_dm_raw, Combined_fit_dm_raw, 1, type, Combined_hist_dm_raw, Combined_chi2_dm_raw, Diff_dM_array_raw, Diff_dM_array_err_raw);
+	changecosmetic(c_dwidth_raw, Combined_fit_dwidth_raw, 2, type, Combined_hist_dwidth_raw, Combined_chi2_dwidth_raw, Diff_dWidth_array_raw, Diff_dWidth_array_err_raw);
 	changecosmetic(c_alpha_raw, Combined_fit_alpha_raw, 3, type);
 	changecosmetic(c_n_raw, Combined_fit_n_raw, 4, type);
 	changecosmetic(c_STD_raw, Combined_fit_STD_raw, 5, type);
 
-	changecosmetic(c_dm_eta, Combined_fit_dm_eta, 1, type, Combined_hist_dm_eta, Combined_chi2_dm_eta);
-	changecosmetic(c_dwidth_eta, Combined_fit_dwidth_eta, 2, type, Combined_hist_dwidth_eta, Combined_chi2_dwidth_eta);
+	changecosmetic(c_dm_eta, Combined_fit_dm_eta, 1, type, Combined_hist_dm_eta, Combined_chi2_dm_eta, Diff_dM_array_eta, Diff_dM_array_err_eta);
+	changecosmetic(c_dwidth_eta, Combined_fit_dwidth_eta, 2, type, Combined_hist_dwidth_eta, Combined_chi2_dwidth_eta, Diff_dWidth_array_eta, Diff_dWidth_array_err_eta);
 	changecosmetic(c_alpha_eta, Combined_fit_alpha_eta, 3, type);
 	changecosmetic(c_n_eta, Combined_fit_n_eta, 4, type);
 	changecosmetic(c_STD_eta, Combined_fit_STD_eta, 5, type);
 
-	// Below are width
-
-	/*TCanvas *c2 = new TCanvas("", "", 1600, 800);
-
-	c2->cd();
-
-	changecosmetic(Combined_fit_dwidth, 2);
-	changecosmetic(Combined_hist_dwidth, 2);
-
-	Combined_fit_dwidth->GetYaxis()->SetRangeUser(-1, 2);
-
-	Combined_fit_dwidth->SetMarkerColor(2);
-	Combined_fit_dwidth->SetLineColor(2);
-	Combined_fit_dwidth->SetMarkerStyle(20);
-	Combined_fit_dwidth->SetMarkerSize(1);
-
-	Combined_hist_dwidth->SetMarkerColor(4);
-	Combined_hist_dwidth->SetLineColor(4);
-	Combined_hist_dwidth->SetMarkerStyle(21);
-	Combined_hist_dwidth->SetMarkerSize(1);
-
-	Combined_chi2_dwidth->SetMarkerColor(3);
-	Combined_chi2_dwidth->SetLineColor(3);
-	Combined_chi2_dwidth->SetMarkerStyle(4);
-	Combined_chi2_dwidth->SetMarkerSize(1);
-
-	Combined_fit_dwidth->Draw("AP");
-	Combined_hist_dwidth->Draw("PSAME");
-	Combined_chi2_dwidth->Draw("PSAME");
-
-	TF1 *fit_pp_fit_width = new TF1("fit_pp_fit_width", "[0]", 0, 22.5);
-	TF1 *fit_pp_hist_width = new TF1("fit_pp_hist_width", "[0]", 0, 22.5);
-	TF1 *fit_pp_chi2_width = new TF1("fit_pp_chi2_width", "[0]", 0, 22.5);
-
-	TF1 *fit_HI_fit_width = new TF1("fit_HI_fit_width", "[0]", 0, 80);
-	TF1 *fit_HI_hist_width = new TF1("fit_HI_hist_width", "[0]", 0, 80);
-	TF1 *fit_HI_chi2_width = new TF1("fit_HI_chi2_width", "[0]", 0, 80);
-
-	fit_pp_fit_width->SetLineColor(2);
-	fit_pp_hist_width->SetLineColor(4);
-	fit_pp_chi2_width->SetLineColor(3);
-	fit_HI_fit_width->SetLineColor(2);
-	fit_HI_hist_width->SetLineColor(4);
-	fit_HI_chi2_width->SetLineColor(3);
-
-	Combined_fit_dwidth->Fit(fit_pp_fit_width, "QR", "", 0.5, 22.5);
-	Combined_hist_dwidth->Fit(fit_pp_hist_width, "QR", "", 0.5, 22.5);
-	Combined_chi2_dwidth->Fit(fit_pp_chi2_width, "QR", "", 0.5, 22.5);
-
-	Combined_fit_dwidth->Fit(fit_HI_fit_width, "QR", "", 22.6, 28.5);
-	Combined_hist_dwidth->Fit(fit_HI_hist_width, "QR", "", 22.6, 28.5);
-	Combined_chi2_dwidth->Fit(fit_HI_chi2_width, "QR", "", 22.6, 28.5);
-
-	fit_pp_fit_width->Draw("SAME");
-	fit_pp_hist_width->Draw("SAME");
-	fit_pp_chi2_width->Draw("SAME");
-
-	TLegend *legend_wdith = new TLegend(0.6, 0.75, 0.75, 0.9);
-	legend_wdith->SetTextFont(40);
-	legend_wdith->SetBorderSize(0);
-	if (type == 1)
-		legend_wdith->AddEntry(Combined_fit_dwidth, "unbinned_fit", "lep");
-	if (type == 2)
-		legend_wdith->AddEntry(Combined_fit_dwidth, "unbinned_fit_exp", "lep");
-	if (type == 1)
-		legend_wdith->AddEntry(Combined_hist_dwidth, "hist_stat", "lep");
-	if (type == 2)
-		legend_wdith->AddEntry(Combined_hist_dwidth, "hist_stat_exp", "lep");
-	if (type == 1)
-		legend_wdith->AddEntry(Combined_chi2_dwidth, "chi2", "lep");
-	if (type == 2)
-		legend_wdith->AddEntry(Combined_chi2_dwidth, "chi2_bksub", "lep");
-	legend_wdith->SetFillColor(0);
-
-	TPaveText *pt_1;
-	if (type == 1)
-		pt_1 = new TPaveText(0.2, 0.75, 0.55, 0.9, "brNDC");
-	else
-	{
-		pt_1 = new TPaveText(0.2, 0.65, 0.55, 0.9, "brNDC");
-	}
-	pt_1->SetBorderSize(0);
-	pt_1->SetFillColor(0);
-	pt_1->SetTextAlign(12); // Align left and vertically centered
-	pt_1->SetTextFont(42);
-	pt_1->SetTextSize(0.03);
-	pt_1->SetMargin(0.01);
-	pt_1->AddText(Form("pp_fit fit = %.4f #pm %.4f", fit_pp_fit_width->GetParameter(0), fit_pp_fit_width->GetParError(0)));
-	pt_1->AddText(Form("HI_fit fit = %.4f #pm %.4f", fit_HI_fit_width->GetParameter(0), fit_HI_fit_width->GetParError(0)));
-	pt_1->AddText(Form("pp_hist fit = %.4f #pm %.4f + 3", fit_pp_hist_width->GetParameter(0), fit_pp_hist_width->GetParError(0)));
-	pt_1->AddText(Form("HI_hist fit = %.4f #pm %.4f + 3", fit_HI_hist_width->GetParameter(0), fit_HI_hist_width->GetParError(0)));
-	pt_1->AddText(Form("pp_chi2 fit = %.4f #pm %.4f", fit_pp_chi2_width->GetParameter(0), fit_pp_chi2_width->GetParError(0)));
-	pt_1->AddText(Form("HI_chi2 fit = %.4f #pm %.4f", fit_HI_chi2_width->GetParameter(0), fit_HI_chi2_width->GetParError(0)));
-	pt_1->Draw();
-	legend_wdith->Draw();
-
-	TLine *line_width = new TLine(22.5, -1, 22.5, 2); // Define the start (1, 4.0) and end (5, 4.0) points of the line
-
-	// Set the line style to dashed
-	line_width->SetLineStyle(2);	  // 2 corresponds to a dashed line style
-	line_width->SetLineColor(kBlack); // Optional: Set the color of the line
-	line_width->SetLineWidth(2);	  // Optional: Set the width of the line
-
-	// Draw the line on the canvas
-	line_width->Draw("same"); // "same" ensures the line is drawn on the current canvas*/
+	getdiffcosmetic(c_diff_dm_raw, Diff_dM_array_raw, Diff_dM_array_err_raw, 1);
+	getdiffcosmetic(c_diff_dwidth_raw, Diff_dWidth_array_raw, Diff_dWidth_array_err_raw, 0);
+	getdiffcosmetic(c_diff_dm_eta, Diff_dM_array_eta, Diff_dM_array_err_eta, 1);
+	getdiffcosmetic(c_diff_dwidth_eta, Diff_dWidth_array_eta, Diff_dWidth_array_err_eta, 0);
 
 	if (type == 1)
 	{
@@ -642,12 +683,16 @@ void get_tgraph(int type = 2)
 		c_alpha_raw->SaveAs("./combined/raw/Combined_alpha_raw.png");
 		c_n_raw->SaveAs("./combined/raw/Combined_n_raw.png");
 		c_STD_raw->SaveAs("./combined/raw/Combined_STD_raw.png");
+		c_diff_dm_raw->SaveAs("./diff/raw/dm.png");
+		c_diff_dwidth_raw->SaveAs("./diff/raw/dw.png");
 
 		c_dm_eta->SaveAs("./combined/eta/Combined_dm_eta.png");
 		c_dwidth_eta->SaveAs("./combined/eta/Combined_dwidth_eta.png");
 		c_alpha_eta->SaveAs("./combined/eta/Combined_alpha_eta.png");
 		c_n_eta->SaveAs("./combined/eta/Combined_n_eta.png");
 		c_STD_eta->SaveAs("./combined/eta/Combined_STD_eta.png");
+		c_diff_dm_eta->SaveAs("./diff/eta/dm.png");
+		c_diff_dwidth_eta->SaveAs("./diff/eta/dw.png");
 	}
 	else
 	{
@@ -656,11 +701,15 @@ void get_tgraph(int type = 2)
 		c_alpha_raw->SaveAs("./combined/raw/Combined_alpha_exp_raw.png");
 		c_n_raw->SaveAs("./combined/raw/Combined_n_exp_raw.png");
 		c_STD_raw->SaveAs("./combined/raw/Combined_STD_exp_raw.png");
+		c_diff_dm_raw->SaveAs("./diff/raw/dm_exp.png");
+		c_diff_dwidth_raw->SaveAs("./diff/raw/dw_exp.png");
 
 		c_dm_eta->SaveAs("./combined/eta/Combined_dm_exp_eta.png");
 		c_dwidth_eta->SaveAs("./combined/eta/Combined_dwidth_exp_eta.png");
 		c_alpha_eta->SaveAs("./combined/eta/Combined_alpha_exp_eta.png");
 		c_n_eta->SaveAs("./combined/eta/Combined_n_exp_eta.png");
 		c_STD_eta->SaveAs("./combined/eta/Combined_STD_exp_eta.png");
+		c_diff_dm_eta->SaveAs("./diff/eta/dm_exp.png");
+		c_diff_dwidth_eta->SaveAs("./diff/eta/dw_exp.png");
 	}
 }

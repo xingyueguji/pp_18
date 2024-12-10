@@ -1,23 +1,23 @@
 void MeanfromHist_HI(){
 	TFile *f1 = new TFile("data_file.root","UPDATE");
-	TH1D* mass_array_data[6];
+	TH1D* mass_array_data[5];
 
-	Double_t dMass[6];
-	Double_t dMass_Err[6];
+	Double_t dMass[5];
+	Double_t dMass_Err[5];
 
-	Double_t dWidth[6];
-	Double_t dWidth_Err[6];
+	Double_t dWidth[5];
+	Double_t dWidth_Err[5];
 
-	Double_t xposition[6];
-	Double_t xposition_err[6];
+	Double_t xposition[5];
+	Double_t xposition_err[5];
 
-	Double_t dMass_before[6];
-	Double_t dMass_Err_before[6];
+	Double_t dMass_before[5];
+	Double_t dMass_Err_before[5];
 
-	Double_t dWidth_before[6];
-	Double_t dWidth_Err_before[6];
+	Double_t dWidth_before[5];
+	Double_t dWidth_Err_before[5];
 
-	RooDataHist *dataHistarray[6];
+	RooDataHist *dataHistarray[5];
 	RooRealVar x("x", "x", 60, 120);
 	RooRealVar tau("tau", "slope", -0.1, -5, +5);
 	RooExponential exp("exp", "Exponential PDF", x, tau);
@@ -33,7 +33,7 @@ void MeanfromHist_HI(){
 
 	TCanvas *c1 = new TCanvas("c1","c1",800,600);
 
-	for (int i=1; i<=5; i++){
+	for (int i=1; i<=4; i++){
 		mass_array_data[i] = (TH1D*)f1->Get(Form("mass_array_data_witheta_%i",i-1));
 		xposition[i] = i+1; 
 		xposition_err[i] = 0;

@@ -1,4 +1,6 @@
 #include "fit.h"
+#include "tdrStyle.C"
+#include "CMS_lumi.C"
 
 void setupfitvariable()
 {
@@ -19,14 +21,14 @@ void setupfitvariableHI(bool isfix, bool isbksub, bool isetacut)
 		{
 			if (isetacut)
 			{
-				cbalpha = new RooRealVar("alpha", "alpha", 1.8012); // Combined_alpha_exp_eta
-				cbn = new RooRealVar("n", "n", 0.9523);				// Combined_n_exp_eta
+				cbalpha = new RooRealVar("alpha", "alpha", 1.8312); // Combined_alpha_exp_eta
+				cbn = new RooRealVar("n", "n", 0.9112);				// Combined_n_exp_eta
 																	// cbsigma = new RooRealVar("sigma", "sigma", 0.8281); // Combined_STD_exp_eta
 			}
 			else
 			{
-				cbalpha = new RooRealVar("alpha", "alpha", 1.8202); // Combined_alpha_exp_raw
-				cbn = new RooRealVar("n", "n", 1.0352);				// Combined_n_exp_raw
+				cbalpha = new RooRealVar("alpha", "alpha", 1.8617); // Combined_alpha_exp_raw
+				cbn = new RooRealVar("n", "n", 0.9723);				// Combined_n_exp_raw
 																	// cbsigma = new RooRealVar("sigma", "sigma", 1.0787); // Combined_STD_exp_raw
 			}
 		}
@@ -35,14 +37,14 @@ void setupfitvariableHI(bool isfix, bool isbksub, bool isetacut)
 		{
 			if (isetacut)
 			{
-				cbalpha = new RooRealVar("alpha", "alpha", 1.9404); // Combined_alpha_eta
-				cbn = new RooRealVar("n", "n", 0.8015);				// Combined_n_eta
+				cbalpha = new RooRealVar("alpha", "alpha", 1.9240); // Combined_alpha_eta
+				cbn = new RooRealVar("n", "n", 0.8250);				// Combined_n_eta
 																	// cbsigma = new RooRealVar("sigma", "sigma", 0.8010); // Combined_STD_eta
 			}
 			else
 			{
-				cbalpha = new RooRealVar("alpha", "alpha", 1.8927); // Combined_alpha_raw
-				cbn = new RooRealVar("n", "n", 0.9353);				// Combined_n_raw
+				cbalpha = new RooRealVar("alpha", "alpha", 1.8780); // Combined_alpha_raw
+				cbn = new RooRealVar("n", "n", 0.9612);				// Combined_n_raw
 																	// cbsigma = new RooRealVar("sigma", "sigma", 1.0805); // Combined_STD_raw
 			}
 		}
@@ -57,6 +59,8 @@ void setupfitvariableHI(bool isfix, bool isbksub, bool isetacut)
 	newconvpdf = new RooFFTConvPdf("newconvpdf", "newconvpdf", *x, *bw, *cb);
 	fsig = new RooRealVar("fsig", "signal fraction", 0.99, 0, 1);
 	purepdf = new RooAddPdf("purepdf", "cbconbw+exp", RooArgList(*newconvpdf, *expo), *fsig);
+
+	newconvpdf->setBufferFraction(0.5);
 }
 
 void dofit(RooDataSet *dataset, int iteration, string type)
@@ -71,36 +75,60 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	if (fittype == 2)
 		fitresult = purepdf->fitTo(*dataset, RooFit::Save(true), RooFit::NumCPU(8), RooFit::SumW2Error(true), RooFit::Minimizer("Minuit2", "migrad"));
 
-	frame = x->frame(RooFit::Title("Z mass fit"));
-	framecheck = x->frame(RooFit::Title("Background"));
+	frame = x->frame(RooFit::Title(""));
+	framecheck = x->frame(RooFit::Title(""));
 
-	dataset->plotOn(frame, RooFit::Name("roodata"), RooFit::Binning(60), RooFit::MarkerColor(kBlack), RooFit::MarkerSize(0.1));
+	dataset->plotOn(frame, RooFit::Name("roodata"), RooFit::Binning(60), RooFit::MarkerColor(kBlack), RooFit::MarkerSize(1));
+
 	if (fittype == 1)
 	{
 		newconvpdf->plotOn(frame, RooFit::Name("fit"), RooFit::LineWidth(1));
-		newconvpdf->paramOn(frame, RooFit::Format("NEU", RooFit::AutoPrecision(3)), RooFit::Layout(0.6, 1, 0.9), RooFit::ShowConstants(kTRUE));
+		// newconvpdf->paramOn(frame, RooFit::Format("NEU", RooFit::AutoPrecision(3)), RooFit::Layout(0.6, 1, 0.9), RooFit::ShowConstants(kTRUE));
 	}
 	if (fittype == 2)
 	{
 		purepdf->plotOn(frame, RooFit::Name("fit"), RooFit::LineWidth(1));
-		purepdf->paramOn(frame, RooFit::Format("NEU", RooFit::AutoPrecision(3)), RooFit::Layout(0.6, 1, 0.9), RooFit::ShowConstants(kTRUE));
-		purepdf->plotOn(framecheck, RooFit::Components(*expo), RooFit::LineStyle(kDashed), RooFit::LineColor(kRed));
+		// purepdf->paramOn(frame, RooFit::Format("NE", RooFit::AutoPrecision(2)), RooFit::Layout(0.6, 0.9, 0.9), RooFit::ShowConstants(kFALSE));
+		purepdf->plotOn(frame, RooFit::Name("Background"), RooFit::Components(*expo), RooFit::LineStyle(kDashed), RooFit::LineColor(kRed));
 	}
+
 	residuals = frame->residHist("roodata", "fit", true, false); // true = pull, false = center of the bin
 	int nParams = fitresult->floatParsFinal().getSize();
-	double chi2ndf = frame->chiSquare(nParams);
+	double chi2ndf = frame->chiSquare("fit", "roodata", nParams);
 
 	pullFrame = x->frame();
 	pullFrame->addPlotable(residuals, "P");
 	pullFrame->SetTitle("");
 	pullFrame->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV)");
-	frame->SetTitle("");
-	frame->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV)");
+	// pullFrame->GetXaxis()->CenterTitle();
 
-	c1 = new TCanvas("c1", "", 1600, 1200);
-	c1->Divide(2, 2);
+	frame->SetTitle("");
+	frame->GetYaxis()->SetTitle("Events / 1.0 GeV");
+	frame->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV)");
+	// frame->GetYaxis()->CenterTitle();
+	// frame->GetXaxis()->CenterTitle();
+
+	framecheck->SetTitle("");
+
+	c1 = new TCanvas("c1", "", 2000, 1000);
+	c1->Divide(2, 1);
 	c1->cd(1);
-	frame->Draw();
+	// gPad->SetLogy();
+	// frame->Draw();
+
+	// Assuming 'frame' is your RooPlot
+	TLine *line = new TLine(91.1876, frame->GetMinimum(), 91.1896, frame->GetMaximum());
+	line->SetLineStyle(2);		// 2 corresponds to a dashed line
+	line->SetLineWidth(2);		// Set the line width (optional)
+	line->SetLineColor(kBlack); // Optional: set line color (e.g., red)
+
+	frame->addObject(line); // Add the line to the RooPlot
+
+	frame->Draw(); // Draw the frame with the line
+
+	TPad *pad = (TPad *)gPad;
+	pad->SetLogy();
+	CMS_lumi(pad, 13, 10);
 
 	double meanofBW = bwmean->getVal() - 91.1876;
 	double meanerrorofBW = bwmean->getError();
@@ -115,18 +143,44 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	Double_t sigma = cbsigma->getVal();
 	Double_t sigma_err = cbsigma->getError();
 
-	textBox = new TPaveText(0.1, 0.5, 0.3, 0.8, "NDC");
+	textBoxparam = new TPaveText(0.7, 0.7, 0.9, 0.9, "NDC");
+	textBoxparam->SetBorderSize(0);
+	textBoxparam->SetFillColor(0);
+	textBoxparam->SetTextSize(0.02);
+	textBoxparam->AddText(Form("#mu_{BW}: %.3f #pm %.3f", bwmean->getVal(), bwmean->getError()));
+	textBoxparam->AddText(Form("#Gamma_{BW}: %.3f #pm %.3f", width->getVal(), width->getError()));
+	textBoxparam->AddText(Form("#sigma_{CB}: %.3f #pm %.3f", cbsigma->getVal(), cbsigma->getError()));
+	textBoxparam->AddText(Form("#alpha_{CB}: %.3f #pm %.3f", cbalpha->getVal(), cbalpha->getError()));
+	textBoxparam->AddText(Form("n_{CB}: %.3f #pm %.3f", cbn->getVal(), cbn->getError()));
+	if (fittype == 2)
+	{
+		textBoxparam->AddText(Form("#tau_{exp}: %.3f #pm %.3f", decayVar->getVal(), decayVar->getError()));
+	}
+
+	textBoxparam->Draw();
+
+	int newcenlowlimit[5] = {0,0,10,20,30};
+	int newcenhighlimit[5] = {100,10,20,30,100};
+
+	textBox = new TPaveText(0.25, 0.6, 0.4, 0.8, "NDC");
+	textBox->SetBorderSize(0);
 	textBox->SetFillColor(0);
-	textBox->SetTextSize(0.03);
-	textBox->AddText(Form("Mean value: %.2f", meanofBW));
-	textBox->AddText(Form("Width value: %.2f", widthofBW));
+	textBox->SetTextSize(0.02);
+	textBox->AddText(Form("d(Mean) value: %.2f GeV", meanofBW));
+	textBox->AddText(Form("d(Width) value: %.2f GeV", widthofBW));
 	textBox->AddText(Form("# of Entries: %i", numEntries));
-	textBox->AddText(Form("chi2/ndf: %f", chi2ndf));
+	textBox->AddText(Form("#chi^{2}/ndf: %f", chi2ndf));
+	textBox->AddText(Form("Centrality: %i - %i", newcenlowlimit[iteration], newcenhighlimit[iteration]));
+	if (type == "raw")
+		textBox->AddText("|#eta| < 2.4");
+	if (type == "eta")
+		textBox->AddText("|#eta| < 1");
 	textBox->Draw();
+
 	c1->cd(2);
 	pullFrame->Draw();
-	c1->cd(3);
-	framecheck->Draw();
+	// c1->cd(3);
+	// framecheck->Draw();
 
 	if (type == "raw")
 	{
@@ -159,11 +213,11 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	{
 		if (type == "raw")
 		{
-			c1->SaveAs(Form("./fitHI/raw/HI_18_%i.png", iteration));
+			c1->SaveAs(Form("./fitHI/raw/HI_18_%i_%i.png", newcenlowlimit[iteration], newcenhighlimit[iteration]));
 		}
 		else
 		{
-			c1->SaveAs(Form("./fitHI/eta/HI_18_%i.png", iteration));
+			c1->SaveAs(Form("./fitHI/eta/HI_18_%i_%i.png", newcenlowlimit[iteration], newcenhighlimit[iteration]));
 		}
 	}
 
@@ -171,17 +225,19 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	{
 		if (type == "raw")
 		{
-			c1->SaveAs(Form("./fitHI/raw/HI_18_exp_%i.png", iteration));
+			c1->SaveAs(Form("./fitHI/raw/HI_18_exp_%i_%i.png", newcenlowlimit[iteration], newcenhighlimit[iteration]));
 		}
 		else
 		{
-			c1->SaveAs(Form("./fitHI/eta/HI_18_exp_%i.png", iteration));
+			c1->SaveAs(Form("./fitHI/eta/HI_18_exp_%i_%i.png", newcenlowlimit[iteration], newcenhighlimit[iteration]));
 		}
 	}
 }
 
 void fit_HI(int nobkorexp = 2, bool isfix = 1)
 {
+	setTDRStyle();
+
 	fittype = nobkorexp;
 	TFile *f1 = new TFile("data_file.root", "READ");
 
@@ -190,7 +246,7 @@ void fit_HI(int nobkorexp = 2, bool isfix = 1)
 	HI_mass_array_raw[0] = (RooDataSet *)f1->Get("roodata_10");
 	HI_mass_array_eta[0] = (RooDataSet *)f1->Get("roodata_eta_10");
 
-	for (int i = 1; i <= 5; i++)
+	for (int i = 1; i <= 4; i++)
 	{
 		// Reserve 0th position for inclusive
 		HI_mass_array_raw[i] = (RooDataSet *)f1->Get(Form("roodata_%i", i - 1));
@@ -213,7 +269,7 @@ void fit_HI(int nobkorexp = 2, bool isfix = 1)
 		setupfitvariableHI(isfix, isbksub, 0); // Here the iseta does not matter
 	}
 
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		if (isfix)
 		{
@@ -230,20 +286,20 @@ void fit_HI(int nobkorexp = 2, bool isfix = 1)
 	cout << "HI_xposition_is" << HI_xposition[0] << endl;
 	cout << "Mass is " << HI_dMass_raw[0] << endl;
 
-	TGraphErrors *g_1 = new TGraphErrors(6, HI_xposition, HI_dMass_raw, HI_xposition_err, HI_dMass_Err_raw);
-	TGraphErrors *g_2 = new TGraphErrors(6, HI_xposition, HI_dMass_eta, HI_xposition_err, HI_dMass_Err_eta);
+	TGraphErrors *g_1 = new TGraphErrors(5, HI_xposition, HI_dMass_raw, HI_xposition_err, HI_dMass_Err_raw);
+	TGraphErrors *g_2 = new TGraphErrors(5, HI_xposition, HI_dMass_eta, HI_xposition_err, HI_dMass_Err_eta);
 
-	TGraphErrors *g_3 = new TGraphErrors(6, HI_xposition, HI_dWidth_raw, HI_xposition_err, HI_dWidth_Err_raw);
-	TGraphErrors *g_4 = new TGraphErrors(6, HI_xposition, HI_dWidth_eta, HI_xposition_err, HI_dWidth_Err_eta);
+	TGraphErrors *g_3 = new TGraphErrors(5, HI_xposition, HI_dWidth_raw, HI_xposition_err, HI_dWidth_Err_raw);
+	TGraphErrors *g_4 = new TGraphErrors(5, HI_xposition, HI_dWidth_eta, HI_xposition_err, HI_dWidth_Err_eta);
 
-	TGraphErrors *g_5 = new TGraphErrors(6, HI_xposition, HI_Alpha_raw, HI_xposition_err, HI_Alpha_Err_raw);
-	TGraphErrors *g_6 = new TGraphErrors(6, HI_xposition, HI_Alpha_eta, HI_xposition_err, HI_Alpha_Err_raw);
+	TGraphErrors *g_5 = new TGraphErrors(5, HI_xposition, HI_Alpha_raw, HI_xposition_err, HI_Alpha_Err_raw);
+	TGraphErrors *g_6 = new TGraphErrors(5, HI_xposition, HI_Alpha_eta, HI_xposition_err, HI_Alpha_Err_eta);
 
-	TGraphErrors *g_7 = new TGraphErrors(6, HI_xposition, HI_N_raw, HI_xposition_err, HI_N_Err_raw);
-	TGraphErrors *g_8 = new TGraphErrors(6, HI_xposition, HI_N_eta, HI_xposition_err, HI_N_Err_eta);
+	TGraphErrors *g_7 = new TGraphErrors(5, HI_xposition, HI_N_raw, HI_xposition_err, HI_N_Err_raw);
+	TGraphErrors *g_8 = new TGraphErrors(5, HI_xposition, HI_N_eta, HI_xposition_err, HI_N_Err_eta);
 
-	TGraphErrors *g_9 = new TGraphErrors(6, HI_xposition, HI_Std_raw, HI_xposition_err, HI_Std_Err_raw);
-	TGraphErrors *g_10 = new TGraphErrors(6, HI_xposition, HI_Std_eta, HI_xposition_err, HI_Std_Err_eta);
+	TGraphErrors *g_9 = new TGraphErrors(5, HI_xposition, HI_Std_raw, HI_xposition_err, HI_Std_Err_raw);
+	TGraphErrors *g_10 = new TGraphErrors(5, HI_xposition, HI_Std_eta, HI_xposition_err, HI_Std_Err_eta);
 
 	TFile *f2 = new TFile("All_plots.root", "UPDATE");
 	f2->cd();

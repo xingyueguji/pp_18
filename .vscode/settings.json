@@ -71,7 +71,12 @@
         "unordered_set": "cpp",
         "vector": "cpp",
         "algorithm": "cpp",
-        "run_chi2.C": "cpp"
+        "run_chi2.C": "cpp",
+        "skimdata.C": "cpp",
+        "rebin.C": "cpp",
+        "tdrStyle.C": "cpp",
+        "CMS_lumi.C": "cpp",
+        "mcvsdata.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
