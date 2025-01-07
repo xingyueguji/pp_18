@@ -5,6 +5,7 @@
 class chisquaretest : public plotting_helper
 {
 public:
+	chisquaretest();
 	chisquaretest(TString s2, TString s3, int type, bool isNew);
 	chisquaretest(TString s1, TString s2, TString s3, bool iseta, bool isNew);
 	~chisquaretest();
@@ -132,26 +133,30 @@ public:
 	TFile *datafile;
 	TFile *bkfile;
 
-	double eta_mass_shift_array_low[nbins_cent] = {-0.45, -0.3, -0.45, -0.5, 0, 0, 0, 0, 0, 0, -0.34};
-	double eta_mass_shift_array_high[nbins_cent] = {-0.05, 0.2, 0.1, 0, 0, 0, 0, 0, 0, 0, -0.08};
-	double eta_mass_smear_array_low[nbins_cent] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	double eta_mass_smear_array_high[nbins_cent] = {0.01, 0.01, 0.01, 0.01, 0, 0, 0, 0, 0, 0, 0.007};
+	double eta_mass_shift_array_low[nbins_cent] = {-0.45, -0.3, -0.45, -0.5, 0, 0, 0, 0, 0, 0, -0.35};
+	double eta_mass_shift_array_high[nbins_cent] = {-0.05, 0.2, 0.1, 0, 0, 0, 0, 0, 0, 0, 0.0};
+	double eta_mass_smear_array_low[nbins_cent] = {-0.25, -0.05, -0.15, -0.3, 0, 0, 0, 0, 0, 0, 0};
+	double eta_mass_smear_array_high[nbins_cent] = {0.3, 0.65, 0.65, 0.5, 0, 0, 0, 0, 0, 0, 0.35};
 
-	double raw_mass_shift_array_low[nbins_cent] = {-0.3, -0.4, -0.4, -0.4, 0, 0, 0, 0, 0, 0, -0.3};
-	double raw_mass_shift_array_high[nbins_cent] = {0, -0.05, 0.0, 0.05, 0, 0, 0, 0, 0, 0, 0};
-	double raw_mass_smear_array_low[nbins_cent] = {0, 0.001, 0, 0.002, 0, 0, 0, 0, 0, 0, 0};
-	double raw_mass_smear_array_high[nbins_cent] = {0.008, 0.012, 0.008, 0.013, 0, 0, 0, 0, 0, 0, 0.008};
+	double raw_mass_shift_array_low[nbins_cent] = {-0.3, -0.35, -0.4, -0.3, 0, 0, 0, 0, 0, 0, -0.25};
+	double raw_mass_shift_array_high[nbins_cent] = {0.05, 0.0, 0.0, 0.1, 0, 0, 0, 0, 0, 0, 0.0};
+	double raw_mass_smear_array_low[nbins_cent] = {0.05, 0.15, -0.1, 0.2, 0, 0, 0, 0, 0, 0, 0.2};
+	double raw_mass_smear_array_high[nbins_cent] = {0.4, 0.6, 0.4, 0.7, 0, 0, 0, 0, 0, 0, 0.45};
 
-	double eta_pp_mass_shift_low = -0.15;
-	double eta_pp_mass_shift_high = -0.1;
-	double eta_pp_smear_low = 0.007;
-	double eta_pp_smear_high = 0.012;
+	double eta_pp_mass_shift_low = -0.2;
+	double eta_pp_mass_shift_high = 0.05;
+	double eta_pp_smear_low = 0.2;
+	double eta_pp_smear_high = 0.4;
 
-	double raw_pp_mass_shift_low = -0.12;
-	double raw_pp_mass_shift_high = -0.075;
-	double raw_pp_smear_low = 0.007;
-	double raw_pp_smear_high = 0.014;
+	double raw_pp_mass_shift_low = -0.15;
+	double raw_pp_mass_shift_high = 0.05;
+	double raw_pp_smear_low = 0.26;
+	double raw_pp_smear_high = 0.33;
+
 };
+chisquaretest::chisquaretest()
+{
+}
 
 chisquaretest::chisquaretest(TString s2, TString s3, int type, bool isNew)
 {
@@ -164,6 +169,7 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool isNew)
 
 	datafile = new TFile(datafilepath, "READ");
 	bkfile = new TFile(bkfilepath, "READ");
+	mcfile = new TFile("../ZBoson_18/rootfile/new_template_reco_gen.root", "READ");
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -178,7 +184,7 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool isNew)
 
 		cout << "cent is " << cent << endl;
 
-		if (type == 1)
+		/*if (type == 1)
 		{
 			if (cent == 0)
 			{
@@ -225,9 +231,9 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool isNew)
 				// This is the same as 0-10
 				mcfilepath = "../ZBoson_18/rootfile/raw_0_10_shift_-0.3_0.0_smear_0_0.008_modified_signal_21_21_1000.root";
 			}
-		}
+		}*/
 
-		mcfile = new TFile(mcfilepath, "READ");
+		// mcfile = new TFile(mcfilepath, "READ");
 		if (type == 1)
 		{
 			this->lowbin_mass_shift = eta_mass_shift_array_low[cent];
@@ -263,7 +269,7 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool isNew)
 		}
 
 		c_2d_chisquare_ndf[cent] = new TCanvas(Form("c_2d_chisquare_ndf_%i", cent), "", 3200, 2400);
-		c_data_mc_raw[cent] = new TCanvas(Form("c_data_mc_raw_%i", cent), "", 800, 600);
+		c_data_mc_raw[cent] = new TCanvas(Form("c_data_mc_raw_%i", cent), "", 800, 800);
 		c_data_data_bk[cent] = new TCanvas(Form("c_data_data_bk_%i", cent), "", 800, 600);
 		c_contour_HI[cent] = new TCanvas(Form("c_contour_HI_%i", cent), "", 800, 600);
 
@@ -290,7 +296,7 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool isNew)
 				{
 					if (isNew)
 					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("modifiedmass_raw_without_eff_%i_%i_%i_new", shift, smear, cent));
+						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("mass_array_with_eff_template_%i_%i_%i", shift, smear, cent));
 					}
 					else
 					{
@@ -301,7 +307,7 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool isNew)
 				{
 					if (isNew)
 					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("modifiedmass_eta_without_eff_%i_%i_%i_new", shift, smear, cent));
+						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("mass_array_witheta_witheff_template_%i_%i_%i", shift, smear, cent));
 					}
 					else
 					{
@@ -325,11 +331,19 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 	bkfilepath = s3;
 
 	if (iseta)
-		mcfilepath = "../ZBoson_18/rootfile/eta_pp_test_shift_-0.15_-0.1_smear_0.007_0.012_modified_signal_21_21_1000.root";
+		mcfilepath = "../ZBoson_18/rootfile/new_template_pp_reco_gen.root";
+		//mcfilepath = "../ZBoson_18/rootfile/new_template_pp_reco_gen_raw_test_-1_1_0_2.root";
 	if (!iseta)
-		// mcfilepath = "../ZBoson_18/rootfile/test2_raw.root";
-		mcfilepath = "../ZBoson_18/rootfile/raw_pp_test_shift_-0.12_-0.075_smear_0.007_0.011_modified_signal_21_21_1000.root";
+	{
+		mcfilepath = "../ZBoson_18/rootfile/new_template_pp_reco_gen.root";
+		//mcfilepath = "../ZBoson_18/rootfile/new_template_pp_reco_gen_raw_test_-1_1_0_2.root";
+		//mcfilepath = "../ZBoson_18/rootfile/new_template_pp_reco_gen_raw_test_-1_1_-1_1.root";
+	}
+
+	// mcfilepath = "../ZBoson_18/rootfile/new_template_pp_reco_gen.root";
 	// mcfilepath = "../ZBoson_18/rootfile/raw_pp_shift_-0.12_-0.08_smear_0.0085_0.012_modified_signal_21_21_1000.root";
+
+	cout << "mcfilepath is " << mcfilepath << endl;
 
 	mcfile = new TFile(mcfilepath, "READ");
 	datafile = new TFile(datafilepath, "READ");
@@ -405,11 +419,11 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 				{
 					if (isNew)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("modifiedmass_eta_without_eff_%i_%i_%i_new", shift, smear, 10));
+						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("mass_array_witheta_witheff_template_%i_%i_%i", shift, smear, 10));
 					}
 					else
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("modifiedmass_eta_without_eff_%i_%i_%i", shift, smear, 10));
+						//h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("modifiedmass_eta_without_eff_%i_%i_%i", shift, smear, 10));
 					}
 					// h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("modifiedmass_%i_%i_%i", shift, smear, 10));
 				}
@@ -417,11 +431,11 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 				{
 					if (isNew)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("modifiedmass_raw_without_eff_%i_%i_%i_new", shift, smear, 10));
+						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("mass_array_with_eff_template_%i_%i_%i", shift, smear, 10));
 					}
 					else
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("modifiedmass_raw_without_eff_%i_%i_%i", shift, smear, 10));
+						//h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("modifiedmass_raw_without_eff_%i_%i_%i", shift, smear, 10));
 					}
 
 					// h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("modifiedmass_%i_%i_%i", shift, smear, 10));
@@ -480,6 +494,17 @@ void chisquaretest::calculatechisqpp(bool isbk)
 					chisquarevalue = myownfunctionchi2(h_data_bksub_pp[runperiod], h_mc_signal_pp[shift][smear][runperiod]);
 				if (!isbk)
 					chisquarevalue = myownfunctionchi2(h_data_pp[runperiod], h_mc_signal_pp[shift][smear][runperiod]);
+
+				if (runperiod == 0)
+				{
+					if (shift == 10 && (smear == 10 || smear == 0))
+					{
+						cout << "For smear " << smear << " For shift " << shift << " The chi2 value is " << chisquarevalue << endl;
+						cout << "data name is " << h_data_pp[runperiod]->GetName()<< endl;
+						cout << "Name is " << h_mc_signal_pp[shift][smear][runperiod]->GetName()<<endl; 
+
+					}
+				}
 				std::ostringstream stream;
 				stream << std::fixed << std::setprecision(2) << chisquarevalue;
 				double formattedBinContent = std::stod(stream.str());
@@ -505,7 +530,7 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 		if (isbk)
 		{
 			chi2_title = "PbPb, |#eta| < 2.4 with bksub, centrality: (%i-%i)";
-			data_mc_title = "Raw_with_bksub_%i_%i";
+			data_mc_title = "WholeAcceptance, bksub, Cent:(%i-%i)";
 			data_data_title = "Raw_%i_%i";
 			chi2_saving_path = "./newchi2/chi2plots/raw/bksub/Raw_with_bksub_%i_%i.png";
 			data_mc_saving_path = "./newchi2/datamc/raw/bksub/Raw_with_bksub_%i_%i.png";
@@ -515,7 +540,7 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 		if (!isbk)
 		{
 			chi2_title = "PbPb, |#eta| < 2.4 without bksub, centrality: (%i-%i)";
-			data_mc_title = "Raw_without_bksub_%i_%i";
+			data_mc_title = "WholeAcceptance, no bksub, Cent:(%i-%i)";
 			data_data_title = "Raw_%i_%i";
 			chi2_saving_path = "./newchi2/chi2plots/raw/nobksub/Raw_without_bksub_%i_%i.png";
 			data_mc_saving_path = "./newchi2/datamc/raw/nobksub/Raw_without_bksub_%i_%i.png";
@@ -528,7 +553,7 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 		if (isbk)
 		{
 			chi2_title = "PbPb, |#eta| < 1.0 with bksub, centrality: (%i-%i)";
-			data_mc_title = "Eta_with_bksub_%i_%i";
+			data_mc_title = "|#eta| < 1.0, bksub, centrality: (%i-%i)";
 			data_data_title = "Eta_%i_%i";
 			chi2_saving_path = "./newchi2/chi2plots/eta/bksub/Eta_with_bksub_%i_%i.png";
 			data_mc_saving_path = "./newchi2/datamc/eta/bksub/Eta_with_bksub_%i_%i.png";
@@ -538,7 +563,7 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 		if (!isbk)
 		{
 			chi2_title = "PbPb, |#eta| < |1.0| without bksub, centrality: (%i-%i)";
-			data_mc_title = "Eta_without_bksub_%i_%i";
+			data_mc_title = "|#eta| < 1.0, no bksub, centrality: (%i-%i)";
 			data_data_title = "Eta_%i_%i";
 			chi2_saving_path = "./newchi2/chi2plots/eta/nobksub/Eta_without_bksub_%i_%i.png";
 			chi2_saving_path = "./newchi2/chi2plots/eta/nobksub/Eta_without_bksub_%i_%i.png";
@@ -565,7 +590,7 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 		h_chisquare[cent]->GetXaxis()->SetLabelSize(0.02); // Change this value to make the labels smaller
 		h_chisquare[cent]->GetYaxis()->SetLabelSize(0.02);
 		h_chisquare[cent]->GetXaxis()->SetTitle("Shifted Amount (GeV)");
-		h_chisquare[cent]->GetYaxis()->SetTitle("Smeared Amount (Sig)");
+		h_chisquare[cent]->GetYaxis()->SetTitle("Smeared Amount (GeV)");
 
 		for (int j = 1; j <= nbins_mass_shift; j++)
 		{
@@ -644,11 +669,6 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 
 		Double_t xCenter = h_chisquare[cent]->GetXaxis()->GetBinCenter(minBinX);
 		Double_t yCenter = h_chisquare[cent]->GetYaxis()->GetBinCenter(minBinY);
-
-		double sigmasmear = 91.1876 * (yCenter);
-		double quadsum = TMath::Power(2.4955, 2) + TMath::Power(sigmasmear, 2);
-		double sqrtquadsum = sqrt(quadsum);
-		yCenter = sqrtquadsum - 2.4955;
 
 		// Here's drawing all the left right TBoxes.
 
@@ -759,6 +779,8 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 			dMass_HI[cent + 1] = xCenter;
 			dWidth_HI[cent + 1] = yCenter;
 
+			//cout << "dWidth is " << dWidth_HI[cent + 1] << endl;
+
 			dMass_Err_HI[cent + 1] = getuncertainty(h_chisquare[cent], 1, minBinX, minBinY, numberofDF);
 			dWidth_Err_HI[cent + 1] = getuncertainty(h_chisquare[cent], 2, minBinX, minBinY, numberofDF);
 		}
@@ -773,6 +795,8 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 			dWidth_Err_HI[0] = getuncertainty(h_chisquare[cent], 2, minBinX, minBinY, numberofDF);
 		}
 
+		cout << "yCenter is " << yCenter << endl;
+
 		TBox *box1 = new TBox(xMin, yMin, xMax, yMax);
 		box1->SetLineColor(kRed);
 		box1->SetLineWidth(4);
@@ -784,33 +808,70 @@ void chisquaretest::plottingandformatting(int type, bool isbk)
 		// This is Data and MC
 
 		c_data_mc_raw[cent]->cd();
-		c_data_mc_raw[cent]->SetLogy();
+		c_data_mc_raw[cent]->SetLeftMargin(0.15);
+		c_data_mc_raw[cent]->SetRightMargin(0.08);
+		c_data_mc_raw[cent]->SetBottomMargin(0.13);
+		c_data_mc_raw[cent]->SetTicks(1, 1);
+		// c_data_mc_raw[cent]->SetLogy();
 
 		if (isbk)
 		{
 			h_data_bksub[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 			h_data_bksub[cent]->SetMarkerColor(kRed);
+			h_data_bksub[cent]->SetMarkerSize(1.5);
 			h_data_bksub[cent]->SetMarkerStyle(kFullCircle);
+			h_data_bksub[cent]->GetYaxis()->SetTitle("Normalized counts");
+			h_data_bksub[cent]->GetXaxis()->SetTitle("m_{u^{+}u^{-}} (GeV)");
+
+			h_data_bksub[cent]->GetYaxis()->SetTitleFont(42);	// Times, bold
+			h_data_bksub[cent]->GetYaxis()->SetLabelFont(42);	// Times, bold
+			h_data_bksub[cent]->GetYaxis()->SetTitleSize(0.05); // Title size
+			h_data_bksub[cent]->GetYaxis()->SetLabelSize(0.04); // Label size
+			h_data_bksub[cent]->GetXaxis()->SetTitleFont(42);	// Times, bold
+			h_data_bksub[cent]->GetXaxis()->SetLabelFont(42);	// Times, bold
+			h_data_bksub[cent]->GetXaxis()->SetTitleSize(0.05); // Title size
+			h_data_bksub[cent]->GetXaxis()->SetLabelSize(0.04); // Label size
+
 			h_data_bksub[cent]->Draw("P");
 			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerColor(kGreen);
 			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerStyle(kFullDotLarge);
+			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerSize(1.5);
 			h_mc_signal[minBinX - 1][minBinY - 1][cent]->Draw("P SAME");
 		}
 		if (!isbk)
 		{
 			h_data[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 			h_data[cent]->SetMarkerColor(kRed);
+			h_data[cent]->SetMarkerSize(1.5);
 			h_data[cent]->SetMarkerStyle(kFullCircle);
+			h_data[cent]->GetYaxis()->SetTitle("Normalized counts");
+			h_data[cent]->GetXaxis()->SetTitle("m_{u^{+}u^{-}} (GeV)");
+
+			h_data[cent]->GetYaxis()->SetTitleFont(42);	  // Times, bold
+			h_data[cent]->GetYaxis()->SetLabelFont(42);	  // Times, bold
+			h_data[cent]->GetYaxis()->SetTitleSize(0.05); // Title size
+			h_data[cent]->GetYaxis()->SetLabelSize(0.04); // Label size
+			h_data[cent]->GetXaxis()->SetTitleFont(42);	  // Times, bold
+			h_data[cent]->GetXaxis()->SetLabelFont(42);	  // Times, bold
+			h_data[cent]->GetXaxis()->SetTitleSize(0.05); // Title size
+			h_data[cent]->GetXaxis()->SetLabelSize(0.04); // Label size
+
 			h_data[cent]->Draw("P");
 			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerColor(kGreen);
 			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerStyle(kFullDotLarge);
+			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerSize(1.5);
 			h_mc_signal[minBinX - 1][minBinY - 1][cent]->Draw("P SAME");
 		}
 
-		TPaveText *pt1 = new TPaveText(0.1, 0.8, 0.5, 0.9, "NDC");
-		pt1->AddText("Red is data, green is best signal");
-		pt1->SetTextSize(0.04);
+		TPaveText *pt1 = new TPaveText(0.15, 0.7, 0.5, 0.8, "NDC");
+		pt1->AddText("Red is data");
+		pt1->AddText("Green is best template");
+		pt1->SetTextSize(0.03);
 		pt1->SetTextAlign(22); // Center alignment
+		pt1->SetFillStyle(0);  // Make the background transparent
+		pt1->SetBorderSize(0); // Remove the border
+		pt1->SetLineColor(0);  // Remove the border line (optional)
+		pt1->SetTextColor(1);  // Set text color (default: black)
 		pt1->Draw();
 
 		c_data_mc_raw[cent]->SaveAs(Form(data_mc_saving_path, this->cenlowlimit[cent], this->cenhighlimit[cent]));
@@ -928,7 +989,7 @@ void chisquaretest::plottingandformattingpp(bool iseta, bool isbk)
 		h_chisquare_pp[runperiod]->GetXaxis()->SetLabelSize(0.02); // Change this value to make the labels smaller
 		h_chisquare_pp[runperiod]->GetYaxis()->SetLabelSize(0.02);
 		h_chisquare_pp[runperiod]->GetXaxis()->SetTitle("Shifted Amount (GeV)");
-		h_chisquare_pp[runperiod]->GetYaxis()->SetTitle("Smeared Amount (Sig)");
+		h_chisquare_pp[runperiod]->GetYaxis()->SetTitle("Smeared Amount (GeV)");
 
 		for (int j = 1; j <= nbins_mass_shift; j++)
 		{
@@ -971,11 +1032,6 @@ void chisquaretest::plottingandformattingpp(bool iseta, bool isbk)
 
 		Double_t xCenter = h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX);
 		Double_t yCenter = h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY);
-
-		double sigmasmear = 91.1876 * (yCenter);
-		double quadsum = TMath::Power(2.4955, 2) + TMath::Power(sigmasmear, 2);
-		double sqrtquadsum = sqrt(quadsum);
-		yCenter = sqrtquadsum - 2.4955;
 
 		dMass_pp[runperiod] = xCenter;
 		dWidth_pp[runperiod] = yCenter;
@@ -1354,11 +1410,11 @@ Double_t chisquaretest::getuncertainty(TH2D *h_1, int type, Int_t minBinX, Int_t
 			// std::cout << "Y Bin with chi2/ndf closest to 1 unit difference from minimum: " << bin_closest << std::endl;
 			// std::cout << "Y Chi2/ndf value in that bin: " << chi2_closest << std::endl;
 			// std::cout << "Y Difference with minimum chi2/ndf: " << closest_difference << std::endl;
-			double sigmasmear = 91.1876 * h_1->GetYaxis()->GetBinCenter(minBinY);
-			double errofsmear = fabs(h_1->GetYaxis()->GetBinCenter(bin_closest) - h_1->GetYaxis()->GetBinCenter(minBinY)) * 91.1876;
-			double deno = sqrt(TMath::Power(2.4955, 2) + TMath::Power(h_1->GetYaxis()->GetBinCenter(minBinY) * 91.1876, 2));
-			double errorofdwidth = (sigmasmear / deno) * errofsmear;
-			return errorofdwidth;
+			// double sigmasmear = 91.1876 * h_1->GetYaxis()->GetBinCenter(minBinY);
+			// double errofsmear = fabs(h_1->GetYaxis()->GetBinCenter(bin_closest) - h_1->GetYaxis()->GetBinCenter(minBinY)) * 91.1876;
+			// double deno = sqrt(TMath::Power(2.4955, 2) + TMath::Power(h_1->GetYaxis()->GetBinCenter(minBinY) * 91.1876, 2));
+			// double errorofdwidth = (sigmasmear / deno) * errofsmear;
+			return (fabs(h_1->GetYaxis()->GetBinCenter(bin_closest) - h_1->GetYaxis()->GetBinCenter(minBinY)));
 		}
 		else
 		{
@@ -1687,12 +1743,12 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	onesig_left->SetTitle(title);
 
 	onesig_left->GetXaxis()->SetTitle("Shifted Amount (GeV)");
-	onesig_left->GetYaxis()->SetTitle("Smeared Amount (Percent)");
+	onesig_left->GetYaxis()->SetTitle("Smeared Amount (GeV)");
 
 	onesig_left->SetMarkerSize(2);
-	onesig_left->SetMarkerColor(kGreen-3);
-	onesig_left->SetLineWidth(3);	   // Set line width to 2
-	onesig_left->SetLineColor(kGreen-3); // Set line color to blue
+	onesig_left->SetMarkerColor(kGreen - 3);
+	onesig_left->SetLineWidth(3);		   // Set line width to 2
+	onesig_left->SetLineColor(kGreen - 3); // Set line color to blue
 	onesig_left->SetLineStyle(2);
 	onesig_left->SetMarkerStyle(21);
 
@@ -1704,7 +1760,7 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 
 	twosig_left->SetMarkerSize(2);
 	twosig_left->SetMarkerColor(kRose);
-	twosig_left->SetLineWidth(3);		 // Set line width to 2
+	twosig_left->SetLineWidth(3); // Set line width to 2
 	twosig_left->SetLineStyle(2);
 	twosig_left->SetLineColor(kRose); // Set line color to blue
 	twosig_left->SetMarkerStyle(21);
@@ -1721,7 +1777,7 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	{
 		double x, y;
 		onesig_left->GetPoint(i, x, y);
-		std::cout << "Point " << i << ": (" << x << ", " << y << ")" << std::endl;
+		//std::cout << "Point " << i << ": (" << x << ", " << y << ")" << std::endl;
 	}
 	// onesig_right->Draw("PL SAME");
 	twosig_left->Draw("PL SAME");
