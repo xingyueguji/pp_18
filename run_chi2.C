@@ -10,13 +10,13 @@ void run_chi2(bool isNew = 1){
     //jobID_3_shift_-0.5_0.2_smear_0.0_0.015_modified_signal_21_21_1000.root
 
    //newchisquaretest(0,0,isNew);
-   //newchisquaretest(1,1,isNew);
+   newchisquaretest(1,1,isNew);
    //newchisquaretest(0,1,isNew);
-   newchisquaretest(1,0,isNew);
+   //newchisquaretest(1,0,isNew);
 
-    //newchisquaretestpp(0,1,isNew);
-    //newchisquaretestpp(0,0,isNew);
-    //newchisquaretestpp(1,1,isNew);
-    //newchisquaretestpp(1,0,isNew);
+   //newchisquaretestpp(0,1,isNew);
+   //newchisquaretestpp(0,0,isNew);
+   //newchisquaretestpp(1,1,isNew);
+   //newchisquaretestpp(1,0,isNew);
 
 }

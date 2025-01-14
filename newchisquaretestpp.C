@@ -12,11 +12,11 @@ void newchisquaretestpp(bool iseta = 1, bool isbk = 1, bool isNew = 1)
 
 	if (iseta)
 	{
-		bkfile = "etacut_file.root";
+		bkfile = "../ZBoson_18/rootfile/normalized/etacut_file.root";
 	}
 	if (!iseta)
 	{
-		bkfile = "rawfile.root";
+		bkfile = "../ZBoson_18/rootfile/normalized/rawfile.root";
 	}
 
 	datafile = "./new_pp_data_file_stability_readonly.root";

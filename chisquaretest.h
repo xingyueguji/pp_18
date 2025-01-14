@@ -143,14 +143,14 @@ public:
 	double raw_mass_smear_array_low[nbins_cent] = {0.05, 0.15, -0.1, 0.2, 0, 0, 0, 0, 0, 0, 0.2};
 	double raw_mass_smear_array_high[nbins_cent] = {0.4, 0.6, 0.4, 0.7, 0, 0, 0, 0, 0, 0, 0.45};
 
-	double eta_pp_mass_shift_low = -0.2;
-	double eta_pp_mass_shift_high = 0.05;
+	double eta_pp_mass_shift_low = -0.16;
+	double eta_pp_mass_shift_high = -0.02;
 	double eta_pp_smear_low = 0.2;
-	double eta_pp_smear_high = 0.4;
+	double eta_pp_smear_high = 0.37;
 
-	double raw_pp_mass_shift_low = -0.15;
-	double raw_pp_mass_shift_high = 0.05;
-	double raw_pp_smear_low = 0.26;
+	double raw_pp_mass_shift_low = -0.11;
+	double raw_pp_mass_shift_high = -0.02;
+	double raw_pp_smear_low = 0.23;
 	double raw_pp_smear_high = 0.33;
 
 };

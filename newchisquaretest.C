@@ -13,11 +13,11 @@ void newchisquaretest(int type = 1, bool isbk = 0, bool isNew = 1)
 	TString bkfile;
 
 	if (type == 0)
-		bkfile = "rawfile.root";
+		bkfile = "../ZBoson_18/rootfile/normalized/rawfile.root";
 	if (type == 1)
-		bkfile = "etacut_file.root";
+		bkfile = "../ZBoson_18/rootfile/normalized/etacut_file.root";
 
-	datafile = "data_file.root";
+	datafile = "../ZBoson_18/rootfile/data_file.root";
 	//datafile = "../ZBoson_18/rootfile/shift_-0.150_smear_0.0075_fixed_modified_signal_100.root";
 	
 
