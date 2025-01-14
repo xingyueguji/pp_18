@@ -21,7 +21,8 @@ void getdiffcosmetic(TCanvas *c1, Double_t *arr, Double_t *arrerr, bool isdM)
 	else
 		g1->GetXaxis()->SetTitle("#DeltaWidth (MeV)");
 
-	if (isdM) g1->GetXaxis()->SetLimits(-130,10);
+	if (isdM)
+		g1->GetXaxis()->SetLimits(-130, 10);
 
 	// g1->GetXaxis()->CenterTitle();
 	g1->GetYaxis()->SetLimits(0, 5);
@@ -154,20 +155,20 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	}
 
 	x1->Draw("AP");
-	//x1->Draw("P SAME");
-	//x1->SetFillStyle(3001);
+	// x1->Draw("P SAME");
+	// x1->SetFillStyle(3001);
 
 	if (hist != nullptr)
 	{
-		//hist->SetFillStyle(3001);
+		// hist->SetFillStyle(3001);
 		hist->Draw("P SAME");
-		//hist->Draw("P SAME");
+		// hist->Draw("P SAME");
 	}
 	if (chi2 != nullptr)
 	{
-		//chi2->SetFillStyle(3005);
+		// chi2->SetFillStyle(3005);
 		chi2->Draw("P SAME");
-		//chi2->Draw("P SAME");
+		// chi2->Draw("P SAME");
 	}
 
 	TF1 *fit_pp_fit = new TF1("fit_pp_fit", "[0]", 0, 22.5);
@@ -323,7 +324,7 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	pt->Draw();
 }
 
-void get_tgraph(int type = 2)
+void get_tgraph(int type = 1)
 {
 
 	// setTDRStyle();

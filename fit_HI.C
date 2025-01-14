@@ -159,8 +159,8 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 
 	textBoxparam->Draw();
 
-	int newcenlowlimit[5] = {0,0,10,20,30};
-	int newcenhighlimit[5] = {100,10,20,30,100};
+	int newcenlowlimit[5] = {0, 0, 10, 20, 30};
+	int newcenhighlimit[5] = {100, 10, 20, 30, 100};
 
 	textBox = new TPaveText(0.25, 0.6, 0.4, 0.8, "NDC");
 	textBox->SetBorderSize(0);
@@ -234,7 +234,7 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	}
 }
 
-void fit_HI(int nobkorexp = 2, bool isfix = 1)
+void fit_HI(int nobkorexp = 2, bool isfix = 0)
 {
 	setTDRStyle();
 

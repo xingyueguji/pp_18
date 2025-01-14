@@ -304,7 +304,7 @@ void fitHI(bool isbksub = 0)
 		}
 	}
 }
-void MeanfromHist(bool isbksub = 1)
+void MeanfromHist(bool isbksub = 0)
 {
 	TFile *f1 = new TFile("new_pp_data_file_stability_readonly.root", "READ");
 	TFile *f2 = new TFile("data_file.root", "READ");

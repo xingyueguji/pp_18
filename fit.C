@@ -212,7 +212,7 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	}
 }
 
-void fit(int nobkorexp = 1)
+void fit(int nobkorexp = 2)
 {
 	setTDRStyle();
 	fittype = nobkorexp;
