@@ -81,6 +81,36 @@ std::vector<double> createCustomBinning(
     return newBins;
 }
 
+void ConvertToDNdx(TH1D* h2) {
+    // Check if the histogram exists
+    if (!h2) {
+        std::cerr << "Error: Histogram does not exist!" << std::endl;
+        return;
+    }
+
+    // Loop over all bins in the histograms
+    int nBins = h2->GetNbinsX();
+    for (int bin = 1; bin <= nBins; ++bin) { // Loop over bins (1 to nBins)
+        double binContent = h2->GetBinContent(bin);
+        double binWidth = h2->GetBinWidth(bin);
+
+        if (binWidth > 0) {
+            // Normalize bin content by bin width
+            double normalizedContent = binContent / binWidth;
+            h2->SetBinContent(bin, normalizedContent);
+
+            // Scale the error as well (if applicable)
+            double binError = h2->GetBinError(bin);
+            double normalizedError = binError / binWidth;
+            h2->SetBinError(bin, normalizedError);
+        }
+    }
+
+    // Optionally, update the histogram y-axis title
+    h2->GetYaxis()->SetTitle("dN/dx");
+    std::cout << "Histogram converted to dN/dx." << std::endl;
+}
+
 void rebin()
 {
     TFile *f1 = new TFile("./data_file.root");
@@ -157,7 +187,7 @@ void rebin()
         if (i < 4)
         {
             h2[i] = (TH1D *)mass_array_data_eta[i]->Rebin(nNewBins[i], Form("mass_array_data_witheta_rebin_%i", i), binEdgesArray[i]);
-
+            ConvertToDNdx(h2[i]);
             h2[i]->Draw("HIST");
             h2[i]->Draw("textsame");
 
@@ -166,7 +196,7 @@ void rebin()
         else if (i == 10)
         {
             h2[i] = (TH1D *)mass_array_data_eta[i]->Rebin(nNewBins[5], Form("mass_array_data_witheta_rebin_%i", i), binEdgesArray[5]);
-
+            ConvertToDNdx(h2[i]);
             h2[i]->Draw("HIST");
             h2[i]->Draw("textsame");
 

@@ -324,7 +324,7 @@ void changecosmetic(TCanvas *c1, TGraphErrors *x1, int axistype, int bktype, TGr
 	pt->Draw();
 }
 
-void get_tgraph(int type = 1)
+void get_tgraph(int type = 2)
 {
 
 	// setTDRStyle();

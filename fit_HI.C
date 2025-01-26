@@ -22,13 +22,13 @@ void setupfitvariableHI(bool isfix, bool isbksub, bool isetacut)
 			if (isetacut)
 			{
 				cbalpha = new RooRealVar("alpha", "alpha", 1.8312); // Combined_alpha_exp_eta
-				cbn = new RooRealVar("n", "n", 0.9112);				// Combined_n_exp_eta
+				cbn = new RooRealVar("n", "n", 0.9113);				// Combined_n_exp_eta
 																	// cbsigma = new RooRealVar("sigma", "sigma", 0.8281); // Combined_STD_exp_eta
 			}
 			else
 			{
 				cbalpha = new RooRealVar("alpha", "alpha", 1.8617); // Combined_alpha_exp_raw
-				cbn = new RooRealVar("n", "n", 0.9723);				// Combined_n_exp_raw
+				cbn = new RooRealVar("n", "n", 0.9722);				// Combined_n_exp_raw
 																	// cbsigma = new RooRealVar("sigma", "sigma", 1.0787); // Combined_STD_exp_raw
 			}
 		}
@@ -37,14 +37,14 @@ void setupfitvariableHI(bool isfix, bool isbksub, bool isetacut)
 		{
 			if (isetacut)
 			{
-				cbalpha = new RooRealVar("alpha", "alpha", 1.9240); // Combined_alpha_eta
+				cbalpha = new RooRealVar("alpha", "alpha", 1.9238); // Combined_alpha_eta
 				cbn = new RooRealVar("n", "n", 0.8250);				// Combined_n_eta
 																	// cbsigma = new RooRealVar("sigma", "sigma", 0.8010); // Combined_STD_eta
 			}
 			else
 			{
 				cbalpha = new RooRealVar("alpha", "alpha", 1.8780); // Combined_alpha_raw
-				cbn = new RooRealVar("n", "n", 0.9612);				// Combined_n_raw
+				cbn = new RooRealVar("n", "n", 0.9613);				// Combined_n_raw
 																	// cbsigma = new RooRealVar("sigma", "sigma", 1.0805); // Combined_STD_raw
 			}
 		}
@@ -234,7 +234,7 @@ void dofit(RooDataSet *dataset, int iteration, string type)
 	}
 }
 
-void fit_HI(int nobkorexp = 2, bool isfix = 0)
+void fit_HI(int nobkorexp = 1, bool isfix = 1)
 {
 	setTDRStyle();
 
