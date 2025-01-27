@@ -43,17 +43,21 @@ void SkimNew::Loop()
    //"Raw"
    TH1D *h_mass_array_raw_inclusive = new TH1D("h_mass_array_raw_inclusive", "h_mass_array_raw_inclusive", 120, 60, 120);
    TH1D *h_mass_array_raw[22];
+   TH1D *h_mass_array_raw_inclusive_with_eff = new TH1D("h_mass_array_raw_inclusive_with_eff", "h_mass_array_raw_inclusive_with_eff", 120, 60, 120);
+   TH1D *h_mass_array_raw_with_eff[22];
    RooDataSet *mass_array_raw[22];
-   TH1D *h_Z_pt = new TH1D("h_Z_pt","h_Z_pt",300,0,300);
-   TH1D *h_Z_y = new TH1D("h_Z_y","h_Z_y",100,-3,3);
+   TH1D *h_Z_pt = new TH1D("h_Z_pt", "h_Z_pt", 300, 0, 300);
+   TH1D *h_Z_y = new TH1D("h_Z_y", "h_Z_y", 100, -3, 3);
    RooDataSet *mass_array_raw_inclusive = new RooDataSet("mass_array_raw_inclusive", "mass_array_raw_inclusive", RooArgSet(*x));
 
    //"Etacut"
    TH1D *h_mass_array_eta_inclusive = new TH1D("h_mass_array_eta_inclusive", "h_mass_array_eta_inclusive", 120, 60, 120);
    TH1D *h_mass_array_eta[22];
+   TH1D *h_mass_array_eta_inclusive_with_eff = new TH1D("h_mass_array_eta_inclusive_with_eff", "h_mass_array_eta_inclusive_with_eff", 120, 60, 120);
+   TH1D *h_mass_array_eta_with_eff[22];
    RooDataSet *mass_array_eta[22];
-   TH1D *h_Z_pt_eta = new TH1D("h_Z_pt_eta","h_Z_pt_eta",300,0,300);
-   TH1D *h_Z_y_eta = new TH1D("h_Z_y_eta","h_Z_y_eta",100,-3,3);
+   TH1D *h_Z_pt_eta = new TH1D("h_Z_pt_eta", "h_Z_pt_eta", 300, 0, 300);
+   TH1D *h_Z_y_eta = new TH1D("h_Z_y_eta", "h_Z_y_eta", 100, -3, 3);
    RooDataSet *mass_array_eta_inclusive = new RooDataSet("mass_array_eta_inclusive", "mass_array_eta_inclusive", RooArgSet(*x));
 
    for (int i = 0; i < 22; i++)
@@ -62,9 +66,18 @@ void SkimNew::Loop()
       h_mass_array_raw[i] = new TH1D(Form("h_mass_array_raw_%i", i), Form("h_mass_array_raw_%i", i), 120, 60, 120);
       h_mass_array_eta[i] = new TH1D(Form("h_mass_array_eta_%i", i), Form("h_mass_array_eta_%i", i), 120, 60, 120);
 
+      h_mass_array_raw_with_eff[i] = new TH1D(Form("h_mass_array_raw_with_eff_%i", i), Form("h_mass_array_raw_with_eff_%i", i), 120, 60, 120);
+      h_mass_array_eta_with_eff[i] = new TH1D(Form("h_mass_array_eta_with_eff_%i", i), Form("h_mass_array_eta_with_eff_%i", i), 120, 60, 120);
+
       mass_array_raw[i] = new RooDataSet(Form("mass_array_raw_%i", i), Form("mass_array_raw_%i", i), RooArgSet(*x));
       mass_array_eta[i] = new RooDataSet(Form("mass_array_eta_%i", i), Form("mass_array_eta_%i", i), RooArgSet(*x));
    }
+
+   TEfficiency *e;
+
+   TFile *eff_f1 = new TFile("~/ZBoson_18/rootfile/mc_eff.root", "READ");
+
+   e = (TEfficiency *)eff_f1->Get("eff_0_100");
 
    for (Long64_t jentry = 0; jentry < nentries; jentry++)
    {
@@ -77,15 +90,16 @@ void SkimNew::Loop()
 
       double percentage = 100.0 * jentry / nentries;
       if (jentry % 100000 == 0)
-      std::cout << "Progress: " << percentage << "% completed\r" << std::flush;
+         std::cout << "Progress: " << percentage << "% completed\r" << std::flush;
 
       // Event selection:
 
       if (abs(zVtx) > 15)
          continue;
-      if (!(CheckTrigBit(HLTriggers,5))) continue;
-      //if ((CheckTrigBit(HLTriggers,8))) cout << "For this event we have HLT 6 == 1" << endl;
-      //cout << " HLT for event is " << std::bitset<18>(HLTriggers) << endl;
+      //if (!(CheckTrigBit(HLTriggers, 5)))
+      //   continue;
+      // if ((CheckTrigBit(HLTriggers,8))) cout << "For this event we have HLT 6 == 1" << endl;
+      // cout << " HLT for event is " << std::bitset<18>(HLTriggers) << endl;
 
       // Now looping through all reco dimuon pairs
       for (int znum = 0; znum < Reco_QQ_size; znum++)
@@ -119,9 +133,10 @@ void SkimNew::Loop()
             continue;
 
          // Cut on Trigger of two candidate muons
-         Bool_t isDaughter1Trigger = CheckTrigBit(Reco_mu_trig[muonindexplus],5);
-         Bool_t isDaughter2Trigger = CheckTrigBit(Reco_mu_trig[muonindexminus],5);
-         if (!(isDaughter1Trigger||isDaughter2Trigger)) continue;
+         //Bool_t isDaughter1Trigger = CheckTrigBit(Reco_mu_trig[muonindexplus], 5);
+         //Bool_t isDaughter2Trigger = CheckTrigBit(Reco_mu_trig[muonindexminus], 5);
+         //if (!(isDaughter1Trigger || isDaughter2Trigger))
+         //   continue;
          /*if ((isDaughter1Trigger||isDaughter2Trigger)){
             cout << " We have one dimuon pair with HLT 6 or == 1 " << endl;
             cout << " Trigger Bit is * and * " << Reco_mu_trig[muonindexplus] << " " << Reco_mu_trig[muonindexminus] << endl;
@@ -152,16 +167,25 @@ void SkimNew::Loop()
          // Finally can fill the Roodataset
 
          // Fill the incluive one first
+         double efficiency = getEfficiency(e, Z_momentum->Rapidity(), Z_momentum->Pt());
+
          h_mass_array_raw_inclusive->Fill(ZMass);
+         h_mass_array_raw_inclusive_with_eff->Fill(ZMass, 1.0 / efficiency);
          mass_array_raw_inclusive->add(RooArgSet(*x));
+
          h_Z_pt->Fill(Z_momentum->Pt());
          h_Z_y->Fill(Z_momentum->Rapidity());
+
          if (isEtacutPassed)
+         {
             h_mass_array_eta_inclusive->Fill(ZMass);
+            h_mass_array_eta_inclusive_with_eff->Fill(ZMass, 1.0 / efficiency);
+         }
          if (isEtacutPassed)
             mass_array_eta_inclusive->add(RooArgSet(*x));
 
-         if(isEtacutPassed){
+         if (isEtacutPassed)
+         {
             h_Z_pt_eta->Fill(Z_momentum->Pt());
             h_Z_y_eta->Fill(Z_momentum->Rapidity());
          }
@@ -173,10 +197,12 @@ void SkimNew::Loop()
             if (runNb >= runlowerlimit[runindex] && runNb <= runupperlimit[runindex])
             {
                h_mass_array_raw[runindex]->Fill(ZMass);
+               h_mass_array_raw_with_eff[runindex]->Fill(ZMass, 1.0 / efficiency);
                mass_array_raw[runindex]->add(RooArgSet(*x));
                if (isEtacutPassed)
                {
                   h_mass_array_eta[runindex]->Fill(ZMass);
+                  h_mass_array_eta_with_eff[runindex]->Fill(ZMass, 1.0 / efficiency);
                   mass_array_eta[runindex]->add(RooArgSet(*x));
                }
             }
@@ -187,31 +213,35 @@ void SkimNew::Loop()
    TFile *writeout = new TFile("./new_pp_data_file_stability_readonly.root", "UPDATE");
    writeout->cd();
    h_mass_array_raw_inclusive->Write("", 2);
+   h_mass_array_raw_inclusive_with_eff->Write("", 2);
    mass_array_raw_inclusive->Write("", 2);
    h_mass_array_eta_inclusive->Write("", 2);
+   h_mass_array_eta_inclusive_with_eff->Write("", 2);
    mass_array_eta_inclusive->Write("", 2);
 
    for (int j = 0; j < 22; j++)
    {
       h_mass_array_raw[j]->Write("", 2);
+      h_mass_array_raw_with_eff[j]->Write("", 2);
       mass_array_raw[j]->Write("", 2);
       h_mass_array_eta[j]->Write("", 2);
+      h_mass_array_eta_with_eff[j]->Write("", 2);
       mass_array_eta[j]->Write("", 2);
    }
 
    writeout->Close();
 
-   TCanvas *c1 = new TCanvas("","",1200,600);
-	c1->Divide(2,2);
-	//c1->SetLogy(1);
-	c1->cd(1);
-	h_Z_pt_eta->Draw("hist");
-	c1->cd(2);
-	h_Z_pt->Draw("hist");
-	c1->cd(3);
-	h_Z_y_eta->Draw("hist");
-	c1->cd(4);
-	h_Z_y->Draw("hist");
+   TCanvas *c1 = new TCanvas("", "", 1200, 600);
+   c1->Divide(2, 2);
+   // c1->SetLogy(1);
+   c1->cd(1);
+   h_Z_pt_eta->Draw("hist");
+   c1->cd(2);
+   h_Z_pt->Draw("hist");
+   c1->cd(3);
+   h_Z_y_eta->Draw("hist");
+   c1->cd(4);
+   h_Z_y->Draw("hist");
 
    c1->SaveAs("../ZBoson_18/etacheck/pp_data_pt.png");
 }

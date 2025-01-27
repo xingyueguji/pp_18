@@ -15,176 +15,184 @@
 // Header file for the classes stored in the TTree if any.
 #include "TClonesArray.h"
 
-class SkimNew {
-public :
-   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
-   Int_t           fCurrent; //!current Tree number in a TChain
+class SkimNew
+{
+public:
+   TTree *fChain;  //! pointer to the analyzed TTree or TChain
+   Int_t fCurrent; //! current Tree number in a TChain
 
-// Fixed size dimensions of array or collections stored in the TTree if any.
+   // Fixed size dimensions of array or collections stored in the TTree if any.
 
    // Declaration of leaf types
-   UInt_t          eventNb;
-   UInt_t          runNb;
-   UInt_t          LS;
-   Float_t         zVtx;
-   Short_t         nPV;
-   Short_t         Ntracks;
-   Int_t           trigPrescale[18];
-   ULong64_t       HLTriggers;
-   Short_t         Reco_QQ_size;
-   Short_t         Reco_QQ_type[5];   //[Reco_QQ_size]
-   Short_t         Reco_QQ_sign[5];   //[Reco_QQ_size]
-   TClonesArray    *Reco_QQ_4mom;
-   Short_t         Reco_QQ_mupl_idx[5];   //[Reco_QQ_size]
-   Short_t         Reco_QQ_mumi_idx[5];   //[Reco_QQ_size]
-   ULong64_t       Reco_QQ_trig[5];   //[Reco_QQ_size]
-   Bool_t          Reco_QQ_isCowboy[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_ctau[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_ctauErr[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_cosAlpha[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_ctau3D[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_ctauErr3D[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_cosAlpha3D[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_VtxProb[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_dca[5];   //[Reco_QQ_size]
-   Float_t         Reco_QQ_MassErr[5];   //[Reco_QQ_size]
-   TClonesArray    *Reco_QQ_vtx;
-   Short_t         Reco_mu_size;
-   Short_t         Reco_mu_type[5];   //[Reco_mu_size]
-   Int_t           Reco_mu_SelectionType[5];   //[Reco_mu_size]
-   Short_t         Reco_mu_charge[5];   //[Reco_mu_size]
-   TClonesArray    *Reco_mu_4mom;
-   ULong64_t       Reco_mu_trig[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_InTightAcc[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_InLooseAcc[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_highPurity[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_isPF[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_isTracker[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_isGlobal[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_isSoftCutBased[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_isHybridSoft[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_isMedium[5];   //[Reco_mu_size]
-   Bool_t          Reco_mu_isTightCutBased[5];   //[Reco_mu_size]
-   Short_t         Reco_mu_candType[5];   //[Reco_mu_size]
-   Int_t           Reco_mu_nPixValHits[5];   //[Reco_mu_size]
-   Int_t           Reco_mu_nMuValHits[5];   //[Reco_mu_size]
-   Int_t           Reco_mu_nTrkHits[5];   //[Reco_mu_size]
-   Float_t         Reco_mu_normChi2_inner[5];   //[Reco_mu_size]
-   Float_t         Reco_mu_normChi2_global[5];   //[Reco_mu_size]
-   Int_t           Reco_mu_nPixWMea[5];   //[Reco_mu_size]
-   Int_t           Reco_mu_nTrkWMea[5];   //[Reco_mu_size]
-   Int_t           Reco_mu_StationsMatched[5];   //[Reco_mu_size]
-   Float_t         Reco_mu_dxy[5];   //[Reco_mu_size]
-   Float_t         Reco_mu_dxyErr[5];   //[Reco_mu_size]
-   Float_t         Reco_mu_dz[5];   //[Reco_mu_size]
-   Float_t         Reco_mu_dzErr[5];   //[Reco_mu_size]
-   Float_t         Reco_mu_ptErr_inner[5];   //[Reco_mu_size]
+   UInt_t eventNb;
+   UInt_t runNb;
+   UInt_t LS;
+   Float_t zVtx;
+   Short_t nPV;
+   Short_t Ntracks;
+   Int_t trigPrescale[18];
+   ULong64_t HLTriggers;
+   Short_t Reco_QQ_size;
+   Short_t Reco_QQ_type[5]; //[Reco_QQ_size]
+   Short_t Reco_QQ_sign[5]; //[Reco_QQ_size]
+   TClonesArray *Reco_QQ_4mom;
+   Short_t Reco_QQ_mupl_idx[5];   //[Reco_QQ_size]
+   Short_t Reco_QQ_mumi_idx[5];   //[Reco_QQ_size]
+   ULong64_t Reco_QQ_trig[5];     //[Reco_QQ_size]
+   Bool_t Reco_QQ_isCowboy[5];    //[Reco_QQ_size]
+   Float_t Reco_QQ_ctau[5];       //[Reco_QQ_size]
+   Float_t Reco_QQ_ctauErr[5];    //[Reco_QQ_size]
+   Float_t Reco_QQ_cosAlpha[5];   //[Reco_QQ_size]
+   Float_t Reco_QQ_ctau3D[5];     //[Reco_QQ_size]
+   Float_t Reco_QQ_ctauErr3D[5];  //[Reco_QQ_size]
+   Float_t Reco_QQ_cosAlpha3D[5]; //[Reco_QQ_size]
+   Float_t Reco_QQ_VtxProb[5];    //[Reco_QQ_size]
+   Float_t Reco_QQ_dca[5];        //[Reco_QQ_size]
+   Float_t Reco_QQ_MassErr[5];    //[Reco_QQ_size]
+   TClonesArray *Reco_QQ_vtx;
+   Short_t Reco_mu_size;
+   Short_t Reco_mu_type[5];        //[Reco_mu_size]
+   Int_t Reco_mu_SelectionType[5]; //[Reco_mu_size]
+   Short_t Reco_mu_charge[5];      //[Reco_mu_size]
+   TClonesArray *Reco_mu_4mom;
+   ULong64_t Reco_mu_trig[5];          //[Reco_mu_size]
+   Bool_t Reco_mu_InTightAcc[5];       //[Reco_mu_size]
+   Bool_t Reco_mu_InLooseAcc[5];       //[Reco_mu_size]
+   Bool_t Reco_mu_highPurity[5];       //[Reco_mu_size]
+   Bool_t Reco_mu_isPF[5];             //[Reco_mu_size]
+   Bool_t Reco_mu_isTracker[5];        //[Reco_mu_size]
+   Bool_t Reco_mu_isGlobal[5];         //[Reco_mu_size]
+   Bool_t Reco_mu_isSoftCutBased[5];   //[Reco_mu_size]
+   Bool_t Reco_mu_isHybridSoft[5];     //[Reco_mu_size]
+   Bool_t Reco_mu_isMedium[5];         //[Reco_mu_size]
+   Bool_t Reco_mu_isTightCutBased[5];  //[Reco_mu_size]
+   Short_t Reco_mu_candType[5];        //[Reco_mu_size]
+   Int_t Reco_mu_nPixValHits[5];       //[Reco_mu_size]
+   Int_t Reco_mu_nMuValHits[5];        //[Reco_mu_size]
+   Int_t Reco_mu_nTrkHits[5];          //[Reco_mu_size]
+   Float_t Reco_mu_normChi2_inner[5];  //[Reco_mu_size]
+   Float_t Reco_mu_normChi2_global[5]; //[Reco_mu_size]
+   Int_t Reco_mu_nPixWMea[5];          //[Reco_mu_size]
+   Int_t Reco_mu_nTrkWMea[5];          //[Reco_mu_size]
+   Int_t Reco_mu_StationsMatched[5];   //[Reco_mu_size]
+   Float_t Reco_mu_dxy[5];             //[Reco_mu_size]
+   Float_t Reco_mu_dxyErr[5];          //[Reco_mu_size]
+   Float_t Reco_mu_dz[5];              //[Reco_mu_size]
+   Float_t Reco_mu_dzErr[5];           //[Reco_mu_size]
+   Float_t Reco_mu_ptErr_inner[5];     //[Reco_mu_size]
 
    // List of branches
-   TBranch        *b_eventNb;   //!
-   TBranch        *b_runNb;   //!
-   TBranch        *b_LS;   //!
-   TBranch        *b_zVtx;   //!
-   TBranch        *b_nPV;   //!
-   TBranch        *b_Ntracks;   //!
-   TBranch        *b_trigPrescale;   //!
-   TBranch        *b_HLTriggers;   //!
-   TBranch        *b_Reco_QQ_size;   //!
-   TBranch        *b_Reco_QQ_type;   //!
-   TBranch        *b_Reco_QQ_sign;   //!
-   TBranch        *b_Reco_QQ_4mom;   //!
-   TBranch        *b_Reco_QQ_mupl_idx;   //!
-   TBranch        *b_Reco_QQ_mumi_idx;   //!
-   TBranch        *b_Reco_QQ_trig;   //!
-   TBranch        *b_Reco_QQ_isCowboy;   //!
-   TBranch        *b_Reco_QQ_ctau;   //!
-   TBranch        *b_Reco_QQ_ctauErr;   //!
-   TBranch        *b_Reco_QQ_cosAlpha;   //!
-   TBranch        *b_Reco_QQ_ctau3D;   //!
-   TBranch        *b_Reco_QQ_ctauErr3D;   //!
-   TBranch        *b_Reco_QQ_cosAlpha3D;   //!
-   TBranch        *b_Reco_QQ_VtxProb;   //!
-   TBranch        *b_Reco_QQ_dca;   //!
-   TBranch        *b_Reco_QQ_MassErr;   //!
-   TBranch        *b_Reco_QQ_vtx;   //!
-   TBranch        *b_Reco_mu_size;   //!
-   TBranch        *b_Reco_mu_type;   //!
-   TBranch        *b_Reco_mu_SelectionType;   //!
-   TBranch        *b_Reco_mu_charge;   //!
-   TBranch        *b_Reco_mu_4mom;   //!
-   TBranch        *b_Reco_mu_trig;   //!
-   TBranch        *b_Reco_mu_InTightAcc;   //!
-   TBranch        *b_Reco_mu_InLooseAcc;   //!
-   TBranch        *b_Reco_mu_highPurity;   //!
-   TBranch        *b_Reco_mu_isPF;   //!
-   TBranch        *b_Reco_mu_isTracker;   //!
-   TBranch        *b_Reco_mu_isGlobal;   //!
-   TBranch        *b_Reco_mu_isSoftCutBased;   //!
-   TBranch        *b_Reco_mu_isHybridSoft;   //!
-   TBranch        *b_Reco_mu_isMedium;   //!
-   TBranch        *b_Reco_mu_isTightCutBased;   //!
-   TBranch        *b_Reco_mu_candType;   //!
-   TBranch        *b_Reco_mu_nPixValHits;   //!
-   TBranch        *b_Reco_mu_nMuValHits;   //!
-   TBranch        *b_Reco_mu_nTrkHits;   //!
-   TBranch        *b_Reco_mu_normChi2_inner;   //!
-   TBranch        *b_Reco_mu_normChi2_global;   //!
-   TBranch        *b_Reco_mu_nPixWMea;   //!
-   TBranch        *b_Reco_mu_nTrkWMea;   //!
-   TBranch        *b_Reco_mu_StationsMatched;   //!
-   TBranch        *b_Reco_mu_dxy;   //!
-   TBranch        *b_Reco_mu_dxyErr;   //!
-   TBranch        *b_Reco_mu_dz;   //!
-   TBranch        *b_Reco_mu_dzErr;   //!
-   TBranch        *b_Reco_mu_ptErr_inner;   //!
+   TBranch *b_eventNb;                 //!
+   TBranch *b_runNb;                   //!
+   TBranch *b_LS;                      //!
+   TBranch *b_zVtx;                    //!
+   TBranch *b_nPV;                     //!
+   TBranch *b_Ntracks;                 //!
+   TBranch *b_trigPrescale;            //!
+   TBranch *b_HLTriggers;              //!
+   TBranch *b_Reco_QQ_size;            //!
+   TBranch *b_Reco_QQ_type;            //!
+   TBranch *b_Reco_QQ_sign;            //!
+   TBranch *b_Reco_QQ_4mom;            //!
+   TBranch *b_Reco_QQ_mupl_idx;        //!
+   TBranch *b_Reco_QQ_mumi_idx;        //!
+   TBranch *b_Reco_QQ_trig;            //!
+   TBranch *b_Reco_QQ_isCowboy;        //!
+   TBranch *b_Reco_QQ_ctau;            //!
+   TBranch *b_Reco_QQ_ctauErr;         //!
+   TBranch *b_Reco_QQ_cosAlpha;        //!
+   TBranch *b_Reco_QQ_ctau3D;          //!
+   TBranch *b_Reco_QQ_ctauErr3D;       //!
+   TBranch *b_Reco_QQ_cosAlpha3D;      //!
+   TBranch *b_Reco_QQ_VtxProb;         //!
+   TBranch *b_Reco_QQ_dca;             //!
+   TBranch *b_Reco_QQ_MassErr;         //!
+   TBranch *b_Reco_QQ_vtx;             //!
+   TBranch *b_Reco_mu_size;            //!
+   TBranch *b_Reco_mu_type;            //!
+   TBranch *b_Reco_mu_SelectionType;   //!
+   TBranch *b_Reco_mu_charge;          //!
+   TBranch *b_Reco_mu_4mom;            //!
+   TBranch *b_Reco_mu_trig;            //!
+   TBranch *b_Reco_mu_InTightAcc;      //!
+   TBranch *b_Reco_mu_InLooseAcc;      //!
+   TBranch *b_Reco_mu_highPurity;      //!
+   TBranch *b_Reco_mu_isPF;            //!
+   TBranch *b_Reco_mu_isTracker;       //!
+   TBranch *b_Reco_mu_isGlobal;        //!
+   TBranch *b_Reco_mu_isSoftCutBased;  //!
+   TBranch *b_Reco_mu_isHybridSoft;    //!
+   TBranch *b_Reco_mu_isMedium;        //!
+   TBranch *b_Reco_mu_isTightCutBased; //!
+   TBranch *b_Reco_mu_candType;        //!
+   TBranch *b_Reco_mu_nPixValHits;     //!
+   TBranch *b_Reco_mu_nMuValHits;      //!
+   TBranch *b_Reco_mu_nTrkHits;        //!
+   TBranch *b_Reco_mu_normChi2_inner;  //!
+   TBranch *b_Reco_mu_normChi2_global; //!
+   TBranch *b_Reco_mu_nPixWMea;        //!
+   TBranch *b_Reco_mu_nTrkWMea;        //!
+   TBranch *b_Reco_mu_StationsMatched; //!
+   TBranch *b_Reco_mu_dxy;             //!
+   TBranch *b_Reco_mu_dxyErr;          //!
+   TBranch *b_Reco_mu_dz;              //!
+   TBranch *b_Reco_mu_dzErr;           //!
+   TBranch *b_Reco_mu_ptErr_inner;     //!
 
-   SkimNew(TTree *tree=0);
+   SkimNew(TTree *tree = 0);
    virtual ~SkimNew();
-   virtual Int_t    Cut(Long64_t entry);
-   virtual Int_t    GetEntry(Long64_t entry);
+   virtual Int_t Cut(Long64_t entry);
+   virtual Int_t GetEntry(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
-   virtual void     Init(TTree *tree);
-   virtual void     Loop();
-   virtual bool     Notify();
-   virtual void     Show(Long64_t entry = -1);
-   virtual void     ToggleBranches();
-   virtual Bool_t   CheckTrigBit(ULong64_t num, int bitPosition);
+   virtual void Init(TTree *tree);
+   virtual void Loop();
+   virtual bool Notify();
+   virtual void Show(Long64_t entry = -1);
+   virtual void ToggleBranches();
+   virtual Bool_t CheckTrigBit(ULong64_t num, int bitPosition);
+   virtual double getEfficiency(TEfficiency *e, double y, double pt);
 };
 
 #endif
 
 #ifdef SkimNew_cxx
-SkimNew::SkimNew(TTree *tree) : fChain(0) 
+SkimNew::SkimNew(TTree *tree) : fChain(0)
 {
-// if parameter tree is not specified (or zero), connect the file
-// used to generate this class and read the Tree.
-   if (tree == 0) {
-      TFile* f = TFile::Open("root://eoshome-z.cern.ch//eos/user/z/zheng/Oniatree_ppData2018D_miniAOD_pass1_cernbox.root");
-      TDirectory * dir = (TDirectory*)f->Get("hionia");
-      dir->GetObject("myTree",tree);
+   // if parameter tree is not specified (or zero), connect the file
+   // used to generate this class and read the Tree.
+   if (tree == 0)
+   {
+      TFile *f = TFile::Open("~/ROOTFILES/Oniatree_ppData2018D_miniAOD_pass1_cernbox.root");
+      TDirectory *dir = (TDirectory *)f->Get("hionia");
+      dir->GetObject("myTree", tree);
    }
    Init(tree);
 }
 
 SkimNew::~SkimNew()
 {
-   if (!fChain) return;
+   if (!fChain)
+      return;
    delete fChain->GetCurrentFile();
 }
 
 Int_t SkimNew::GetEntry(Long64_t entry)
 {
-// Read contents of entry.
-   if (!fChain) return 0;
+   // Read contents of entry.
+   if (!fChain)
+      return 0;
    return fChain->GetEntry(entry);
 }
 Long64_t SkimNew::LoadTree(Long64_t entry)
 {
-// Set the environment to read one entry
-   if (!fChain) return -5;
+   // Set the environment to read one entry
+   if (!fChain)
+      return -5;
    Long64_t centry = fChain->LoadTree(entry);
-   if (centry < 0) return centry;
-   if (fChain->GetTreeNumber() != fCurrent) {
+   if (centry < 0)
+      return centry;
+   if (fChain->GetTreeNumber() != fCurrent)
+   {
       fCurrent = fChain->GetTreeNumber();
       Notify();
    }
@@ -206,7 +214,8 @@ void SkimNew::Init(TTree *tree)
    Reco_QQ_vtx = 0;
    Reco_mu_4mom = 0;
    // Set branch addresses and branch pointers
-   if (!tree) return;
+   if (!tree)
+      return;
    fChain = tree;
    fCurrent = -1;
    fChain->SetMakeClass(1);
@@ -283,35 +292,36 @@ bool SkimNew::Notify()
 
 void SkimNew::Show(Long64_t entry)
 {
-// Print contents of entry.
-// If entry is not specified, print current entry
-   if (!fChain) return;
+   // Print contents of entry.
+   // If entry is not specified, print current entry
+   if (!fChain)
+      return;
    fChain->Show(entry);
 }
 Int_t SkimNew::Cut(Long64_t entry)
 {
-// This function may be called from Loop.
-// returns  1 if entry is accepted.
-// returns -1 otherwise.
+   // This function may be called from Loop.
+   // returns  1 if entry is accepted.
+   // returns -1 otherwise.
    return 1;
 }
 void SkimNew::ToggleBranches()
 {
-   fChain->SetBranchStatus("*",0);
-   fChain->SetBranchStatus("zVtx",1);
-   fChain->SetBranchStatus("Reco_QQ_size",1);
-   fChain->SetBranchStatus("Reco_QQ_sign",1);
-   fChain->SetBranchStatus("Reco_QQ_4mom",1);
-   fChain->SetBranchStatus("Reco_QQ_mupl_idx",1);
-   fChain->SetBranchStatus("Reco_QQ_mumi_idx",1);
-   fChain->SetBranchStatus("Reco_QQ_trig",1);
-   fChain->SetBranchStatus("Reco_QQ_VtxProb",1);
-   fChain->SetBranchStatus("Reco_mu_size",1);
-   fChain->SetBranchStatus("Reco_mu_charge",1);
-   fChain->SetBranchStatus("Reco_mu_4mom",1);
-   fChain->SetBranchStatus("Reco_mu_trig",1);
-   fChain->SetBranchStatus("HLTriggers",1);
-   fChain->SetBranchStatus("runNb",1);
+   fChain->SetBranchStatus("*", 0);
+   fChain->SetBranchStatus("zVtx", 1);
+   fChain->SetBranchStatus("Reco_QQ_size", 1);
+   fChain->SetBranchStatus("Reco_QQ_sign", 1);
+   fChain->SetBranchStatus("Reco_QQ_4mom", 1);
+   fChain->SetBranchStatus("Reco_QQ_mupl_idx", 1);
+   fChain->SetBranchStatus("Reco_QQ_mumi_idx", 1);
+   fChain->SetBranchStatus("Reco_QQ_trig", 1);
+   fChain->SetBranchStatus("Reco_QQ_VtxProb", 1);
+   fChain->SetBranchStatus("Reco_mu_size", 1);
+   fChain->SetBranchStatus("Reco_mu_charge", 1);
+   fChain->SetBranchStatus("Reco_mu_4mom", 1);
+   fChain->SetBranchStatus("Reco_mu_trig", 1);
+   fChain->SetBranchStatus("HLTriggers", 1);
+   fChain->SetBranchStatus("runNb", 1);
    /*fChain->SetBranchStatus("",1);
    fChain->SetBranchStatus("",1);
    fChain->SetBranchStatus("",1);*/
@@ -319,8 +329,32 @@ void SkimNew::ToggleBranches()
 Bool_t SkimNew::CheckTrigBit(ULong64_t num, int bitPosition)
 {
    int bit = (num >> bitPosition) & 1;
-   if (bit == 1) return true;
-   if (bit == 0) return false;
-   else return false;
+   if (bit == 1)
+      return true;
+   if (bit == 0)
+      return false;
+   else
+      return false;
+}
+double SkimNew::getEfficiency(TEfficiency *e, double y, double pt)
+{
+   double originalPt = pt;
+   if (pt >= 200)
+   {
+      // std::cout << "Very High-Pt Z (>200) detected. Pt = " << originalPt << " I am pretending it's pt is 199.9 for efficiency purposes!" << std::endl;
+      pt = 199.9;
+   }
+
+   int bin = e->FindFixBin(y, pt);
+   float efficiency = e->GetEfficiency(bin);
+
+   if (efficiency > 0 && efficiency <= 1)
+      return efficiency;
+   else
+   {
+      std::cout << "efficiency not in the range [0,1], returning 1!" << std::endl;
+      std::cout << "Rapidity: " << y << " Pt: " << originalPt << std::endl;
+      return 1;
+   }
 }
 #endif // #ifdef SkimNew_cxx
