@@ -7,13 +7,13 @@ class chisquaretest : public plotting_helper
 public:
 	chisquaretest();
 	chisquaretest(TString s2, TString s3, int type, bool iseta);
-	chisquaretest(TString s1, TString s2, TString s3, bool iseta, bool isbk, bool iseff);
+	chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta);
 	~chisquaretest();
 	Double_t myownfunctionchi2(TH1D *h1, TH1D *h2);
 	void calculatechisq(bool isbk);
 	void calculatechisqpp(bool isbk);
 	void plottingandformatting(int type, bool iseta);
-	void plottingandformattingpp(bool iseta, bool isbk, bool iseff);
+	void plottingandformattingpp(int type, bool iseta);
 	void bincontentcheck(bool isbk);
 	void RebinAll(int type);
 	TGraph *RemoveInvalidPoints(TGraph *originalGraph);
@@ -30,7 +30,7 @@ public:
 		double range4_min, double range4_max, int rebin4);
 
 	Int_t mapthreecases(int type, bool isbk, bool iseff);
-	void saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true);
+	void saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, bool iseta, int iteration, int region_size = 3, bool ispp = true);
 
 	static const int nbins_mass_shift = 42;
 	static const int nbins_smear = 42;
@@ -325,8 +325,15 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta)
 	}
 }
 
-chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, bool isbk, bool iseff)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta)
 {
+
+	// type 1 = nominal
+	// type 2 = tnpU
+	// type 3 = tnpD
+	// type 4 = Acooff
+	// type 5 = Nominal_no_bk
+
 	mcfilepath = s1;
 	datafilepath = s2;
 	bkfilepath = s3;
@@ -339,7 +346,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 
 	if (iseta)
 	{
-		if (isbk)
+		if (!(type == 5))
 		{
 			this->lowbin_mass_shift = eta_pp_mass_shift_low_with_bk;
 			this->highbin_mass_shift = eta_pp_mass_shift_high_with_bk;
@@ -352,7 +359,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 			this->h_low_smear = lowbin_smear - ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 			this->h_high_smear = highbin_smear + ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 		}
-		if (!isbk)
+		if (type == 5)
 		{
 			this->lowbin_mass_shift = eta_pp_mass_shift_low_without_bk;
 			this->highbin_mass_shift = eta_pp_mass_shift_high_without_bk;
@@ -369,7 +376,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 
 	if (!iseta)
 	{
-		if (isbk)
+		if (!(type == 5))
 		{
 			this->lowbin_mass_shift = raw_pp_mass_shift_low_with_bk;
 			this->highbin_mass_shift = raw_pp_mass_shift_high_with_bk;
@@ -382,7 +389,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 			this->h_low_smear = lowbin_smear - ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 			this->h_high_smear = highbin_smear + ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 		}
-		if (!isbk)
+		if (type == 5)
 		{
 			this->lowbin_mass_shift = raw_pp_mass_shift_low_without_bk;
 			this->highbin_mass_shift = raw_pp_mass_shift_high_without_bk;
@@ -412,26 +419,53 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 		c_data_mc_raw_pp[runperiod] = new TCanvas(Form("c_data_mc_raw_pp_%i", runperiod), "", 800, 600);
 		c_data_data_bk_pp[runperiod] = new TCanvas(Form("c_data_data_bk_pp_%i", runperiod), "", 800, 600);
 
-		if (iseta)
+		cout << "We are here" << endl;
+
+		if (type == 1 || type == 5)
 		{
-			if (iseff)
+			if (iseta)
 			{
-				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("h_mass_array_eta_with_eff_%i", runperiod));
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_nominal_%i", runperiod));
 			}
-			if (!iseff)
+			if (!iseta)
 			{
-				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("h_mass_array_eta_%i", runperiod));
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_nominal_%i", runperiod));
 			}
 		}
-		else
+
+		if (type == 2)
 		{
-			if (iseff)
+			if (iseta)
 			{
-				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("h_mass_array_raw_with_eff_%i", runperiod));
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_tnpU_%i", runperiod));
 			}
-			if (!iseff)
+			if (!iseta)
 			{
-				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("h_mass_array_raw_%i", runperiod));
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_tnpU_%i", runperiod));
+			}
+		}
+
+		if (type == 3)
+		{
+			if (iseta)
+			{
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_tnpD_%i", runperiod));
+			}
+			if (!iseta)
+			{
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_tnpD_%i", runperiod));
+			}
+		}
+
+		if (type == 4)
+		{
+			if (iseta)
+			{
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_AcoOff_%i", runperiod));
+			}
+			if (!iseta)
+			{
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_AcoOff_%i", runperiod));
 			}
 		}
 
@@ -448,26 +482,27 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, bool iseta, boo
 		{
 			for (int smear = 0; smear < nbins_smear; smear++)
 			{
-				if (iseta)
+				if (type == 1 || type == 2 || type == 3 || type == 5)
 				{
-					if (iseff)
+					if (iseta)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("mass_array_witheta_witheff_template_%i_%i_%i", shift, smear, 10));
+						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, 10));
 					}
-					else
+					if (!iseta)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("mass_array_witheta_template_%i_%i_%i", shift, smear, 10));
+						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
 					}
 				}
-				else
+
+				if (type == 4)
 				{
-					if (iseff)
+					if (iseta)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("mass_array_with_eff_template_%i_%i_%i", shift, smear, 10));
+						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_acooff_%i_%i_%i", shift, smear, 10));
 					}
-					else
+					if (!iseta)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("mass_array_raw_template_%i_%i_%i", shift, smear, 10));
+						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acooff_%i_%i_%i", shift, smear, 10));
 					}
 				}
 
@@ -742,7 +777,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		}
 
 		// This is to export minimum region
-		this->saveChi2Region(h_chisquare[cent], minBinX, minBinY, type, cent, 3, false);
+		this->saveChi2Region(h_chisquare[cent], minBinX, minBinY, type, iseta, cent, 3, false);
 
 		this->getcontour(h_chisquare[cent], 1, minBinX, minBinY, minContent, contour_x_left_onesig_HI, contour_x_right_onesig_HI);
 
@@ -1071,7 +1106,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 	temp->Close();
 }
 
-void chisquaretest::plottingandformattingpp(bool iseta, bool isbk, bool iseff)
+void chisquaretest::plottingandformattingpp(int type, bool iseta)
 {
 
 	TString chi2_title;
@@ -1082,95 +1117,137 @@ void chisquaretest::plottingandformattingpp(bool iseta, bool isbk, bool iseff)
 	TString data_data_saving_path;
 	TString contour_saving_path;
 
-	int my_case = mapthreecases(iseta, isbk, iseff);
+	// type 1 = nominal
+	// type 2 = tnpU
+	// type 3 = tnpD
+	// type 4 = Acooff
+	// type 5 = nominal without bk subtraction
 
-	if (my_case == 5)
+	if (type == 1)
 	{
-		// eta, bk, eff
-		chi2_title = "pp, |#eta| < 1.0 with bksub and eff, Period: (%i)";
-		data_mc_title = "eta_with_bksub_with_eff_%i";
-		data_data_title = "eta_eff_%i";
-		chi2_saving_path = "./chi2pp/chi2plots/eta/bksub/eta_with_bksub_with_eff_%i.png";
-		data_mc_saving_path = "./chi2pp/datamc/eta/bksub/eta_with_bksub_with_eff_%i.png";
-		data_data_saving_path = "./chi2pp/datadata/eta/eta_%i.png";
-		contour_saving_path = "./chi2pp/contour/eta/eta_with_bksub_with_eff_%i.png";
+		if (iseta)
+		{
+			chi2_title = "pp, |#eta| < 1.0, Nominal, Period: (%i)";
+			data_mc_title = "Eta cut, Nominal, Period: (%i)";
+			data_data_title = "Eta_Nominal_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal/Eta_Nominal_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal/Eta_Nominal_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/eta/Eta_Nominal_%i.png";
+			contour_saving_path = "./chi2pp/contour/eta/Eta_Nominal_%i.png";
+		}
+		if (!iseta)
+		{
+			chi2_title = "pp, |#eta| < 2.4, Nominal, Period: (%i)";
+			data_mc_title = "WholeAcceptance, Nominal, Period: (%i)";
+			data_data_title = "Raw_Nominal_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal/Raw_Nominal_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal/Raw_Nominal_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/raw/Raw_Nominal_%i.png";
+			contour_saving_path = "./chi2pp/contour/raw/raw_Nominal_%i.png";
+		}
 	}
-	if (my_case == 6)
+	if (type == 2)
 	{
-		// eta, bk
-		chi2_title = "pp, |#eta| < 1.0 with bksub without eff, Period: (%i)";
-		data_mc_title = "eta_with_bksub_without_eff_%i";
-		data_data_title = "eta_%i";
-		chi2_saving_path = "./chi2pp/chi2plots/eta/bksub/eta_with_bksub_without_eff_%i.png";
-		data_mc_saving_path = "./chi2pp/datamc/eta/bksub/eta_with_bksub_without_eff_%i.png";
-		data_data_saving_path = "./chi2pp/datadata/eta/eta_%i.png";
-		contour_saving_path = "./chi2pp/contour/eta/eta_with_bksub_without_eff_%i.png";
+		if (iseta)
+		{
+			chi2_title = "pp, |#eta| < 1.0, tnpU, Period: (%i)";
+			data_mc_title = "Eta, tnpU, Period: (%i)";
+			data_data_title = "Eta_tnpU_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/eta/tnpU/Raw_tnpU_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/eta/tnpU/Raw_tnpU_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/eta/Eta_tnpU_%i.png";
+			contour_saving_path = "./chi2pp/contour/eta/Eta_tnpU_%i.png";
+		}
+		if (!iseta)
+		{
+			chi2_title = "pp, |#eta| < 2.4, tnpU, Period: (%i)";
+			data_mc_title = "WholeAcceptance, tnpU, Period: (%i)";
+			data_data_title = "Raw_tnpU_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/raw/tnpU/Raw_tnpU_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/raw/tnpU/Raw_tnpU_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/raw/Raw_tnpU_%i.png";
+			contour_saving_path = "./chi2pp/contour/raw/raw_tnpU_%i.png";
+		}
 	}
-	if (my_case == 7)
+	if (type == 3)
 	{
-		// eta, eff
-		chi2_title = "pp, |#eta| < 1.0 without bksub with eff, Period: (%i)";
-		data_mc_title = "eta_without_bksub_with_eff_%i";
-		data_data_title = "eta_eff_%i";
-		chi2_saving_path = "./chi2pp/chi2plots/eta/nobksub/eta_without_bksub_with_eff_%i.png";
-		data_mc_saving_path = "./chi2pp/datamc/eta/nobksub/eta_without_bksub_with_eff_%i.png";
-		data_data_saving_path = "./chi2pp/datadata/eta/eta_with_eff_%i.png";
-		contour_saving_path = "./chi2pp/contour/eta/eta_without_bksub_with_eff_%i.png";
+		if (iseta)
+		{
+			chi2_title = "pp, |#eta| < 1.0, tnpD, Period: (%i)";
+			data_mc_title = "Eta cut, tnpD, Period: (%i)";
+			data_data_title = "Eta_tnpD_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/eta/tnpD/Eta_tnpD_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/eta/tnpD/Eta_tnpD_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/eta/Eta_tnpD_%i.png";
+			contour_saving_path = "./chi2pp/contour/eta/eta_tnpD_%i.png";
+		}
+		if (!iseta)
+		{
+			chi2_title = "pp, |#eta| < 2.4, tnpD, Period: (%i)";
+			data_mc_title = "WholeAcceptance, tnpD, Period: (%i)";
+			data_data_title = "Raw_tnpD_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/raw/tnpD/Raw_tnpD_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/raw/tnpD/Raw_tnpD_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/raw/Raw_tnpD_%i.png";
+			contour_saving_path = "./chi2pp/contour/raw/raw_tnpD_%i.png";
+		}
 	}
-	if (my_case == 8)
+	if (type == 4)
 	{
-		// eta
-		chi2_title = "pp, |#eta| < 1.0 without bksub without eff, Period: (%i)";
-		data_mc_title = "eta_without_bksub_without_eff_%i";
-		data_data_title = "eta_without_eff_%i";
-		chi2_saving_path = "./chi2pp/chi2plots/eta/nobksub/eta_without_bksub_without_eff_%i.png";
-		data_mc_saving_path = "./chi2pp/datamc/eta/nobksub/eta_without_bksub_without_eff_%i.png";
-		data_data_saving_path = "./chi2pp/datadata/eta/eta_without_eff_%i.png";
-		contour_saving_path = "./chi2pp/contour/eta/eta_without_bksub_without_eff_%i.png";
+		if (iseta)
+		{
+			chi2_title = "pp, |#eta| < 1.0, Acooff, Period: (%i)";
+			data_mc_title = "Eta cut, Acooff, Period: (%i)";
+			data_data_title = "Eta_Acooff_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/eta/Acooff/Eta_Acooff_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/eta/Acooff/Eta_Acooff_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/eta/Eta_Acooff_%i.png";
+			contour_saving_path = "./chi2pp/contour/eta/Eta_Acooff_%i.png";
+		}
+		if (!iseta)
+		{
+			chi2_title = "pp, |#eta| < 2.4, Acooff, Period: (%i)";
+			data_mc_title = "WholeAcceptance, Acooff, Period: (%i)";
+			data_data_title = "Raw_Acooff_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/raw/Acooff/Raw_Acooff_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/raw/Acooff/Raw_Acooff_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/raw/Raw_Acooff_%i.png";
+			contour_saving_path = "./chi2pp/contour/raw/raw_Acooff_%i.png";
+		}
 	}
-	if (my_case == 1)
+
+	if (type == 5)
 	{
-		// raw, bk, eff
-		chi2_title = "pp, |#eta| < 2.4 with bksub with eff, Period: (%i)";
-		data_mc_title = "Raw_with_bksub_with_eff_%i";
-		data_data_title = "Raw_with_eff_%i";
-		chi2_saving_path = "./chi2pp/chi2plots/raw/bksub/raw_with_bksub_with_eff_%i.png";
-		data_mc_saving_path = "./chi2pp/datamc/raw/bksub/raw_with_bksub_with_eff_%i.png";
-		data_data_saving_path = "./chi2pp/datadata/raw/raw_with_eff_%i.png";
-		contour_saving_path = "./chi2pp/contour/raw/raw_with_bksub_with_eff_%i.png";
-	}
-	if (my_case == 2)
-	{
-		// raw, bk
-		chi2_title = "pp, |#eta| < 2.4 with bksub without eff, Period: (%i)";
-		data_mc_title = "Raw_with_bksub_without_eff_%i";
-		data_data_title = "Raw_without_eff_%i";
-		chi2_saving_path = "./chi2pp/chi2plots/raw/bksub/raw_with_bksub_without_eff_%i.png";
-		data_mc_saving_path = "./chi2pp/datamc/raw/bksub/raw_with_bksub_without_eff_%i.png";
-		data_data_saving_path = "./chi2pp/datadata/raw/raw_without_eff_%i.png";
-		contour_saving_path = "./chi2pp/contour/raw/raw_with_bksub_without_eff_%i.png";
-	}
-	if (my_case == 3)
-	{
-		// raw, eff
-		chi2_title = "pp, |#eta| < 2.4 without bksub with eff, Period: (%i)";
-		data_mc_title = "Raw_without_bksub_with_eff_%i";
-		data_data_title = "Raw_with_eff_%i";
-		chi2_saving_path = "./chi2pp/chi2plots/raw/nobksub/raw_without_bksub_with_eff_%i.png";
-		data_mc_saving_path = "./chi2pp/datamc/raw/nobksub/raw_without_bksub_with_eff_%i.png";
-		data_data_saving_path = "./chi2pp/datadata/raw/raw_with_eff_%i.png";
-		contour_saving_path = "./chi2pp/contour/raw/raw_without_bksub_with_eff_%i.png";
-	}
-	if (my_case == 4)
-	{
-		// raw
-		chi2_title = "pp, |#eta| < 2.4 without bksub without eff, Period: (%i)";
-		data_mc_title = "Raw_without_bksub_without_eff_%i";
-		data_data_title = "Raw_wihout_eff_%i";
-		chi2_saving_path = "./chi2pp/chi2plots/raw/nobksub/raw_without_bksub_without_eff_%i.png";
-		data_mc_saving_path = "./chi2pp/datamc/raw/nobksub/raw_without_bksub_without_eff_%i.png";
-		data_data_saving_path = "./chi2pp/datadata/raw/raw_without_eff_%i.png";
-		contour_saving_path = "./chi2pp/contour/raw/raw_without_bksub_without_eff_%i.png";
+		if (iseta)
+		{
+			chi2_title = "pp, |#eta| < 1.0, Nominal no bk, Period: (%i)";
+			data_mc_title = "Eta cut, Nominal no bk, Period: (%i)";
+			data_data_title = "Eta_Nominal_no_bk_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal_no_bk/Eta_nominal_no_bk_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal_no_bk/Eta_nominal_no_bk_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/eta/Eta_nominal_no_bk_%i.png";
+			contour_saving_path = "./chi2pp/contour/eta/Eta_nominal_no_bk_%i.png";
+		}
+		if (!iseta)
+		{
+			chi2_title = "pp, |#eta| < 2.4, Nominal no bk, Period: (%i)";
+			data_mc_title = "|#eta| < 2.4, Nominal no bk, Period: (%i)";
+			data_data_title = "Raw_Nominal_no_bk_%i";
+
+			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
+			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/raw/Raw_nominal_no_bk_%i.png";
+			contour_saving_path = "./chi2pp/contour/raw/raw_nominal_no_bk_%i.png";
+		}
 	}
 
 	for (int runperiod = 0; runperiod < 22; runperiod++)
@@ -1235,7 +1312,7 @@ void chisquaretest::plottingandformattingpp(bool iseta, bool isbk, bool iseff)
 		dWidth_pp[runperiod] = yCenter;
 
 		// This is to export minimum region
-		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, my_case, runperiod, 3, true);
+		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, type, iseta, runperiod, 3, true);
 
 		this->getcontour(h_chisquare_pp[runperiod], 2, minBinX, minBinY, minContent, contour_x_left_onesig_HI, contour_x_right_onesig_HI);
 
@@ -1247,7 +1324,7 @@ void chisquaretest::plottingandformattingpp(bool iseta, bool isbk, bool iseff)
 		TString T_contour_saving_path = Form(contour_saving_path, runperiod);
 		TString T_chi2_title = Form(chi2_title, runperiod);
 
-		//this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, isbk, iseta, true, false, T_chi2_title, T_contour_saving_path);
+		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, iseta, true, T_chi2_title, T_contour_saving_path);
 
 		for (int nbinssmearing = 1; nbinssmearing <= nbins_smear; ++nbinssmearing)
 		{
@@ -1364,35 +1441,73 @@ void chisquaretest::plottingandformattingpp(bool iseta, bool isbk, bool iseff)
 		// This is Data and MC
 
 		c_data_mc_raw_pp[runperiod]->cd();
-		c_data_mc_raw_pp[runperiod]->SetLogy();
-		if (isbk)
+		c_data_mc_raw_pp[runperiod]->SetLeftMargin(0.15);
+		c_data_mc_raw_pp[runperiod]->SetRightMargin(0.08);
+		c_data_mc_raw_pp[runperiod]->SetBottomMargin(0.13);
+		c_data_mc_raw_pp[runperiod]->SetTicks(1, 1);
+		// c_data_mc_raw_pp[runperiod]->SetLogy();
+		if (type != 5)
 		{
 			h_data_bksub_pp[runperiod]->SetTitle(Form(data_mc_title, runperiod));
 			h_data_bksub_pp[runperiod]->SetMarkerColor(kRed);
+			h_data_bksub_pp[runperiod]->SetMarkerSize(1.5);
 			h_data_bksub_pp[runperiod]->SetMarkerStyle(kFullCircle);
+			h_data_bksub_pp[runperiod]->GetYaxis()->SetTitle("Normalized counts");
+			h_data_bksub_pp[runperiod]->GetXaxis()->SetTitle("m_{u^{+}u^{-}} (GeV)");
+
+			h_data_bksub_pp[runperiod]->GetYaxis()->SetTitleFont(42);	// Times, bold
+			h_data_bksub_pp[runperiod]->GetYaxis()->SetLabelFont(42);	// Times, bold
+			h_data_bksub_pp[runperiod]->GetYaxis()->SetTitleSize(0.05); // Title size
+			h_data_bksub_pp[runperiod]->GetYaxis()->SetLabelSize(0.04); // Label size
+			h_data_bksub_pp[runperiod]->GetXaxis()->SetTitleFont(42);	// Times, bold
+			h_data_bksub_pp[runperiod]->GetXaxis()->SetLabelFont(42);	// Times, bold
+			h_data_bksub_pp[runperiod]->GetXaxis()->SetTitleSize(0.05); // Title size
+			h_data_bksub_pp[runperiod]->GetXaxis()->SetLabelSize(0.04); // Label size
+
 			h_data_bksub_pp[runperiod]->Draw("P");
+
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerColor(kGreen);
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerStyle(kFullDotLarge);
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerSize(1.5);
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->Draw("P SAME");
 		}
-		if (!isbk)
+		if (type == 5)
 		{
 			h_data_pp[runperiod]->SetTitle(Form(data_mc_title, runperiod));
 			h_data_pp[runperiod]->SetMarkerColor(kRed);
+			h_data_pp[runperiod]->SetMarkerSize(1.5);
 			h_data_pp[runperiod]->SetMarkerStyle(kFullCircle);
+			h_data_pp[runperiod]->GetYaxis()->SetTitle("Normalized counts");
+			h_data_pp[runperiod]->GetXaxis()->SetTitle("m_{u^{+}u^{-}} (GeV)");
+
+			h_data_pp[runperiod]->GetYaxis()->SetTitleFont(42);	  // Times, bold
+			h_data_pp[runperiod]->GetYaxis()->SetLabelFont(42);	  // Times, bold
+			h_data_pp[runperiod]->GetYaxis()->SetTitleSize(0.05); // Title size
+			h_data_pp[runperiod]->GetYaxis()->SetLabelSize(0.04); // Label size
+			h_data_pp[runperiod]->GetXaxis()->SetTitleFont(42);	  // Times, bold
+			h_data_pp[runperiod]->GetXaxis()->SetLabelFont(42);	  // Times, bold
+			h_data_pp[runperiod]->GetXaxis()->SetTitleSize(0.05); // Title size
+			h_data_pp[runperiod]->GetXaxis()->SetLabelSize(0.04); // Label size
+
 			h_data_pp[runperiod]->Draw("P");
 			// h_data_bksub_pp[runperiod]->SetMarkerColor(kBlue);
 			// h_data_bksub_pp[runperiod]->SetMarkerStyle(kFullCircle);
 			// h_data_bksub_pp[runperiod]->Draw("PSAME");
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerColor(kGreen);
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerStyle(kFullDotLarge);
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerSize(1.5);
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->Draw("P SAME");
 		}
 
-		TPaveText *pt1 = new TPaveText(0.1, 0.8, 0.5, 0.9, "NDC");
-		pt1->AddText("Red is data, green is best signal");
-		pt1->SetTextSize(0.04);
+		TPaveText *pt1 = new TPaveText(0.15, 0.7, 0.5, 0.8, "NDC");
+		pt1->AddText("Red is data");
+		pt1->AddText("Green is best template");
+		pt1->SetTextSize(0.03);
 		pt1->SetTextAlign(22); // Center alignment
+		pt1->SetFillStyle(0);  // Make the background transparent
+		pt1->SetBorderSize(0); // Remove the border
+		pt1->SetLineColor(0);  // Remove the border line (optional)
+		pt1->SetTextColor(1);  // Set text color (default: black)
 		pt1->Draw();
 
 		c_data_mc_raw_pp[runperiod]->SaveAs(Form(data_mc_saving_path, runperiod));
@@ -1403,7 +1518,8 @@ void chisquaretest::plottingandformattingpp(bool iseta, bool isbk, bool iseff)
 		h_data_pp[runperiod]->SetTitle(Form(data_data_title, runperiod));
 		h_data_pp[runperiod]->SetMarkerColor(kRed);
 		h_data_pp[runperiod]->SetMarkerStyle(kFullCircle);
-		h_data_pp[runperiod]->Draw("P HIST");
+		h_data_pp[runperiod]->Draw("P");
+		h_data_pp[runperiod]->Draw("TEXT SAME");
 		h_data_bksub_pp[runperiod]->SetMarkerStyle(kFullDotLarge);
 		h_data_bksub_pp[runperiod]->SetMarkerColor(kGreen);
 		h_data_bksub_pp[runperiod]->Draw("P SAME");
@@ -1423,45 +1539,70 @@ void chisquaretest::plottingandformattingpp(bool iseta, bool isbk, bool iseff)
 	TFile *temp = new TFile("All_plots.root", "UPDATE");
 	temp->cd();
 
-	if (my_case == 1)
+	if (type == 1)
 	{
-		g_pp_dmass->Write("pp_dM_chi2_raw_bksub_eff", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_raw_bksub_eff", 2);
+		if (iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_eta_nominal", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_eta_nominal", 2);
+		}
+		if (!iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_raw_nominal", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal", 2);
+		}
 	}
-	if (my_case == 2)
+	if (type == 2)
 	{
-		g_pp_dmass->Write("pp_dM_chi2_raw_bksub", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_raw_bksub", 2);
+		if (iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_eta_tnpU", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_eta_tnpU", 2);
+		}
+		if (!iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_raw_tnpU", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_raw_tnpU", 2);
+		}
 	}
-	if (my_case == 3)
+	if (type == 3)
 	{
-		g_pp_dmass->Write("pp_dM_chi2_raw_nobksub_eff", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nobksub_eff", 2);
+		if (iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_eta_tnpD", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_eta_tnpD", 2);
+		}
+		if (!iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_raw_tnpD", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_raw_tnpD", 2);
+		}
 	}
-	if (my_case == 4)
+	if (type == 4)
 	{
-		g_pp_dmass->Write("pp_dM_chi2_raw_nobksub", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nobksub", 2);
+		if (iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_eta_acooff", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_eta_acooff", 2);
+		}
+		if (!iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_raw_acooff", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_raw_acooff", 2);
+		}
 	}
-	if (my_case == 5)
+	if (type == 5)
 	{
-		g_pp_dmass->Write("pp_dM_chi2_eta_bksub_eff", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_eta_bksub_eff", 2);
-	}
-	if (my_case == 6)
-	{
-		g_pp_dmass->Write("pp_dM_chi2_eta_bksub", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_eta_bksub", 2);
-	}
-	if (my_case == 7)
-	{
-		g_pp_dmass->Write("pp_dM_chi2_eta_nobksub_eff", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_eta_nobksub_eff", 2);
-	}
-	if (my_case == 8)
-	{
-		g_pp_dmass->Write("pp_dM_chi2_eta_nobksub", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_eta_nobksub", 2);
+		if (iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_eta_nominal_no_bk", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_eta_nominal_no_bk", 2);
+		}
+		if (!iseta)
+		{
+			g_pp_dmass->Write("pp_dM_chi2_raw_nominal_no_bk", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_no_bk", 2);
+		}
 	}
 
 	temp->Close();
@@ -2156,7 +2297,7 @@ Int_t chisquaretest::mapthreecases(int type, bool isbk, bool iseff)
 	}
 	return -99;
 }
-void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true)
+void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, bool iseta, int iteration, int region_size = 3, bool ispp = true)
 {
 	if (region_size % 2 == 0)
 	{
@@ -2183,6 +2324,7 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 	TString txtname = "";
 	TString txtname_prefix = "";
 	TString cent = "";
+	TString anotherprefix = "";
 
 	if (my_case == 1)
 		txtname = "nominal";
@@ -2218,7 +2360,12 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 	if (!ispp)
 		txtname_prefix = "PbPb_";
 
-	std::ofstream outfile("./zoomin/" + txtname_prefix + txtname + cent + ".txt");
+	if (iseta)
+		anotherprefix = "eta_";
+	if (!iseta)
+		anotherprefix = "FA_";
+
+	std::ofstream outfile("./zoomin/" + txtname_prefix + anotherprefix + txtname + cent + ".txt");
 
 	outfile << std::fixed << std::setprecision(2); // Set fixed-point notation with 2 decimal places
 

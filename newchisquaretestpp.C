@@ -1,5 +1,17 @@
-void newchisquaretestpp(bool iseta = 1, bool isbk = 1, bool iseff = 1)
+void newchisquaretestpp(int type = 1, bool iseta = 1)
 {
+
+	// type 1 = nominal
+	// type 2 = tnpU
+	// type 3 = tnpD
+	// type 4 = Acooff
+	// type 5 = nominal - bk
+
+	bool isbk = true;
+	if (type == 5)
+	{
+		isbk = false;
+	}
 
 	gStyle->SetOptFit(0);
 	gStyle->SetOptStat(0);
@@ -10,26 +22,51 @@ void newchisquaretestpp(bool iseta = 1, bool isbk = 1, bool iseff = 1)
 	TString datafile;
 	TString bkfile;
 
-	if (iseff)
+	if (type == 1 || type == 5)
 	{
 		if (iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/etacut_eff_file.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_nominal.root";
 		}
 		if (!iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/efffile.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_nominal.root";
 		}
 	}
-	if (!iseff)
+
+	if (type == 2)
 	{
 		if (iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/etacut_file.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_tnpU.root";
 		}
 		if (!iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/rawfile.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpU.root";
+		}
+	}
+
+	if (type == 3)
+	{
+		if (iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_tnpD.root";
+		}
+		if (!iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpD.root";
+		}
+	}
+
+	if (type == 4)
+	{
+		if (iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_acooff.root";
+		}
+		if (!iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_acooff.root";
 		}
 	}
 
@@ -37,17 +74,17 @@ void newchisquaretestpp(bool iseta = 1, bool isbk = 1, bool iseff = 1)
 
 	if (isbk)
 	{
-		mcfile = "../ZBoson_18/rootfile/new_template_reco_gen_bk.root";
+		mcfile = "../ZBoson_18/rootfile/template_pp_bk.root";
 	}
 	if (!isbk)
 	{
-		mcfile = "../ZBoson_18/rootfile/new_template_reco_gen_nobk.root";
+		mcfile = "../ZBoson_18/rootfile/template_pp_nobk.root";
 	}
 
-	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, iseta, isbk, iseff);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, iseta);
 
 	// ovo->bincontentcheck(isbk);
 	// ovo->RebinAllpp(2);
 	ovo->calculatechisqpp(isbk);
-	ovo->plottingandformattingpp(iseta, isbk, iseff);
+	ovo->plottingandformattingpp(type, iseta);
 }

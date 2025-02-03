@@ -107,11 +107,41 @@ void get_systematic()
     TGraphErrors *HI_dWidth_chi2_eta_acooff = (TGraphErrors *)f1->Get("HI_dWidth_chi2_eta_acooff");
     TGraphErrors *HI_dWidth_chi2_eta_nominal_no_bk = (TGraphErrors *)f1->Get("HI_dWidth_chi2_eta_nominal_no_bk");
 
+    TGraphErrors *pp_dM_chi2_raw_nominal = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_nominal");
+    TGraphErrors *pp_dM_chi2_raw_tnpU = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_tnpU");
+    TGraphErrors *pp_dM_chi2_raw_tnpD = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_tnpD");
+    TGraphErrors *pp_dM_chi2_raw_acooff = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_acooff");
+    TGraphErrors *pp_dM_chi2_raw_nominal_no_bk = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_nominal_no_bk");
+
+    TGraphErrors *pp_dWidth_chi2_raw_nominal = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_nominal");
+    TGraphErrors *pp_dWidth_chi2_raw_tnpU = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_tnpU");
+    TGraphErrors *pp_dWidth_chi2_raw_tnpD = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_tnpD");
+    TGraphErrors *pp_dWidth_chi2_raw_acooff = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_acooff");
+    TGraphErrors *pp_dWidth_chi2_raw_nominal_no_bk = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_nominal_no_bk");
+
+    TGraphErrors *pp_dM_chi2_eta_nominal = (TGraphErrors *)f1->Get("pp_dM_chi2_eta_nominal");
+    TGraphErrors *pp_dM_chi2_eta_tnpU = (TGraphErrors *)f1->Get("pp_dM_chi2_eta_tnpU");
+    TGraphErrors *pp_dM_chi2_eta_tnpD = (TGraphErrors *)f1->Get("pp_dM_chi2_eta_tnpD");
+    TGraphErrors *pp_dM_chi2_eta_acooff = (TGraphErrors *)f1->Get("pp_dM_chi2_eta_acooff");
+    TGraphErrors *pp_dM_chi2_eta_nominal_no_bk = (TGraphErrors *)f1->Get("pp_dM_chi2_eta_nominal_no_bk");
+
+    TGraphErrors *pp_dWidth_chi2_eta_nominal = (TGraphErrors *)f1->Get("pp_dWidth_chi2_eta_nominal");
+    TGraphErrors *pp_dWidth_chi2_eta_tnpU = (TGraphErrors *)f1->Get("pp_dWidth_chi2_eta_tnpU");
+    TGraphErrors *pp_dWidth_chi2_eta_tnpD = (TGraphErrors *)f1->Get("pp_dWidth_chi2_eta_tnpD");
+    TGraphErrors *pp_dWidth_chi2_eta_acooff = (TGraphErrors *)f1->Get("pp_dWidth_chi2_eta_acooff");
+    TGraphErrors *pp_dWidth_chi2_eta_nominal_no_bk = (TGraphErrors *)f1->Get("pp_dWidth_chi2_eta_nominal_no_bk");
+
     TCanvas *c_FA_dM = new TCanvas("c_FA_dM", "", 800, 600);
     TCanvas *c_FA_dW = new TCanvas("c_FA_dW", "", 800, 600);
 
     TCanvas *c_Eta_dM = new TCanvas("c_Eta_dM", "", 800, 600);
     TCanvas *c_Eta_dW = new TCanvas("c_Eta_dW", "", 800, 600);
+
+    TCanvas *c_pp_FA_dM = new TCanvas("c_pp_FA_dM", "", 800, 600);
+    TCanvas *c_pp_FA_dW = new TCanvas("c_pp_FA_dW", "", 800, 600);
+
+    TCanvas *c_pp_Eta_dM = new TCanvas("c_pp_Eta_dM", "", 800, 600);
+    TCanvas *c_pp_Eta_dW = new TCanvas("c_pp_Eta_dW", "", 800, 600);
 
     c_FA_dM->cd();
 
@@ -201,8 +231,103 @@ void get_systematic()
     legend3->SetFillColorAlpha(kWhite, 0.1); // Background color with transparency
     legend3->Draw("SAME");
 
+    c_pp_FA_dM->cd();
+
+    cosmetic(pp_dM_chi2_raw_nominal, pp_dM_chi2_raw_tnpU, pp_dM_chi2_raw_tnpD, pp_dM_chi2_raw_acooff, pp_dM_chi2_raw_nominal_no_bk,1);
+    pp_dM_chi2_raw_nominal->Draw("AP");
+    pp_dM_chi2_raw_tnpU->Draw("P SAME");
+    pp_dM_chi2_raw_tnpD->Draw("P SAME");
+    pp_dM_chi2_raw_acooff->Draw("P SAME");
+    pp_dM_chi2_raw_nominal_no_bk->Draw("P SAME");
+
+    TLegend *legend4 = new TLegend(0.2, 0.7, 0.4, 0.9);
+    legend4->AddEntry(pp_dM_chi2_raw_nominal, "Nominal", "PL");
+    legend4->AddEntry(pp_dM_chi2_raw_tnpU, "tnpU", "PL");
+    legend4->AddEntry(pp_dM_chi2_raw_tnpD, "tnpD", "PL");
+    legend4->AddEntry(pp_dM_chi2_raw_acooff, "acooff", "PL");
+    legend4->AddEntry(pp_dM_chi2_raw_nominal_no_bk, "bk_off", "PL");
+    legend4->SetTextSize(0.03);              // Set text size
+    legend4->SetTextFont(42);                // Use a modern, clean font
+    legend4->SetBorderSize(0);               // Set border size (0 for no border)
+    legend4->SetLineColor(kBlack);           // Border color (if any)
+    legend4->SetLineWidth(0);                // Border line width
+    legend4->SetFillColorAlpha(kWhite, 0.1); // Background color with transparency
+    legend4->Draw("SAME");
+
+    c_pp_FA_dW->cd();
+    cosmetic(pp_dWidth_chi2_raw_nominal, pp_dWidth_chi2_raw_tnpU, pp_dWidth_chi2_raw_tnpD, pp_dWidth_chi2_raw_acooff, pp_dWidth_chi2_raw_nominal_no_bk,0);
+    pp_dWidth_chi2_raw_nominal->GetYaxis()->SetRangeUser(0.2,0.34);
+    pp_dWidth_chi2_raw_nominal->Draw("AP");
+    pp_dWidth_chi2_raw_tnpU->Draw("P SAME");
+    pp_dWidth_chi2_raw_tnpD->Draw("P SAME");
+    pp_dWidth_chi2_raw_acooff->Draw("P SAME");
+    pp_dWidth_chi2_raw_nominal_no_bk->Draw("P SAME");
+
+    TLegend *legend5 = new TLegend(0.2, 0.7, 0.4, 0.9);
+    legend5->AddEntry(pp_dWidth_chi2_raw_nominal, "Nominal", "PL");
+    legend5->AddEntry(pp_dWidth_chi2_raw_tnpU, "tnpU", "PL");
+    legend5->AddEntry(pp_dWidth_chi2_raw_tnpD, "tnpD", "PL");
+    legend5->AddEntry(pp_dWidth_chi2_raw_acooff, "acooff", "PL");
+    legend5->AddEntry(pp_dWidth_chi2_raw_nominal_no_bk, "bk_off", "PL");
+    legend5->SetTextSize(0.03);              // Set text size
+    legend5->SetTextFont(42);                // Use a modern, clean font
+    legend5->SetBorderSize(0);               // Set border size (0 for no border)
+    legend5->SetLineColor(kBlack);           // Border color (if any)
+    legend5->SetLineWidth(0);                // Border line width
+    legend5->SetFillColorAlpha(kWhite, 0.1); // Background color with transparency
+    legend5->Draw("SAME");
+
+    c_pp_Eta_dM->cd();
+    cosmetic(pp_dM_chi2_eta_nominal, pp_dM_chi2_eta_tnpU, pp_dM_chi2_eta_tnpD, pp_dM_chi2_eta_acooff, pp_dM_chi2_eta_nominal_no_bk,1);
+    pp_dM_chi2_eta_nominal->Draw("AP");
+    pp_dM_chi2_eta_tnpU->Draw("P SAME");
+    pp_dM_chi2_eta_tnpD->Draw("P SAME");
+    pp_dM_chi2_eta_acooff->Draw("P SAME");
+    pp_dM_chi2_eta_nominal_no_bk->Draw("P SAME");
+
+    TLegend *legend6 = new TLegend(0.2, 0.7, 0.4, 0.9);
+    legend6->AddEntry(pp_dM_chi2_eta_nominal, "Nominal", "PL");
+    legend6->AddEntry(pp_dM_chi2_eta_tnpU, "tnpU", "PL");
+    legend6->AddEntry(pp_dM_chi2_eta_tnpD, "tnpD", "PL");
+    legend6->AddEntry(pp_dM_chi2_eta_acooff, "acooff", "PL");
+    legend6->AddEntry(pp_dM_chi2_eta_nominal_no_bk, "bk_off", "PL");
+    legend6->SetTextSize(0.03);              // Set text size
+    legend6->SetTextFont(42);                // Use a modern, clean font
+    legend6->SetBorderSize(0);               // Set border size (0 for no border)
+    legend6->SetLineColor(kBlack);           // Border color (if any)
+    legend6->SetLineWidth(0);                // Border line width
+    legend6->SetFillColorAlpha(kWhite, 0.1); // Background color with transparency
+    legend6->Draw("SAME");
+
+    c_pp_Eta_dW->cd();
+    cosmetic(pp_dWidth_chi2_eta_nominal, pp_dWidth_chi2_eta_tnpU, pp_dWidth_chi2_eta_tnpD, pp_dWidth_chi2_eta_acooff, pp_dWidth_chi2_eta_nominal_no_bk,0);
+    pp_dWidth_chi2_eta_nominal->GetYaxis()->SetRangeUser(0.2,0.34);
+    pp_dWidth_chi2_eta_nominal->Draw("AP");
+    pp_dWidth_chi2_eta_tnpU->Draw("P SAME");
+    pp_dWidth_chi2_eta_tnpD->Draw("P SAME");
+    pp_dWidth_chi2_eta_acooff->Draw("P SAME");
+    pp_dWidth_chi2_eta_nominal_no_bk->Draw("P SAME");
+    TLegend *legend7 = new TLegend(0.2, 0.7, 0.4, 0.9);
+    legend7->AddEntry(pp_dWidth_chi2_eta_nominal, "Nominal", "PL");
+    legend7->AddEntry(pp_dWidth_chi2_eta_tnpU, "tnpU", "PL");
+    legend7->AddEntry(pp_dWidth_chi2_eta_tnpD, "tnpD", "PL");
+    legend7->AddEntry(pp_dWidth_chi2_eta_acooff, "acooff", "PL");
+    legend7->AddEntry(pp_dWidth_chi2_eta_nominal_no_bk, "bk_off", "PL");
+    legend7->SetTextSize(0.03);              // Set text size
+    legend7->SetTextFont(42);                // Use a modern, clean font
+    legend7->SetBorderSize(0);               // Set border size (0 for no border)
+    legend7->SetLineColor(kBlack);           // Border color (if any)
+    legend7->SetLineWidth(0);                // Border line width
+    legend7->SetFillColorAlpha(kWhite, 0.1); // Background color with transparency
+    legend7->Draw("SAME");
+
     c_FA_dM->SaveAs("./systematic/FA_dM.png");
     c_FA_dW->SaveAs("./systematic/FA_dW.png");
     c_Eta_dM->SaveAs("./systematic/Eta_dM.png");
     c_Eta_dW->SaveAs("./systematic/Eta_dW.png");
+
+    c_pp_FA_dM->SaveAs("./systematic/pp_FA_dM.png");
+    c_pp_FA_dW->SaveAs("./systematic/pp_FA_dW.png");
+    c_pp_Eta_dM->SaveAs("./systematic/pp_Eta_dM.png");
+    c_pp_Eta_dW->SaveAs("./systematic/pp_Eta_dW.png");
 }

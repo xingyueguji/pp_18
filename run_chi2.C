@@ -22,12 +22,15 @@ void run_chi2()
     newchisquaretest(4, 1);
     newchisquaretest(5, 1);
 
-    /*newchisquaretestpp(0, 1, 0);
-    newchisquaretestpp(0, 0, 0);
-    newchisquaretestpp(1, 1, 0);
-    newchisquaretestpp(1, 0, 0);
-    newchisquaretestpp(0, 1, 1);
-    newchisquaretestpp(0, 0, 1);
-    newchisquaretestpp(1, 1, 1);
-    newchisquaretestpp(1, 0, 1);*/
+    newchisquaretestpp(1, 0);
+    newchisquaretestpp(2, 0);
+    newchisquaretestpp(3, 0);
+    newchisquaretestpp(4, 0);
+    newchisquaretestpp(5, 0);
+
+    newchisquaretestpp(1, 1);
+    newchisquaretestpp(2, 1);
+    newchisquaretestpp(3, 1);
+    newchisquaretestpp(4, 1);
+    newchisquaretestpp(5, 1);
 }
