@@ -76,7 +76,8 @@
         "rebin.C": "cpp",
         "tdrStyle.C": "cpp",
         "CMS_lumi.C": "cpp",
-        "mcvsdata.C": "cpp"
+        "mcvsdata.C": "cpp",
+        "get_systematic.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

@@ -1,7 +1,7 @@
 #include "chisquaretest.h"
 #include "newchisquaretest.C"
 #include "newchisquaretestpp.C"
-void run_chi2(bool isNew = 1)
+void run_chi2()
 {
 
     // Don't forget to change everything in the header file
@@ -10,21 +10,24 @@ void run_chi2(bool isNew = 1)
     // shift_-0.2_0.0_smear_0.0_0.006_modified_signal_21_21_100.root
     // jobID_3_shift_-0.5_0.2_smear_0.0_0.015_modified_signal_21_21_1000.root
 
-    /*newchisquaretest(0, 0, 0);
-    newchisquaretest(1, 1, 0);
-    newchisquaretest(0, 1, 0);
-    newchisquaretest(1, 0, 0);
-    newchisquaretest(0, 0, 1);
-    newchisquaretest(1, 1, 1);
-    newchisquaretest(0, 1, 1);
-    newchisquaretest(1, 0, 1);*/
+    newchisquaretest(1, 0);
+    newchisquaretest(2, 0);
+    newchisquaretest(3, 0);
+    newchisquaretest(4, 0);
+    newchisquaretest(5, 0);
 
-    newchisquaretestpp(0, 1, 0);
+    newchisquaretest(1, 1);
+    newchisquaretest(2, 1);
+    newchisquaretest(3, 1);
+    newchisquaretest(4, 1);
+    newchisquaretest(5, 1);
+
+    /*newchisquaretestpp(0, 1, 0);
     newchisquaretestpp(0, 0, 0);
     newchisquaretestpp(1, 1, 0);
     newchisquaretestpp(1, 0, 0);
     newchisquaretestpp(0, 1, 1);
     newchisquaretestpp(0, 0, 1);
     newchisquaretestpp(1, 1, 1);
-    newchisquaretestpp(1, 0, 1);
+    newchisquaretestpp(1, 0, 1);*/
 }

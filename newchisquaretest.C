@@ -1,6 +1,17 @@
-void newchisquaretest(int type = 1, bool isbk = 0, bool iseff = 0)
+void newchisquaretest(int type = 1, bool iseta = 1)
 {
-	// type 0 == raw , 1 == eta
+	// type 1 = nominal
+	// type 2 = tnpU
+	// type 3 = tnpD
+	// type 4 = Acooff
+	// type 5 = nominal - bk
+
+	bool isbk = true;
+	if (type == 5)
+	{
+		isbk = false;
+	}
+
 	gStyle->SetOptFit(0);
 	gStyle->SetOptStat(0);
 
@@ -12,38 +23,61 @@ void newchisquaretest(int type = 1, bool isbk = 0, bool iseff = 0)
 	TString datafile;
 	TString bkfile;
 
-	if (type == 0)
+	if (type == 1 || type == 5)
 	{
-		if (iseff)
+		if (iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/efffile.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_nominal.root";
 		}
-		else
+		if (!iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/rawfile.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_nominal.root";
 		}
 	}
-	
-	if (type == 1)
+
+	if (type == 2)
 	{
-		if (iseff)
+		if (iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/etacut_eff_file.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_tnpU.root";
 		}
-		else
+		if (!iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/etacut_file.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpU.root";
+		}
+	}
+
+	if (type == 3)
+	{
+		if (iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_tnpD.root";
+		}
+		if (!iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpD.root";
+		}
+	}
+
+	if (type == 4)
+	{
+		if (iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_acooff.root";
+		}
+		if (!iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_acooff.root";
 		}
 	}
 
 	datafile = "../ZBoson_18/rootfile/data_file.root";
 	// datafile = "../ZBoson_18/rootfile/shift_-0.150_smear_0.0075_fixed_modified_signal_100.root";
 
-	chisquaretest *ovo = new chisquaretest(datafile, bkfile, type, iseff);
+	chisquaretest *ovo = new chisquaretest(datafile, bkfile, type, iseta);
 
 	// ovo->bincontentcheck(isbk);
-	ovo->RebinAll(type);
-
+	ovo->RebinAll(iseta);
 	ovo->calculatechisq(isbk);
-	ovo->plottingandformatting(type, isbk,iseff);
+	ovo->plottingandformatting(type, iseta);
 }
