@@ -1,0 +1,81 @@
+   ------------------------------------------------------------------
+  | Welcome to ROOT 6.32.06                        https://root.cern |
+  | (c) 1995-2024, The ROOT Team; conception: R. Brun, F. Rademakers |
+  | Built for macosxarm64 on Sep 21 2024, 18:21:53                   |
+  | From tags/6-32-06@6-32-06                                        |
+  | With Apple clang version 16.0.0 (clang-1600.0.26.3)              |
+  | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+   ------------------------------------------------------------------
+
+
+Processing run_chi2.C...
+mcfilepath is ../ZBoson_18/rootfile/template_pp_bk.root
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 16
+X Chi2/ndf value in that bin: 417.81
+X Difference with minimum chi2/ndf: 2.19
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 13
+X Chi2/ndf value in that bin: 361.03
+X Difference with minimum chi2/ndf: 2.45
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 25
+X Chi2/ndf value in that bin: 417.34
+X Difference with minimum chi2/ndf: 2.08
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 9
+X Chi2/ndf value in that bin: 378.2
+X Difference with minimum chi2/ndf: 2.25
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 15
+X Chi2/ndf value in that bin: 368.12
+X Difference with minimum chi2/ndf: 2.31
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 29
+X Chi2/ndf value in that bin: 365.37
+X Difference with minimum chi2/ndf: 2.09
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 15
+X Chi2/ndf value in that bin: 409.76
+X Difference with minimum chi2/ndf: 2.31
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 33
+X Chi2/ndf value in that bin: 368.18
+X Difference with minimum chi2/ndf: 2.17
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 11
+X Chi2/ndf value in that bin: 364.29
+X Difference with minimum chi2/ndf: 2.39
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 27
+X Chi2/ndf value in that bin: 400.41
+X Difference with minimum chi2/ndf: 2.15
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 28
+X Chi2/ndf value in that bin: 378.32
+X Difference with minimum chi2/ndf: 2.09
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 18
+X Chi2/ndf value in that bin: 368.75
+X Difference with minimum chi2/ndf: 2.57
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 27
+X Chi2/ndf value in that bin: 395.92
+X Difference with minimum chi2/ndf: 2.07
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 17
+X Chi2/ndf value in that bin: 388.48
+X Difference with minimum chi2/ndf: 2.31
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 29
+X Chi2/ndf value in that bin: 403.85
+X Difference with minimum chi2/ndf: 2.21
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 28
+X Chi2/ndf value in that bin: 368.28
+X Difference with minimum chi2/ndf: 2.2
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 30
+X Chi2/ndf value in that bin: 372.46
+X Difference with minimum chi2/ndf: 2.18
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 30
+X Chi2/ndf value in that bin: 341.99
+X Difference with minimum chi2/ndf: 2.54
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 30
+X Chi2/ndf value in that bin: 391.26
+X Difference with minimum chi2/ndf: 2.05
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 13
+X Chi2/ndf value in that bin: 352.52
+X Difference with minimum chi2/ndf: 2.12
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 17
+X Chi2/ndf value in that bin: 373.69
+X Difference with minimum chi2/ndf: 2.51
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 18
+X Chi2/ndf value in that bin: 388.3
+X Difference with minimum chi2/ndf: 2.48
+X Bin with chi2/ndf closest to 1 unit difference from minimum: 28
+X Chi2/ndf value in that bin: 465.4
+X Difference with minimum chi2/ndf: 2.28

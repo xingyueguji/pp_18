@@ -22,7 +22,7 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 	TString datafile;
 	TString bkfile;
 
-	if (type == 1 || type == 5)
+	if (type == 1 || type == 5 || type == 6)
 	{
 		if (iseta)
 		{
@@ -70,13 +70,29 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 		}
 	}
 
+	if (type == 7)
+	{
+		if (iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_mass_range.root";
+		}
+		if (!iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_mass_range.root";
+		}
+	}
+
 	datafile = "./new_pp_data_file_stability_readonly.root";
 
-	if (isbk)
+	if (type == 7)
+	{
+		mcfile = "../ZBoson_18/rootfile/template_pp_mass_range.root";
+	}
+	else if (type != 5)
 	{
 		mcfile = "../ZBoson_18/rootfile/template_pp_bk.root";
 	}
-	if (!isbk)
+	else
 	{
 		mcfile = "../ZBoson_18/rootfile/template_pp_nobk.root";
 	}
@@ -84,7 +100,7 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, iseta);
 
 	// ovo->bincontentcheck(isbk);
-	// ovo->RebinAllpp(2);
+	ovo->RebinAllpp(iseta, type);
 	ovo->calculatechisqpp(isbk);
 	ovo->plottingandformattingpp(type, iseta);
 }

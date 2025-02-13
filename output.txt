@@ -1,0 +1,12 @@
+   ------------------------------------------------------------------
+  | Welcome to ROOT 6.32.06                        https://root.cern |
+  | (c) 1995-2024, The ROOT Team; conception: R. Brun, F. Rademakers |
+  | Built for macosxarm64 on Sep 21 2024, 18:21:53                   |
+  | From tags/6-32-06@6-32-06                                        |
+  | With Apple clang version 16.0.0 (clang-1600.0.26.3)              |
+  | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+   ------------------------------------------------------------------
+
+
+Processing run_chi2.C...
+mcfilepath is ../ZBoson_18/rootfile/template_pp_bk.root

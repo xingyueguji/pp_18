@@ -49,16 +49,41 @@ void SkimNew::Loop()
    TH1D *FA_tnpD[22];
    TH1D *Eta_tnpD[22];
 
+   TH1D *FA_mass_range[22];
+   TH1D *Eta_mass_range[22];
+
+   TH1D *FA_nominal_inclusive = new TH1D("FA_nominal_inclusive", "", 120, 60, 120);
+   TH1D *Eta_nominal_inclusive = new TH1D("Eta_nominal_inclusive", "", 120, 60, 120);
+
+   TH1D *FA_AcoOff_inclusive = new TH1D("FA_AcoOff_inclusive", "", 120, 60, 120);
+   TH1D *Eta_AcoOff_inclusive = new TH1D("Eta_AcoOff_inclusive", "", 120, 60, 120);
+
+   TH1D *FA_tnpU_inclusive = new TH1D("FA_tnpU_inclusive", "", 120, 60, 120);
+   TH1D *Eta_tnpU_inclusive = new TH1D("Eta_tnpU_inclusive", "", 120, 60, 120);
+
+   TH1D *FA_tnpD_inclusive = new TH1D("FA_tnpD_inclusive", "", 120, 60, 120);
+   TH1D *Eta_tnpD_inclusive = new TH1D("Eta_tnpD_inclusive", "", 120, 60, 120);
+
+   TH1D *FA_mass_range_inclusive = new TH1D("FA_mass_range_inclusive", "", 80, 70, 110);
+   TH1D *Eta_mass_range_inclusive = new TH1D("Eta_mass_range_inclusive", "", 80, 70, 110);
+
    for (int i = 0; i < 22; i++)
    {
       FA_nominal[i] = new TH1D(Form("FA_nominal_%i", i), "", 120, 60, 120);
       Eta_nominal[i] = new TH1D(Form("Eta_nominal_%i", i), "", 120, 60, 120);
+
       FA_AcoOff[i] = new TH1D(Form("FA_AcoOff_%i", i), "", 120, 60, 120);
       Eta_AcoOff[i] = new TH1D(Form("Eta_AcoOff_%i", i), "", 120, 60, 120);
+
       FA_tnpU[i] = new TH1D(Form("FA_tnpU_%i", i), "", 120, 60, 120);
       Eta_tnpU[i] = new TH1D(Form("Eta_tnpU_%i", i), "", 120, 60, 120);
+
       FA_tnpD[i] = new TH1D(Form("FA_tnpD_%i", i), "", 120, 60, 120);
       Eta_tnpD[i] = new TH1D(Form("Eta_tnpD_%i", i), "", 120, 60, 120);
+
+      FA_mass_range[i] = new TH1D(Form("FA_mass_range_%i", i), "", 80, 70, 110);
+      Eta_mass_range[i] = new TH1D(Form("Eta_mass_range_%i", i), "", 80, 70, 110);
+
    }
 
    TEfficiency *e;
@@ -170,6 +195,30 @@ void SkimNew::Loop()
          if (Z_momentum->Pt() < 1.25 && acoplanarity < 0.001)
             passesAco[0] = false;
 
+         // Here for inclusive
+         if (passesAco[0])
+         {
+            FA_nominal_inclusive->Fill(ZMass, 1.0 / efficiency);
+            FA_tnpU_inclusive->Fill(ZMass, 1.0 / efficiency_U);
+            FA_tnpD_inclusive->Fill(ZMass, 1.0 / efficiency_D);
+            FA_mass_range_inclusive->Fill(ZMass, 1.0 / efficiency);
+
+            if (isEtacutPassed)
+            {
+               Eta_nominal_inclusive->Fill(ZMass, 1.0 / efficiency);
+               Eta_tnpU_inclusive->Fill(ZMass, 1.0 / efficiency_U);
+               Eta_tnpD_inclusive->Fill(ZMass, 1.0 / efficiency_D);
+               Eta_mass_range_inclusive->Fill(ZMass, 1.0 / efficiency);
+            }
+         }
+
+         FA_AcoOff_inclusive->Fill(ZMass, 1.0 / efficiency_acooff);
+
+         if (isEtacutPassed)
+         {
+            Eta_AcoOff_inclusive->Fill(ZMass, 1.0 / efficiency_acooff);
+         }
+
          // Fill the run number based then
 
          for (int runindex = 0; runindex < 22; ++runindex)
@@ -179,14 +228,16 @@ void SkimNew::Loop()
                if (passesAco[0])
                {
                   FA_nominal[runindex]->Fill(ZMass, 1.0 / efficiency);
-						FA_tnpU[runindex]->Fill(ZMass, 1.0 / efficiency_U);
-						FA_tnpD[runindex]->Fill(ZMass, 1.0 / efficiency_D);
+                  FA_tnpU[runindex]->Fill(ZMass, 1.0 / efficiency_U);
+                  FA_tnpD[runindex]->Fill(ZMass, 1.0 / efficiency_D);
+                  FA_mass_range[runindex]->Fill(ZMass, 1.0 / efficiency);
 
                   if (isEtacutPassed)
                   {
                      Eta_nominal[runindex]->Fill(ZMass, 1.0 / efficiency);
-							Eta_tnpU[runindex]->Fill(ZMass, 1.0 / efficiency_U);
-							Eta_tnpD[runindex]->Fill(ZMass, 1.0 / efficiency_D);
+                     Eta_tnpU[runindex]->Fill(ZMass, 1.0 / efficiency_U);
+                     Eta_tnpD[runindex]->Fill(ZMass, 1.0 / efficiency_D);
+                     Eta_mass_range[runindex]->Fill(ZMass, 1.0 / efficiency);
                   }
                }
 
@@ -204,16 +255,29 @@ void SkimNew::Loop()
    TFile *writeout = new TFile("./new_pp_data_file_stability_readonly.root", "UPDATE");
    writeout->cd();
 
+   FA_nominal_inclusive->Write("", 2);
+   Eta_nominal_inclusive->Write("", 2);
+   FA_AcoOff_inclusive->Write("", 2);
+   Eta_AcoOff_inclusive->Write("", 2);
+   FA_tnpU_inclusive->Write("", 2);
+   Eta_tnpU_inclusive->Write("", 2);
+   FA_tnpD_inclusive->Write("", 2);
+   Eta_tnpD_inclusive->Write("", 2);
+   FA_mass_range_inclusive->Write("", 2);
+   Eta_mass_range_inclusive->Write("", 2);
+
    for (int j = 0; j < 22; j++)
    {
       FA_nominal[j]->Write("", 2);
-		Eta_nominal[j]->Write("", 2);
-		FA_AcoOff[j]->Write("", 2);
-		Eta_AcoOff[j]->Write("", 2);
-		FA_tnpU[j]->Write("", 2);
-		Eta_tnpU[j]->Write("", 2);
-		FA_tnpD[j]->Write("", 2);
-		Eta_tnpD[j]->Write("", 2);
+      Eta_nominal[j]->Write("", 2);
+      FA_AcoOff[j]->Write("", 2);
+      Eta_AcoOff[j]->Write("", 2);
+      FA_tnpU[j]->Write("", 2);
+      Eta_tnpU[j]->Write("", 2);
+      FA_tnpD[j]->Write("", 2);
+      Eta_tnpD[j]->Write("", 2);
+      FA_mass_range[j]->Write("", 2);
+      Eta_mass_range[j]->Write("", 2);
    }
 
    writeout->Close();

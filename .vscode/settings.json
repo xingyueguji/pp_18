@@ -78,7 +78,9 @@
         "CMS_lumi.C": "cpp",
         "mcvsdata.C": "cpp",
         "get_systematic.C": "cpp",
-        "get_run_groups.C": "cpp"
+        "get_run_groups.C": "cpp",
+        "backgroundcheck.C": "cpp",
+        "get_systematic_stack.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
