@@ -21,6 +21,7 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 	TString mcfile;
 	TString datafile;
 	TString bkfile;
+	TString zoominfile;
 
 	if (type == 1 || type == 5 || type == 6)
 	{
@@ -44,6 +45,7 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 		{
 			bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpU.root";
 		}
+		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_tnpU.root";
 	}
 
 	if (type == 3)
@@ -56,6 +58,7 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 		{
 			bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpD.root";
 		}
+		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_tnpD.root";
 	}
 
 	if (type == 4)
@@ -68,6 +71,7 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 		{
 			bkfile = "../ZBoson_18/rootfile/normalized/FA_acooff.root";
 		}
+		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_acooff.root";
 	}
 
 	if (type == 7)
@@ -80,6 +84,22 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 		{
 			bkfile = "../ZBoson_18/rootfile/normalized/FA_mass_range.root";
 		}
+		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_nominal_range.root";
+	}
+
+	if (type == 1)
+	{
+		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_nominal.root";
+	}
+
+	if (type == 5)
+	{
+		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_nominal_no_bksub.root";
+	}
+
+	if (type == 6)
+	{
+		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_nominal_binning.root";
 	}
 
 	datafile = "./new_pp_data_file_stability_readonly.root";
@@ -97,7 +117,7 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 		mcfile = "../ZBoson_18/rootfile/template_pp_nobk.root";
 	}
 
-	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, iseta);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, iseta,zoominfile);
 
 	// ovo->bincontentcheck(isbk);
 	ovo->RebinAllpp(iseta, type);

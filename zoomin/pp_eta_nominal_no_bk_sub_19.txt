@@ -1,4 +1,4 @@
-Local Minimum Bin: (25, 23)
+Local Minimum Bin: (27, 23)
 Region Size: 3x3
-X-axis Range: [-0.10, -0.09]
-Y-axis Range: [0.30, 0.31]
+X-axis Range: [-0.0962, -0.0896]
+Y-axis Range: [0.3000, 0.3102]

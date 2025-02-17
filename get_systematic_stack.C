@@ -111,7 +111,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     h_totalSyst->SetLineColor(kTeal); // Gray shaded region
     h_totalSyst->SetLineWidth(2);
     h_totalSyst->SetTitle("");
-    h_totalSyst->GetYaxis()->SetTitle("Absolute Syst. Err (GeV)");
+    h_totalSyst->GetYaxis()->SetTitle("PbPb - pp Absolute Syst. Err (GeV)");
     h_totalSyst->GetXaxis()->SetTitle("Centrality");
     h_totalSyst->GetXaxis()->SetLabelSize(0);
 
@@ -175,7 +175,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     h_tnpDSyst->Draw("L SAME");
     h_acooffSyst->Draw("L SAME");
     h_no_bkSyst->Draw("L SAME");
-    //h_uniform_rebinSyst->Draw("L SAME");
+    h_uniform_rebinSyst->Draw("L SAME");
     h_mass_rangeSyst->Draw("L SAME");
 
     // Add legend
@@ -187,7 +187,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     legend->AddEntry(h_tnpDSyst, "tnpD", "L");
     legend->AddEntry(h_acooffSyst, "acooff", "L");
     legend->AddEntry(h_no_bkSyst, "bk_off", "L");
-    //legend->AddEntry(h_uniform_rebinSyst, "Uniform rebin", "L");
+    legend->AddEntry(h_uniform_rebinSyst, "Uniform rebin", "L");
     legend->AddEntry(h_mass_rangeSyst, "Mass range", "L");
     legend->SetTextSize(0.03);              // Set text size
     legend->SetTextFont(42);                // Use a modern, clean font

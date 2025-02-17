@@ -371,19 +371,10 @@ TGraphErrors *getdiffplot(TGraphErrors *HI_PP, int typeofsystematic = 0)
         err_y = HI_PP->GetErrorY(i);
 
         xVals[i] = x;
-        yVals[i] = y - y_last; // Difference calculation
+        yVals[i] = y - y_last;
 
-        // Default error: quadratic sum
-        /*if (g == 2) // Special case for g3
-        {
-            yErrs[i] = fabs(err_y - err_y_last); // Example: Direct difference in error
-        }*/
-        /*else
-        {
-
-        }*/
         yErrs[i] = sqrt(err_y * err_y + err_y_last * err_y_last); // Quadratic sum
-        xErrs[i] = err_x;                                         // Assume no change in x error
+        xErrs[i] = err_x;
     }
     TGraphErrors *g_diff = new TGraphErrors(nPoints, xVals, yVals, xErrs, yErrs);
     return g_diff;
@@ -623,39 +614,70 @@ void get_systematic()
     c_pp_Eta_dM->SaveAs("./systematic/pp_Eta_dM.png");
     c_pp_Eta_dW->SaveAs("./systematic/pp_Eta_dW.png");
 
-    TFile *nominal_syst = new TFile("./nominal_syst_tgraph.root","RECREATE");
+    TFile *nominal_syst = new TFile("./nominal_syst_tgraph.root", "RECREATE");
     nominal_syst->cd();
 
-    HI_sub_pp_dM_chi2_raw_nominal->Write("HI_sub_pp_dM_chi2_raw_nominal",2);
-    HI_sub_pp_dM_chi2_raw_tnpU->Write("HI_sub_pp_dM_chi2_raw_tnpU",2);
-    HI_sub_pp_dM_chi2_raw_tnpD->Write("HI_sub_pp_dM_chi2_raw_tnpD",2);
-    HI_sub_pp_dM_chi2_raw_acooff->Write("HI_sub_pp_dM_chi2_raw_acooff",2);
-    HI_sub_pp_dM_chi2_raw_nominal_no_bk->Write("HI_sub_pp_dM_chi2_raw_nominal_no_bk",2);
-    HI_sub_pp_dM_chi2_raw_nominal_uniform_rebin->Write("HI_sub_pp_dM_chi2_raw_nominal_uniform_rebin",2);
-    HI_sub_pp_dM_chi2_raw_nominal_mass_range->Write("HI_sub_pp_dM_chi2_raw_nominal_mass_range",2);
+    HI_sub_pp_dM_chi2_raw_nominal->Write("HI_sub_pp_dM_chi2_raw_nominal", 2);
+    HI_sub_pp_dM_chi2_raw_tnpU->Write("HI_sub_pp_dM_chi2_raw_tnpU", 2);
+    HI_sub_pp_dM_chi2_raw_tnpD->Write("HI_sub_pp_dM_chi2_raw_tnpD", 2);
+    HI_sub_pp_dM_chi2_raw_acooff->Write("HI_sub_pp_dM_chi2_raw_acooff", 2);
+    HI_sub_pp_dM_chi2_raw_nominal_no_bk->Write("HI_sub_pp_dM_chi2_raw_nominal_no_bk", 2);
+    HI_sub_pp_dM_chi2_raw_nominal_uniform_rebin->Write("HI_sub_pp_dM_chi2_raw_nominal_uniform_rebin", 2);
+    HI_sub_pp_dM_chi2_raw_nominal_mass_range->Write("HI_sub_pp_dM_chi2_raw_nominal_mass_range", 2);
 
-    HI_sub_pp_dWidth_chi2_raw_nominal->Write("HI_sub_pp_dWidth_chi2_raw_nominal",2);
-    HI_sub_pp_dWidth_chi2_raw_tnpU->Write("HI_sub_pp_dWidth_chi2_raw_tnpU",2);
-    HI_sub_pp_dWidth_chi2_raw_tnpD->Write("HI_sub_pp_dWidth_chi2_raw_tnpD",2);
-    HI_sub_pp_dWidth_chi2_raw_acooff->Write("HI_sub_pp_dWidth_chi2_raw_acooff",2);
-    HI_sub_pp_dWidth_chi2_raw_nominal_no_bk->Write("HI_sub_pp_dWidth_chi2_raw_nominal_no_bk",2);
-    HI_sub_pp_dWidth_chi2_raw_nominal_uniform_rebin->Write("HI_sub_pp_dWidth_chi2_raw_nominal_uniform_rebin",2);
-    HI_sub_pp_dWidth_chi2_raw_nominal_mass_range->Write("HI_sub_pp_dWidth_chi2_raw_nominal_mass_range",2);
+    HI_pp_dM_chi2_raw_nominal->Write("HI_pp_dM_chi2_raw_nominal", 2);
+    HI_pp_dM_chi2_raw_tnpU->Write("HI_pp_dM_chi2_raw_tnpU", 2);
+    HI_pp_dM_chi2_raw_tnpD->Write("HI_pp_dM_chi2_raw_tnpD", 2);
+    HI_pp_dM_chi2_raw_acooff->Write("HI_pp_dM_chi2_raw_acooff", 2);
+    HI_pp_dM_chi2_raw_nominal_no_bk->Write("HI_pp_dM_chi2_raw_nominal_no_bk", 2);
+    HI_pp_dM_chi2_raw_nominal_uniform_rebin->Write("HI_pp_dM_chi2_raw_nominal_uniform_rebin", 2);
+    HI_pp_dM_chi2_raw_nominal_mass_range->Write("HI_pp_dM_chi2_raw_nominal_mass_range", 2);
 
-    HI_sub_pp_dM_chi2_eta_nominal->Write("HI_sub_pp_dM_chi2_eta_nominal",2);
-    HI_sub_pp_dM_chi2_eta_tnpU->Write("HI_sub_pp_dM_chi2_eta_tnpU",2);
-    HI_sub_pp_dM_chi2_eta_tnpD->Write("HI_sub_pp_dM_chi2_eta_tnpD",2);
-    HI_sub_pp_dM_chi2_eta_acooff->Write("HI_sub_pp_dM_chi2_eta_acooff",2);
-    HI_sub_pp_dM_chi2_eta_nominal_no_bk->Write("HI_sub_pp_dM_chi2_eta_nominal_no_bk",2);
-    HI_sub_pp_dM_chi2_eta_nominal_uniform_rebin->Write("HI_sub_pp_dM_chi2_eta_nominal_uniform_rebin",2);
-    HI_sub_pp_dM_chi2_eta_nominal_mass_range->Write("HI_sub_pp_dM_chi2_eta_nominal_mass_range",2);
+    HI_sub_pp_dWidth_chi2_raw_nominal->Write("HI_sub_pp_dWidth_chi2_raw_nominal", 2);
+    HI_sub_pp_dWidth_chi2_raw_tnpU->Write("HI_sub_pp_dWidth_chi2_raw_tnpU", 2);
+    HI_sub_pp_dWidth_chi2_raw_tnpD->Write("HI_sub_pp_dWidth_chi2_raw_tnpD", 2);
+    HI_sub_pp_dWidth_chi2_raw_acooff->Write("HI_sub_pp_dWidth_chi2_raw_acooff", 2);
+    HI_sub_pp_dWidth_chi2_raw_nominal_no_bk->Write("HI_sub_pp_dWidth_chi2_raw_nominal_no_bk", 2);
+    HI_sub_pp_dWidth_chi2_raw_nominal_uniform_rebin->Write("HI_sub_pp_dWidth_chi2_raw_nominal_uniform_rebin", 2);
+    HI_sub_pp_dWidth_chi2_raw_nominal_mass_range->Write("HI_sub_pp_dWidth_chi2_raw_nominal_mass_range", 2);
 
-    HI_sub_pp_dWidth_chi2_eta_nominal->Write("HI_sub_pp_dWidth_chi2_eta_nominal",2);
-    HI_sub_pp_dWidth_chi2_eta_tnpU->Write("HI_sub_pp_dWidth_chi2_eta_tnpU",2);
-    HI_sub_pp_dWidth_chi2_eta_tnpD->Write("HI_sub_pp_dWidth_chi2_eta_tnpD",2);
-    HI_sub_pp_dWidth_chi2_eta_acooff->Write("HI_sub_pp_dWidth_chi2_eta_acooff",2);
-    HI_sub_pp_dWidth_chi2_eta_nominal_no_bk->Write("HI_sub_pp_dWidth_chi2_eta_nominal_no_bk",2);
-    HI_sub_pp_dWidth_chi2_eta_nominal_uniform_rebin->Write("HI_sub_pp_dWidth_chi2_eta_nominal_uniform_rebin",2);
-    HI_sub_pp_dWidth_chi2_eta_nominal_mass_range->Write("HI_sub_pp_dWidth_chi2_eta_nominal_mass_range",2);
+    HI_pp_dWidth_chi2_raw_nominal->Write("HI_pp_dWidth_chi2_raw_nominal", 2);
+    HI_pp_dWidth_chi2_raw_tnpU->Write("HI_pp_dWidth_chi2_raw_tnpU", 2);
+    HI_pp_dWidth_chi2_raw_tnpD->Write("HI_pp_dWidth_chi2_raw_tnpD", 2);
+    HI_pp_dWidth_chi2_raw_acooff->Write("HI_pp_dWidth_chi2_raw_acooff", 2);
+    HI_pp_dWidth_chi2_raw_nominal_no_bk->Write("HI_pp_dWidth_chi2_raw_nominal_no_bk", 2);
+    HI_pp_dWidth_chi2_raw_nominal_uniform_rebin->Write("HI_pp_dWidth_chi2_raw_nominal_uniform_rebin", 2);
+    HI_pp_dWidth_chi2_raw_nominal_mass_range->Write("HI_pp_dWidth_chi2_raw_nominal_mass_range", 2);
 
+    HI_sub_pp_dM_chi2_eta_nominal->Write("HI_sub_pp_dM_chi2_eta_nominal", 2);
+    HI_sub_pp_dM_chi2_eta_tnpU->Write("HI_sub_pp_dM_chi2_eta_tnpU", 2);
+    HI_sub_pp_dM_chi2_eta_tnpD->Write("HI_sub_pp_dM_chi2_eta_tnpD", 2);
+    HI_sub_pp_dM_chi2_eta_acooff->Write("HI_sub_pp_dM_chi2_eta_acooff", 2);
+    HI_sub_pp_dM_chi2_eta_nominal_no_bk->Write("HI_sub_pp_dM_chi2_eta_nominal_no_bk", 2);
+    HI_sub_pp_dM_chi2_eta_nominal_uniform_rebin->Write("HI_sub_pp_dM_chi2_eta_nominal_uniform_rebin", 2);
+    HI_sub_pp_dM_chi2_eta_nominal_mass_range->Write("HI_sub_pp_dM_chi2_eta_nominal_mass_range", 2);
+
+    HI_pp_dM_chi2_eta_nominal->Write("HI_pp_dM_chi2_eta_nominal", 2);
+    HI_pp_dM_chi2_eta_tnpU->Write("HI_pp_dM_chi2_eta_tnpU", 2);
+    HI_pp_dM_chi2_eta_tnpD->Write("HI_pp_dM_chi2_eta_tnpD", 2);
+    HI_pp_dM_chi2_eta_acooff->Write("HI_pp_dM_chi2_eta_acooff", 2);
+    HI_pp_dM_chi2_eta_nominal_no_bk->Write("HI_pp_dM_chi2_eta_nominal_no_bk", 2);
+    HI_pp_dM_chi2_eta_nominal_uniform_rebin->Write("HI_pp_dM_chi2_eta_nominal_uniform_rebin", 2);
+    HI_pp_dM_chi2_eta_nominal_mass_range->Write("HI_pp_dM_chi2_eta_nominal_mass_range", 2);
+
+    HI_sub_pp_dWidth_chi2_eta_nominal->Write("HI_sub_pp_dWidth_chi2_eta_nominal", 2);
+    HI_sub_pp_dWidth_chi2_eta_tnpU->Write("HI_sub_pp_dWidth_chi2_eta_tnpU", 2);
+    HI_sub_pp_dWidth_chi2_eta_tnpD->Write("HI_sub_pp_dWidth_chi2_eta_tnpD", 2);
+    HI_sub_pp_dWidth_chi2_eta_acooff->Write("HI_sub_pp_dWidth_chi2_eta_acooff", 2);
+    HI_sub_pp_dWidth_chi2_eta_nominal_no_bk->Write("HI_sub_pp_dWidth_chi2_eta_nominal_no_bk", 2);
+    HI_sub_pp_dWidth_chi2_eta_nominal_uniform_rebin->Write("HI_sub_pp_dWidth_chi2_eta_nominal_uniform_rebin", 2);
+    HI_sub_pp_dWidth_chi2_eta_nominal_mass_range->Write("HI_sub_pp_dWidth_chi2_eta_nominal_mass_range", 2);
+
+    HI_pp_dWidth_chi2_eta_nominal->Write("HI_pp_dWidth_chi2_eta_nominal", 2);
+    HI_pp_dWidth_chi2_eta_tnpU->Write("HI_pp_dWidth_chi2_eta_tnpU", 2);
+    HI_pp_dWidth_chi2_eta_tnpD->Write("HI_pp_dWidth_chi2_eta_tnpD", 2);
+    HI_pp_dWidth_chi2_eta_acooff->Write("HI_pp_dWidth_chi2_eta_acooff", 2);
+    HI_pp_dWidth_chi2_eta_nominal_no_bk->Write("HI_pp_dWidth_chi2_eta_nominal_no_bk", 2);
+    HI_pp_dWidth_chi2_eta_nominal_uniform_rebin->Write("HI_pp_dWidth_chi2_eta_nominal_uniform_rebin", 2);
+    HI_pp_dWidth_chi2_eta_nominal_mass_range->Write("HI_pp_dWidth_chi2_eta_nominal_mass_range", 2);
 }

@@ -7,7 +7,7 @@ class chisquaretest : public plotting_helper
 public:
 	chisquaretest();
 	chisquaretest(TString s2, TString s3, int type, bool iseta, TString s4);
-	chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta);
+	chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta, TString s4);
 	~chisquaretest();
 	Double_t myownfunctionchi2(TH1D *h1, TH1D *h2);
 	void calculatechisq(bool isbk, bool iszoomin = 0);
@@ -34,6 +34,7 @@ public:
 	TH1D *reducebin(TH1D *h_old_data, bool iseta, bool isleft);
 	TH1D *reducebinpp(TH1D *h_old_data, bool isleft);
 	void readlimit(int type, bool iseta, int cent);
+	void readlimitpp(int type, bool iseta);
 
 	static const int nbins_mass_shift = 42;
 	static const int nbins_smear = 42;
@@ -98,11 +99,13 @@ public:
 	Double_t contour_x_right_twosig_HI[6];
 
 	TH1D *h_mc_signal_pp[nbins_mass_shift][nbins_smear][23];
+	TH1D *h_mc_signal_pp_zoomin[nbins_mass_shift][nbins_smear];
 	TH1D *h_data_pp[23];
 	TH1D *h_mc_bk_pp;
 	TH1D *h_data_bksub_pp[23];
 
 	TH2D *h_chisquare_pp[23];
+	TH2D *h_chisquare_pp_zoomin;
 
 	Double_t dMass_pp[23];
 	Double_t dMass_Err_pp[23];
@@ -140,6 +143,7 @@ public:
 	TCanvas *c_data_data_bk[nbins_cent];
 
 	TCanvas *c_2d_chisquare_ndf_pp[23];
+	TCanvas *c_2d_chisquare_ndf_pp_zoomin;
 	TCanvas *c_data_mc_raw_pp[23];
 	TCanvas *c_data_data_bk_pp[23];
 
@@ -163,30 +167,47 @@ public:
 	double placeholder_mass_smear_array_low_zoomin;
 	double placeholder_mass_smear_array_high_zoomin;
 
+	double placeholder_pp_mass_shift_array_low_zoomin;
+	double placeholder_pp_mass_shift_array_high_zoomin;
+	double placeholder_pp_mass_smear_array_low_zoomin;
+	double placeholder_pp_mass_smear_array_high_zoomin;
+
+	// eta with bk
+
 	double eta_pp_mass_shift_low_with_bk = -0.14;
 	double eta_pp_mass_shift_high_with_bk = -0.06;
 	double eta_pp_smear_low_with_bk = 0.2;
 	double eta_pp_smear_high_with_bk = 0.32;
 
+	// eta without bk
+
 	double eta_pp_mass_shift_low_without_bk = -0.15;
-	double eta_pp_mass_shift_high_without_bk = -0.05;
+	double eta_pp_mass_shift_high_without_bk = -0.06;
 	double eta_pp_smear_low_without_bk = 0.23;
 	double eta_pp_smear_high_without_bk = 0.37;
+
+	// eta mass range
 
 	double eta_pp_mass_shift_low_mass_range = -0.14;
 	double eta_pp_mass_shift_high_mass_range = -0.07;
 	double eta_pp_smear_low_mass_range = 0.13;
 	double eta_pp_smear_high_mass_range = 0.25;
 
+	// raw with bk
+
 	double raw_pp_mass_shift_low_with_bk = -0.105;
 	double raw_pp_mass_shift_high_with_bk = -0.05;
 	double raw_pp_smear_low_with_bk = 0.2;
 	double raw_pp_smear_high_with_bk = 0.3;
 
-	double raw_pp_mass_shift_low_without_bk = -0.1;
+	// raw without bk
+
+	double raw_pp_mass_shift_low_without_bk = -0.09;
 	double raw_pp_mass_shift_high_without_bk = -0.05;
-	double raw_pp_smear_low_without_bk = 0.25;
-	double raw_pp_smear_high_without_bk = 0.34;
+	double raw_pp_smear_low_without_bk = 0.28;
+	double raw_pp_smear_high_without_bk = 0.36;
+
+	// raw mass range
 
 	double raw_pp_mass_shift_low_mass_range = -0.1;
 	double raw_pp_mass_shift_high_mass_range = -0.05;
@@ -391,7 +412,7 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 	}
 }
 
-chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta, TString s4)
 {
 
 	// type 1 = nominal
@@ -399,16 +420,20 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 	// type 3 = tnpD
 	// type 4 = Acooff
 	// type 5 = Nominal_no_bk
+	// type 6 = rebinned
+	// type 7 = massrange
 
 	mcfilepath = s1;
 	datafilepath = s2;
 	bkfilepath = s3;
+	TString mcfile_zoomin_path = s4;
 
 	cout << "mcfilepath is " << mcfilepath << endl;
 
 	mcfile = new TFile(mcfilepath, "READ");
 	datafile = new TFile(datafilepath, "READ");
 	bkfile = new TFile(bkfilepath, "READ");
+	mcfile_zoomin = new TFile(mcfile_zoomin_path, "READ");
 
 	if (iseta)
 	{
@@ -465,6 +490,15 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 	this->h_low_smear = lowbin_smear - ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 	this->h_high_smear = highbin_smear + ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 
+	readlimitpp(type, iseta);
+
+	double h_low_mass_shift_zoomin = placeholder_pp_mass_shift_array_low_zoomin - ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
+	double h_high_mass_shift_zoomin = placeholder_pp_mass_shift_array_high_zoomin + ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
+	double h_low_smear_zoomin = placeholder_pp_mass_smear_array_low_zoomin - ((placeholder_pp_mass_smear_array_high_zoomin - placeholder_pp_mass_smear_array_low_zoomin) / (nbins_smear - 1)) / 2;
+	double h_high_smear_zoomin = placeholder_pp_mass_smear_array_high_zoomin + ((placeholder_pp_mass_smear_array_high_zoomin - placeholder_pp_mass_smear_array_low_zoomin) / (nbins_smear - 1)) / 2;
+
+	cout << "x low is " << h_low_mass_shift_zoomin << "x high is " << h_high_mass_shift_zoomin << "y low is " << h_low_smear_zoomin << "y high is " << h_high_smear_zoomin << endl;
+
 	h_mc_bk_pp = (TH1D *)bkfile->Get("Normalized_mc_bk_10");
 
 	for (int i = 0; i < nbins_smear; i++)
@@ -476,6 +510,10 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 
 	for (int runperiod = 0; runperiod < 23; runperiod++)
 	{
+		if (runperiod == 22)
+		{
+			c_2d_chisquare_ndf_pp_zoomin = new TCanvas(Form("c_2d_chisquare_ndf_pp_zoomin_%i", 22), "", 3200, 2400);
+		}
 		c_2d_chisquare_ndf_pp[runperiod] = new TCanvas(Form("c_2d_chisquare_ndf_pp_%i", runperiod), "", 3200, 2400);
 		c_data_mc_raw_pp[runperiod] = new TCanvas(Form("c_data_mc_raw_pp_%i", runperiod), "", 800, 600);
 		c_data_data_bk_pp[runperiod] = new TCanvas(Form("c_data_data_bk_pp_%i", runperiod), "", 800, 600);
@@ -571,6 +609,8 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 		}
 
 		h_chisquare_pp[runperiod] = new TH2D(Form("h_chisquare_pp_%i", runperiod), Form("h_chisquare_pp_%i", runperiod), nbins_mass_shift, h_low_mass_shift, h_high_mass_shift, nbins_smear, h_low_smear, h_high_smear);
+		if (runperiod == 22)
+			h_chisquare_pp_zoomin = new TH2D(Form("h_chisquare_pp_zoomin_%i", 22), "", nbins_mass_shift, h_low_mass_shift_zoomin, h_high_mass_shift_zoomin, nbins_smear, h_low_smear_zoomin, h_high_smear_zoomin);
 		this->areanormalize(h_data_pp[runperiod]);
 
 		h_data_bksub_pp[runperiod] = (TH1D *)h_data_pp[runperiod]->Clone();
@@ -589,11 +629,18 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 					if (iseta)
 					{
 						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, 10));
+						if (runperiod == 22)
+						{
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, 10));
+						}
 					}
 					if (!iseta)
 					{
 						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
-						// cout << "nbins is " << h_mc_signal_pp[shift][smear][runperiod]->GetNbinsX() << endl;
+						if (runperiod == 22)
+						{
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
+						}
 					}
 				}
 
@@ -602,10 +649,18 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 					if (iseta)
 					{
 						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_acooff_%i_%i_%i", shift, smear, 10));
+						if (runperiod == 22)
+						{
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_acooff_%i_%i_%i", shift, smear, 10));
+						}
 					}
 					if (!iseta)
 					{
 						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acooff_%i_%i_%i", shift, smear, 10));
+						if (runperiod == 22)
+						{
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acooff_%i_%i_%i", shift, smear, 10));
+						}
 					}
 				}
 				if (type == 7)
@@ -613,14 +668,26 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 					if (iseta)
 					{
 						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_mass_range_%i_%i_%i", shift, smear, 10));
+						if (runperiod == 22)
+						{
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_mass_range_%i_%i_%i", shift, smear, 10));
+						}
 					}
 					if (!iseta)
 					{
 						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, 10));
+						if (runperiod == 22)
+						{
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, 10));
+						}
 					}
 				}
 
 				this->areanormalize(h_mc_signal_pp[shift][smear][runperiod]);
+				if (runperiod == 22)
+				{
+					this->areanormalize(h_mc_signal_pp_zoomin[shift][smear]);
+				}
 			}
 		}
 	}
@@ -661,7 +728,7 @@ void chisquaretest::calculatechisq(bool isbk, bool iszoomin = 0)
 						chisquarevalue = myownfunctionchi2(h_data[cent], h_mc_signal_zoomin[shift][smear][cent]);
 				}
 				std::ostringstream stream;
-				stream << std::fixed << std::setprecision(2) << chisquarevalue;
+				stream << std::fixed << std::setprecision(4) << chisquarevalue;
 				double formattedBinContent = std::stod(stream.str());
 				if (!iszoomin)
 					h_chisquare[cent]->SetBinContent(shift + 1, smear + 1, formattedBinContent);
@@ -682,15 +749,40 @@ void chisquaretest::calculatechisqpp(bool isbk)
 			for (int smear = 0; smear < nbins_smear; smear++)
 			{
 				double chisquarevalue = 0;
+				double chisquarevalue_zoomin = 0;
 				if (isbk)
+				{
 					chisquarevalue = myownfunctionchi2(h_data_bksub_pp[runperiod], h_mc_signal_pp[shift][smear][runperiod]);
+					if (runperiod == 22)
+					{
+						chisquarevalue_zoomin = myownfunctionchi2(h_data_bksub_pp[22], h_mc_signal_pp_zoomin[shift][smear]);
+					}
+				}
+
 				if (!isbk)
+				{
 					chisquarevalue = myownfunctionchi2(h_data_pp[runperiod], h_mc_signal_pp[shift][smear][runperiod]);
 
+					if (runperiod == 22)
+					{
+						chisquarevalue_zoomin = myownfunctionchi2(h_data_pp[22], h_mc_signal_pp_zoomin[shift][smear]);
+					}
+				}
+
 				std::ostringstream stream;
-				stream << std::fixed << std::setprecision(2) << chisquarevalue;
+				std::ostringstream stream_zoomin;
+
+				stream << std::fixed << std::setprecision(4) << chisquarevalue;
+				stream_zoomin << std::fixed << std::setprecision(4) << chisquarevalue_zoomin;
+
 				double formattedBinContent = std::stod(stream.str());
+				double formattedBinContent_zoomin = std::stod(stream_zoomin.str());
 				h_chisquare_pp[runperiod]->SetBinContent(shift + 1, smear + 1, formattedBinContent);
+
+				if (runperiod == 22)
+				{
+					h_chisquare_pp_zoomin->SetBinContent(shift + 1, smear + 1, formattedBinContent_zoomin);
+				}
 			}
 		}
 	}
@@ -1104,7 +1196,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		h_chisquare_zoomin[cent]->SetTitle(Form(chi2_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 		h_chisquare_zoomin[cent]->SetTitleFont(42);
 		h_chisquare_zoomin[cent]->Draw("COLZ");
-		// h_chisquare[cent]->Draw("TEXTSAME");
+		// h_chisquare_zoomin[cent]->Draw("TEXTSAME");
 		h_chisquare_zoomin[cent]->GetXaxis()->SetNdivisions(21, 0, 0);
 		h_chisquare_zoomin[cent]->GetYaxis()->SetNdivisions(21, 0, 0);
 		h_chisquare_zoomin[cent]->GetXaxis()->SetLabelSize(0.02); // Change this value to make the labels smaller
@@ -1429,6 +1521,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 
 	TString chi2_title;
 	TString chi2_saving_path;
+	TString chi2_saving_path_zoomin;
 	TString data_mc_title;
 	TString data_data_title;
 	TString data_mc_saving_path;
@@ -1450,6 +1543,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Eta_Nominal_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal/Eta_Nominal_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Nominal/Eta_Nominal_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal/Eta_Nominal_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/eta/Eta_Nominal_%i.png";
 			contour_saving_path = "./chi2pp/contour/eta/Eta_Nominal_%i.png";
@@ -1461,6 +1555,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Raw_Nominal_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal/Raw_Nominal_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Nominal/Raw_Nominal_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal/Raw_Nominal_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/raw/Raw_Nominal_%i.png";
 			contour_saving_path = "./chi2pp/contour/raw/raw_Nominal_%i.png";
@@ -1474,8 +1569,9 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_mc_title = "Eta, tnpU, Period: (%i)";
 			data_data_title = "Eta_tnpU_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/tnpU/Raw_tnpU_%i.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/tnpU/Raw_tnpU_%i.png";
+			chi2_saving_path = "./chi2pp/chi2plots/eta/tnpU/Eta_tnpU_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/tnpU/Eta_tnpU_zoomin.png";
+			data_mc_saving_path = "./chi2pp/datamc/eta/tnpU/Eta_tnpU_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/eta/Eta_tnpU_%i.png";
 			contour_saving_path = "./chi2pp/contour/eta/Eta_tnpU_%i.png";
 		}
@@ -1486,6 +1582,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Raw_tnpU_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/raw/tnpU/Raw_tnpU_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/tnpU/Raw_tnpU_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/raw/tnpU/Raw_tnpU_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/raw/Raw_tnpU_%i.png";
 			contour_saving_path = "./chi2pp/contour/raw/raw_tnpU_%i.png";
@@ -1500,6 +1597,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Eta_tnpD_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/eta/tnpD/Eta_tnpD_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/tnpD/Eta_tnpD_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/eta/tnpD/Eta_tnpD_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/eta/Eta_tnpD_%i.png";
 			contour_saving_path = "./chi2pp/contour/eta/eta_tnpD_%i.png";
@@ -1511,6 +1609,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Raw_tnpD_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/raw/tnpD/Raw_tnpD_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/tnpD/Raw_tnpD_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/raw/tnpD/Raw_tnpD_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/raw/Raw_tnpD_%i.png";
 			contour_saving_path = "./chi2pp/contour/raw/raw_tnpD_%i.png";
@@ -1525,6 +1624,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Eta_Acooff_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/eta/Acooff/Eta_Acooff_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Acooff/Eta_Acooff_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/eta/Acooff/Eta_Acooff_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/eta/Eta_Acooff_%i.png";
 			contour_saving_path = "./chi2pp/contour/eta/Eta_Acooff_%i.png";
@@ -1536,6 +1636,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Raw_Acooff_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/raw/Acooff/Raw_Acooff_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Acooff/Raw_Acooff_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/raw/Acooff/Raw_Acooff_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/raw/Raw_Acooff_%i.png";
 			contour_saving_path = "./chi2pp/contour/raw/raw_Acooff_%i.png";
@@ -1551,6 +1652,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Eta_Nominal_no_bk_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal_no_bk/Eta_nominal_no_bk_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Nominal_no_bk/Eta_nominal_no_bk_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal_no_bk/Eta_nominal_no_bk_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/eta/Eta_nominal_no_bk_%i.png";
 			contour_saving_path = "./chi2pp/contour/eta/Eta_nominal_no_bk_%i.png";
@@ -1562,6 +1664,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Raw_Nominal_no_bk_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/raw/Raw_nominal_no_bk_%i.png";
 			contour_saving_path = "./chi2pp/contour/raw/raw_nominal_no_bk_%i.png";
@@ -1577,6 +1680,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Eta_Nominal_uniform_rebin_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/eta/Eta_nominal_uniform_rebin_%i.png";
 			contour_saving_path = "./chi2pp/contour/eta/Eta_nominal_uniform_rebin_%i.png";
@@ -1588,6 +1692,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Raw_Nominal_uniform_rebin_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/raw/Raw_nominal_uniform_rebin_%i.png";
 			contour_saving_path = "./chi2pp/contour/raw/raw_nominal_uniform_rebin_%i.png";
@@ -1603,6 +1708,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Eta_Nominal_mass_range_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal_mass_range/Eta_nominal_mass_range_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Nominal_mass_range/Eta_nominal_mass_range_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal_mass_range/Eta_nominal_mass_range_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/eta/Eta_nominal_mass_range_%i.png";
 			contour_saving_path = "./chi2pp/contour/eta/Eta_nominal_mass_range_%i.png";
@@ -1614,6 +1720,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			data_data_title = "Raw_Nominal_mass_range_%i";
 
 			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_zoomin.png";
 			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal_mass_range/Raw_nominal_mass_range_%i.png";
 			data_data_saving_path = "./chi2pp/datadata/raw/Raw_nominal_mass_range_%i.png";
 			contour_saving_path = "./chi2pp/contour/raw/raw_nominal_mass_range_%i.png";
@@ -1670,17 +1777,6 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			}
 		}
 
-		Double_t xMin = h_chisquare_pp[runperiod]->GetXaxis()->GetBinLowEdge(minBinX);
-		Double_t xMax = h_chisquare_pp[runperiod]->GetXaxis()->GetBinUpEdge(minBinX);
-		Double_t yMin = h_chisquare_pp[runperiod]->GetYaxis()->GetBinLowEdge(minBinY);
-		Double_t yMax = h_chisquare_pp[runperiod]->GetYaxis()->GetBinUpEdge(minBinY);
-
-		Double_t xCenter = h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX);
-		Double_t yCenter = h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY);
-
-		dMass_pp[runperiod] = xCenter;
-		dWidth_pp[runperiod] = yCenter;
-
 		// This is to export minimum region
 		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, type, iseta, runperiod, 3, true);
 
@@ -1695,6 +1791,14 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 		TString T_chi2_title = Form(chi2_title, runperiod);
 
 		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, iseta, true, T_chi2_title, T_contour_saving_path);
+
+		Double_t xMin = h_chisquare_pp[runperiod]->GetXaxis()->GetBinLowEdge(minBinX);
+		Double_t xMax = h_chisquare_pp[runperiod]->GetXaxis()->GetBinUpEdge(minBinX);
+		Double_t yMin = h_chisquare_pp[runperiod]->GetYaxis()->GetBinLowEdge(minBinY);
+		Double_t yMax = h_chisquare_pp[runperiod]->GetYaxis()->GetBinUpEdge(minBinY);
+
+		Double_t xCenter = h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX);
+		Double_t yCenter = h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY);
 
 		for (int nbinssmearing = 1; nbinssmearing <= nbins_smear; ++nbinssmearing)
 		{
@@ -1797,34 +1901,8 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 			box_twosig_right_2->Draw("same");
 		}
 
-		dMass_Err_pp[runperiod] = getuncertainty(h_chisquare_pp[runperiod], 1, minBinX, minBinY);
-		dWidth_Err_pp[runperiod] = getuncertainty(h_chisquare_pp[runperiod], 2, minBinX, minBinY);
-
 		double x_cross = 0;
 		double y_cross = 0;
-
-		x_cross = dMass_Err_pp[runperiod];
-		y_cross = dWidth_Err_pp[runperiod];
-
-		TMarker *marker_L = new TMarker(h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX) - x_cross, h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY), 29); // Marker type 29 (big star)
-		marker_L->SetMarkerColor(kRed);
-		marker_L->SetMarkerSize(5.5);
-		marker_L->Draw("same");
-
-		TMarker *marker_R = new TMarker(h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX) + x_cross, h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY), 29); // Marker type 29 (big star)
-		marker_R->SetMarkerColor(kRed);
-		marker_R->SetMarkerSize(5.5);
-		marker_R->Draw("same");
-
-		TMarker *marker_T = new TMarker(h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX), h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY) - y_cross, 29); // Marker type 29 (big star)
-		marker_T->SetMarkerColor(kRed);
-		marker_T->SetMarkerSize(5.5);
-		marker_T->Draw("same");
-
-		TMarker *marker_B = new TMarker(h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX), h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY) + y_cross, 29); // Marker type 29 (big star)
-		marker_B->SetMarkerColor(kRed);
-		marker_B->SetMarkerSize(5.5);
-		marker_B->Draw("same");
 
 		TBox *box1 = new TBox(xMin, yMin, xMax, yMax);
 		box1->SetLineColor(kRed);
@@ -1832,7 +1910,154 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 		box1->SetFillStyle(0);
 		box1->Draw("same");
 
+		if (runperiod == 22)
+		{
+			c_2d_chisquare_ndf_pp_zoomin->cd();
+			gStyle->SetPalette(kRainBow);
+			h_chisquare_pp_zoomin->SetTitle(Form(chi2_title, runperiod));
+			h_chisquare_pp_zoomin->SetTitleFont(42);
+			h_chisquare_pp_zoomin->Draw("COLZ");
+			// h_chisquare_pp[runperiod]->Draw("TEXTSAME");
+			h_chisquare_pp_zoomin->GetXaxis()->SetNdivisions(21, 0, 0);
+			h_chisquare_pp_zoomin->GetYaxis()->SetNdivisions(21, 0, 0);
+			h_chisquare_pp_zoomin->GetXaxis()->SetLabelSize(0.02); // Change this value to make the labels smaller
+			h_chisquare_pp_zoomin->GetYaxis()->SetLabelSize(0.02);
+			h_chisquare_pp_zoomin->GetXaxis()->SetTitle("Mass Shifted Amount (GeV)");
+			h_chisquare_pp_zoomin->GetYaxis()->SetTitle("Width Smeared Amount (GeV)");
+
+			for (int j = 1; j <= nbins_mass_shift; j++)
+			{
+				for (int k = 1; k <= nbins_smear; k++)
+				{
+					double xlow = h_chisquare_pp_zoomin->GetXaxis()->GetBinLowEdge(k);
+					double xup = h_chisquare_pp_zoomin->GetXaxis()->GetBinUpEdge(k);
+					double ylow = h_chisquare_pp_zoomin->GetYaxis()->GetBinLowEdge(j);
+					double yup = h_chisquare_pp_zoomin->GetYaxis()->GetBinUpEdge(j);
+
+					TBox *box = new TBox(xlow, ylow, xup, yup);
+					box->SetFillStyle(0);	   // No fill
+					box->SetLineColor(kBlack); // Black border
+					box->SetLineWidth(1);	   // Border width
+
+					box->Draw("same");
+				}
+			}
+
+			Int_t minBinX_zoomin = -1, minBinY_zoomin = -1;
+			Double_t minContent_zoomin = h_chisquare_pp_zoomin->GetMaximum();
+
+			for (Int_t binX = 1; binX <= h_chisquare_pp_zoomin->GetNbinsX(); ++binX)
+			{
+				for (Int_t binY = 1; binY <= h_chisquare_pp_zoomin->GetNbinsY(); ++binY)
+				{
+					Double_t content = h_chisquare_pp_zoomin->GetBinContent(binX, binY);
+					if (content < minContent_zoomin)
+					{
+						minContent_zoomin = content;
+						minBinX_zoomin = binX;
+						minBinY_zoomin = binY;
+					}
+				}
+			}
+
+			Double_t xMin_zoomin = h_chisquare_pp_zoomin->GetXaxis()->GetBinLowEdge(minBinX_zoomin);
+			Double_t xMax_zoomin = h_chisquare_pp_zoomin->GetXaxis()->GetBinUpEdge(minBinX_zoomin);
+			Double_t yMin_zoomin = h_chisquare_pp_zoomin->GetYaxis()->GetBinLowEdge(minBinY_zoomin);
+			Double_t yMax_zoomin = h_chisquare_pp_zoomin->GetYaxis()->GetBinUpEdge(minBinY_zoomin);
+
+			Double_t xCenter_zoomin = h_chisquare_pp_zoomin->GetXaxis()->GetBinCenter(minBinX_zoomin);
+			Double_t yCenter_zoomin = h_chisquare_pp_zoomin->GetYaxis()->GetBinCenter(minBinY_zoomin);
+
+			TBox *box1_zoomin = new TBox(xMin_zoomin, yMin_zoomin, xMax_zoomin, yMax_zoomin);
+			box1_zoomin->SetLineColor(kRed);
+			box1_zoomin->SetLineWidth(4);
+			box1_zoomin->SetFillStyle(0);
+			box1_zoomin->Draw("same");
+
+			dMass_pp[22] = xCenter_zoomin;
+			dWidth_pp[22] = yCenter_zoomin;
+
+			// cout << "dWidth is " << dWidth_HI[cent + 1] << endl;
+
+			dMass_Err_pp[22] = getuncertainty(h_chisquare_pp[22], 1, minBinX, minBinY);
+			dWidth_Err_pp[22] = getuncertainty(h_chisquare_pp[22], 2, minBinX, minBinY);
+
+			double diffindM = xCenter_zoomin - xCenter;
+			dMass_Err_pp[22] = dMass_Err_pp[22] + diffindM;
+
+			double diffindW = yCenter_zoomin - yCenter;
+			dWidth_Err_pp[22] = dWidth_Err_pp[22] + diffindW;
+
+			x_cross = dMass_Err_pp[22];
+			y_cross = dWidth_Err_pp[22];
+
+			c_2d_chisquare_ndf_pp[22]->cd();
+
+			TMarker *marker_L = new TMarker(xCenter_zoomin - x_cross, yCenter_zoomin, 20); // Marker type 29 (big star)
+			marker_L->SetMarkerColor(kRed);
+			marker_L->SetMarkerSize(3.5);
+			marker_L->Draw("same");
+
+			TMarker *marker_R = new TMarker(xCenter_zoomin + x_cross, yCenter_zoomin, 20); // Marker type 29 (big star)
+			marker_R->SetMarkerColor(kRed);
+			marker_R->SetMarkerSize(3.5);
+			marker_R->Draw("same");
+
+			TMarker *marker_T = new TMarker(xCenter_zoomin, yCenter_zoomin - y_cross, 20); // Marker type 29 (big star)
+			marker_T->SetMarkerColor(kRed);
+			marker_T->SetMarkerSize(3.5);
+			marker_T->Draw("same");
+
+			TMarker *marker_B = new TMarker(xCenter_zoomin, yCenter_zoomin + y_cross, 20); // Marker type 29 (big star)
+			marker_B->SetMarkerColor(kRed);
+			marker_B->SetMarkerSize(3.5);
+			marker_B->Draw("same");
+
+			TMarker *marker_C = new TMarker(xCenter_zoomin, yCenter_zoomin, 20); // Marker type 29 (big star)
+			marker_C->SetMarkerColor(kRed);
+			marker_C->SetMarkerSize(3.5);
+			marker_C->Draw("same");
+		}
+		else
+		{
+
+			dMass_pp[runperiod] = xCenter;
+			dWidth_pp[runperiod] = yCenter;
+
+			dMass_Err_pp[runperiod] = getuncertainty(h_chisquare_pp[runperiod], 1, minBinX, minBinY);
+			dWidth_Err_pp[runperiod] = getuncertainty(h_chisquare_pp[runperiod], 2, minBinX, minBinY);
+
+			x_cross = dMass_Err_pp[runperiod];
+			y_cross = dWidth_Err_pp[runperiod];
+
+			c_2d_chisquare_ndf_pp[runperiod]->cd();
+
+			TMarker *marker_L = new TMarker(h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX) - x_cross, h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY), 29); // Marker type 29 (big star)
+			marker_L->SetMarkerColor(kRed);
+			marker_L->SetMarkerSize(5.5);
+			marker_L->Draw("same");
+
+			TMarker *marker_R = new TMarker(h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX) + x_cross, h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY), 29); // Marker type 29 (big star)
+			marker_R->SetMarkerColor(kRed);
+			marker_R->SetMarkerSize(5.5);
+			marker_R->Draw("same");
+
+			TMarker *marker_T = new TMarker(h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX), h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY) - y_cross, 29); // Marker type 29 (big star)
+			marker_T->SetMarkerColor(kRed);
+			marker_T->SetMarkerSize(5.5);
+			marker_T->Draw("same");
+
+			TMarker *marker_B = new TMarker(h_chisquare_pp[runperiod]->GetXaxis()->GetBinCenter(minBinX), h_chisquare_pp[runperiod]->GetYaxis()->GetBinCenter(minBinY) + y_cross, 29); // Marker type 29 (big star)
+			marker_B->SetMarkerColor(kRed);
+			marker_B->SetMarkerSize(5.5);
+			marker_B->Draw("same");
+		}
+
 		c_2d_chisquare_ndf_pp[runperiod]->SaveAs(Form(chi2_saving_path, runperiod));
+		if (runperiod == 22)
+		{
+			c_2d_chisquare_ndf_pp_zoomin->SaveAs(chi2_saving_path_zoomin);
+		}
 
 		// This is Data and MC
 
@@ -2189,7 +2414,10 @@ void chisquaretest::RebinAllpp(bool iseta, int type)
 					for (int smear = 0; smear < nbins_smear; smear++)
 					{
 						if (runperiod == 0)
+						{
+							h_mc_signal_pp_zoomin[shift][smear]->Rebin(4);
 							h_mc_signal_pp[shift][smear][runperiod]->Rebin(4);
+						}
 					}
 				}
 			}
@@ -2207,6 +2435,10 @@ void chisquaretest::RebinAllpp(bool iseta, int type)
 					for (int smear = 0; smear < nbins_smear; smear++)
 					{
 						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)h_mc_signal_pp[shift][smear][runperiod]->Rebin(nNewBins_mass_range, Form("modifiedmass_eta_without_eff_%i_%i_%i_new", shift, smear, runperiod), binEdgesArray_mass_range);
+						if (runperiod == 22)
+						{
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)h_mc_signal_pp_zoomin[shift][smear]->Rebin(nNewBins_mass_range, Form("modifiedmass_eta_without_eff_%i_%i_%i_zoomin", shift, smear, runperiod), binEdgesArray_mass_range);
+						}
 					}
 				}
 			}
@@ -2225,6 +2457,10 @@ void chisquaretest::RebinAllpp(bool iseta, int type)
 					{
 
 						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)h_mc_signal_pp[shift][smear][runperiod]->Rebin(nNewBins, Form("modifiedmass_eta_without_eff_%i_%i_%i_new", shift, smear, runperiod), binEdgesArray);
+						if (runperiod == 22)
+						{
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)h_mc_signal_pp_zoomin[shift][smear]->Rebin(nNewBins, Form("modifiedmass_eta_without_eff_%i_%i_%i_zoomin", shift, smear, runperiod), binEdgesArray);
+						}
 					}
 				}
 			}
@@ -2250,7 +2486,10 @@ void chisquaretest::RebinAllpp(bool iseta, int type)
 					{
 
 						if (runperiod == 0)
+						{
 							h_mc_signal_pp[shift][smear][runperiod]->Rebin(4);
+							h_mc_signal_pp_zoomin[shift][smear]->Rebin(4);
+						}
 					}
 				}
 			}
@@ -2982,6 +3221,29 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 	double y_low = hist->GetYaxis()->GetBinLowEdge(binY_low);
 	double y_high = hist->GetYaxis()->GetBinUpEdge(binY_high);
 
+	double x_min = hist->GetXaxis()->GetBinCenter(binX_min);
+	double y_min = hist->GetYaxis()->GetBinCenter(binY_min);
+
+	TMarker *marker_L = new TMarker(x_low, y_min, 20); // Marker type 29 (big star)
+	marker_L->SetMarkerColor(kGreen);
+	marker_L->SetMarkerSize(3.5);
+	marker_L->Draw("same");
+
+	TMarker *marker_R = new TMarker(x_high, y_min, 20); // Marker type 29 (big star)
+	marker_R->SetMarkerColor(kGreen);
+	marker_R->SetMarkerSize(3.5);
+	marker_R->Draw("same");
+
+	TMarker *marker_T = new TMarker(x_min, y_high, 20); // Marker type 29 (big star)
+	marker_T->SetMarkerColor(kGreen);
+	marker_T->SetMarkerSize(3.5);
+	marker_T->Draw("same");
+
+	TMarker *marker_B = new TMarker(x_min, y_low, 20); // Marker type 29 (big star)
+	marker_B->SetMarkerColor(kGreen);
+	marker_B->SetMarkerSize(3.5);
+	marker_B->Draw("same");
+
 	// Save to a file
 	TString txtname = "";
 	TString txtname_prefix = "";
@@ -3033,7 +3295,7 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 
 	std::ofstream outfile("./zoomin/" + txtname_prefix + anotherprefix + txtname + cent + ".txt");
 
-	outfile << std::fixed << std::setprecision(2); // Set fixed-point notation with 2 decimal places
+	outfile << std::fixed << std::setprecision(4); // Set fixed-point notation with 2 decimal places
 
 	outfile << "Local Minimum Bin: (" << binX_min << ", " << binY_min << ")\n";
 	outfile << "Region Size: " << region_size << "x" << region_size << "\n";
@@ -3210,4 +3472,54 @@ void chisquaretest::readlimit(int type, bool iseta, int cent)
 	placeholder_mass_shift_array_high_zoomin = ranges[1];
 	placeholder_mass_smear_array_low_zoomin = ranges[2];
 	placeholder_mass_smear_array_high_zoomin = ranges[3];
+}
+
+void chisquaretest::readlimitpp(int type, bool iseta)
+{
+	TString variation[7] = {"nominal", "tnpU", "tnpD", "acooff", "nominal_no_bk_sub", "nominal_binning", "nominal_range"};
+	TString filename = "";
+	TString type_str = "";
+	TString savedname = "";
+
+	if (iseta == 1)
+		type_str = "eta_";
+	if (iseta == 0)
+		type_str = "FA_";
+
+	filename = TString("./zoomin/") + TString("pp_") + type_str + variation[type - 1] + "_" + Form("%i.txt", 22);
+
+	std::ifstream file(filename);
+	if (!file)
+	{
+		std::cerr << "Error: Unable to open file " << filename << std::endl;
+		return;
+	}
+
+	std::vector<double> ranges(4); // Stores xmin, xmax, ymin, ymax
+	std::string line;
+
+	while (std::getline(file, line))
+	{
+		std::istringstream iss(line);
+		std::string key;
+		if (line.find("X-axis Range:") != std::string::npos)
+		{
+			char ch;
+			iss >> key >> key >> ch >> ranges[0] >> ch >> ranges[1]; // Extracts xmin, xmax
+		}
+		else if (line.find("Y-axis Range:") != std::string::npos)
+		{
+			char ch;
+			iss >> key >> key >> ch >> ranges[2] >> ch >> ranges[3]; // Extracts ymin, ymax
+		}
+	}
+
+	file.close();
+
+	// Debug print
+	std::cout << "Extracted ranges: [" << ranges[0] << ", " << ranges[1] << ", " << ranges[2] << ", " << ranges[3] << "]" << std::endl;
+	placeholder_pp_mass_shift_array_low_zoomin = ranges[0];
+	placeholder_pp_mass_shift_array_high_zoomin = ranges[1];
+	placeholder_pp_mass_smear_array_low_zoomin = ranges[2];
+	placeholder_pp_mass_smear_array_high_zoomin = ranges[3];
 }
