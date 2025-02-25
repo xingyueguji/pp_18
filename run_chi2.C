@@ -27,8 +27,14 @@ void run_chi2()
     newchisquaretest(6, 1);
     newchisquaretest(7, 1);*/
 
+    newchisquaretest(8, 0);
+    newchisquaretest(9, 0);
+    newchisquaretest(8, 1);
+    newchisquaretest(9, 1);
 
-    newchisquaretestpp(1, 0);
+
+
+    /*newchisquaretestpp(1, 0);
     newchisquaretestpp(2, 0);
     newchisquaretestpp(3, 0);
     newchisquaretestpp(4, 0);
@@ -43,7 +49,7 @@ void run_chi2()
     newchisquaretestpp(4, 1);
     newchisquaretestpp(5, 1);
     newchisquaretestpp(6, 1);
-    newchisquaretestpp(7, 1);
+    newchisquaretestpp(7, 1);*/
 
 
     cout << "Finished" << endl;

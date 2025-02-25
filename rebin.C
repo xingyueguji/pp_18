@@ -113,7 +113,7 @@ void ConvertToDNdx(TH1D* h2) {
 
 void rebin()
 {
-    TFile *f1 = new TFile("./data_file.root");
+    TFile *f1 = new TFile("../ZBoson_18/rootfile/data_file.root");
 
     Int_t cenlowlimit[11] = {0, 10, 20, 30, 30, 0, 15, 50, 0, 14, 0};
     Int_t cenhighlimit[11] = {10, 20, 30, 100, 50, 15, 100, 100, 14, 100, 100};
@@ -134,8 +134,8 @@ void rebin()
 
     for (int i = 0; i < 11; i++)
     {
-        mass_array_data_raw[i] = (TH1D *)f1->Get(Form("mass_array_data_%i", i));
-        mass_array_data_eta[i] = (TH1D *)f1->Get(Form("mass_array_data_witheta_%i", i));
+        mass_array_data_raw[i] = (TH1D *)f1->Get(Form("FA_nominal_%i", i));
+        mass_array_data_eta[i] = (TH1D *)f1->Get(Form("Eta_nominal_%i", i));
     }
 
     std::vector<double> newBinEdges_0_10 = createCustomBinning(mass_array_data_eta[0], 60, 76, 4, 76, 83, 2, 96, 102, 3, 102, 120, 18);
@@ -175,12 +175,12 @@ void rebin()
         c1->cd();
 
         mass_array_data_raw[i]->Draw("HIST");
-        mass_array_data_raw[i]->Draw("textsame");
+        //mass_array_data_raw[i]->Draw("textsame");
 
         c2->cd();
 
         mass_array_data_eta[i]->Draw("HIST");
-        mass_array_data_eta[i]->Draw("textsame");
+        //mass_array_data_eta[i]->Draw("textsame");
 
         c3->cd();
 
@@ -189,7 +189,7 @@ void rebin()
             h2[i] = (TH1D *)mass_array_data_eta[i]->Rebin(nNewBins[i], Form("mass_array_data_witheta_rebin_%i", i), binEdgesArray[i]);
             ConvertToDNdx(h2[i]);
             h2[i]->Draw("HIST");
-            h2[i]->Draw("textsame");
+            //h2[i]->Draw("textsame");
 
             cout << "# of bins - 2 - 1 for " << cenlowlimit[i] << " " << cenhighlimit[i] << " is " << h2[i]->GetNbinsX() - 3 << endl;
         }
@@ -198,7 +198,7 @@ void rebin()
             h2[i] = (TH1D *)mass_array_data_eta[i]->Rebin(nNewBins[5], Form("mass_array_data_witheta_rebin_%i", i), binEdgesArray[5]);
             ConvertToDNdx(h2[i]);
             h2[i]->Draw("HIST");
-            h2[i]->Draw("textsame");
+            //h2[i]->Draw("textsame");
 
             cout << "# of bins - 2 - 1 for " << cenlowlimit[i] << " " << cenhighlimit[i] << " is " << h2[i]->GetNbinsX() - 3 << endl;
         }

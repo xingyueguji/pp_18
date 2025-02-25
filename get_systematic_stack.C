@@ -111,7 +111,11 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     h_totalSyst->SetLineColor(kTeal); // Gray shaded region
     h_totalSyst->SetLineWidth(2);
     h_totalSyst->SetTitle("");
-    h_totalSyst->GetYaxis()->SetTitle("PbPb - pp Absolute Syst. Err (GeV)");
+    if (isdM)
+        h_totalSyst->GetYaxis()->SetTitle("M_{HI} - M_{pp} Uncertainty (GeV)");
+    if (!isdM)
+        h_totalSyst->GetYaxis()->SetTitle("#Gamma_{HI} - #Gamma_{pp} Uncertainty (GeV)");
+
     h_totalSyst->GetXaxis()->SetTitle("Centrality");
     h_totalSyst->GetXaxis()->SetLabelSize(0);
 
@@ -175,7 +179,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     h_tnpDSyst->Draw("L SAME");
     h_acooffSyst->Draw("L SAME");
     h_no_bkSyst->Draw("L SAME");
-    h_uniform_rebinSyst->Draw("L SAME");
+    // h_uniform_rebinSyst->Draw("L SAME");
     h_mass_rangeSyst->Draw("L SAME");
 
     // Add legend
@@ -187,7 +191,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     legend->AddEntry(h_tnpDSyst, "tnpD", "L");
     legend->AddEntry(h_acooffSyst, "acooff", "L");
     legend->AddEntry(h_no_bkSyst, "bk_off", "L");
-    legend->AddEntry(h_uniform_rebinSyst, "Uniform rebin", "L");
+    // legend->AddEntry(h_uniform_rebinSyst, "Uniform rebin", "L");
     legend->AddEntry(h_mass_rangeSyst, "Mass range", "L");
     legend->SetTextSize(0.03);              // Set text size
     legend->SetTextFont(42);                // Use a modern, clean font
@@ -196,6 +200,17 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     legend->SetLineWidth(0);                // Border line width
     legend->SetFillColorAlpha(kWhite, 0.1); // Background color with transparency
     legend->Draw("SAME");
+
+    TPaveText *pave = new TPaveText(0.25, 0.75, 0.35, 0.85, "NDC"); // Normalized coordinates
+    pave->SetFillColor(0);                                          // Transparent background
+    pave->SetBorderSize(0);                                         // No border
+    pave->SetTextSize(0.04);                                        // Adjust text size
+    pave->SetTextFont(42);                                          // CMS-like font
+    if (iseta)
+        pave->AddText("|#eta| < 1");
+    if (!iseta)
+        pave->AddText("|#eta| < 2.4");
+    pave->Draw("same");
 
     // Update canvas
     gPad->RedrawAxis();

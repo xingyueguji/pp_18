@@ -21,20 +21,20 @@ public:
 	void RebinAllpp(bool iseta, int x);
 	Double_t getuncertainty(TH2D *h_1, int type, Int_t minBinX, Int_t minBinY);
 	void getcontour(TH2D *h1, int type, Int_t minBinX, Int_t minBinY, Double_t minBinContent, Double_t *arrayleft, Double_t *arrayright);
-	void drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool iseta, bool ispp, TString contourtitle, TString contoursaving);
+	void drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool iseta, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0);
 	std::vector<double> createCustomBinning(
 		TH1D *hist,
 		double range1_min, double range1_max, int rebin1,
 		double range2_min, double range2_max, int rebin2,
 		double range3_min, double range3_max, int rebin3,
 		double range4_min = -1, double range4_max = -1, int rebin4 = 1);
-
 	Int_t mapthreecases(int type, bool isbk, bool iseff);
 	void saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, bool iseta, int iteration, int region_size = 3, bool ispp = true);
 	TH1D *reducebin(TH1D *h_old_data, bool iseta, bool isleft);
 	TH1D *reducebinpp(TH1D *h_old_data, bool isleft);
 	void readlimit(int type, bool iseta, int cent);
 	void readlimitpp(int type, bool iseta);
+	TH1D *ConvertToDNdx(TH1D *h2);
 
 	static const int nbins_mass_shift = 42;
 	static const int nbins_smear = 42;
@@ -162,15 +162,15 @@ public:
 	double raw_mass_smear_array_low[nbins_cent] = {0.05, 0.175, -0.1, 0.2, 0, 0, 0, 0, 0, 0, 0.22};
 	double raw_mass_smear_array_high[nbins_cent] = {0.4, 0.6, 0.4, 0.7, 0, 0, 0, 0, 0, 0, 0.45};
 
-	double placeholder_mass_shift_array_low_zoomin;
-	double placeholder_mass_shift_array_high_zoomin;
-	double placeholder_mass_smear_array_low_zoomin;
-	double placeholder_mass_smear_array_high_zoomin;
+	double placeholder_mass_shift_array_low_zoomin = 0;
+	double placeholder_mass_shift_array_high_zoomin = 0;
+	double placeholder_mass_smear_array_low_zoomin = 0;
+	double placeholder_mass_smear_array_high_zoomin = 0;
 
-	double placeholder_pp_mass_shift_array_low_zoomin;
-	double placeholder_pp_mass_shift_array_high_zoomin;
-	double placeholder_pp_mass_smear_array_low_zoomin;
-	double placeholder_pp_mass_smear_array_high_zoomin;
+	double placeholder_pp_mass_shift_array_low_zoomin = 0;
+	double placeholder_pp_mass_shift_array_high_zoomin = 0;
+	double placeholder_pp_mass_smear_array_low_zoomin = 0;
+	double placeholder_pp_mass_smear_array_high_zoomin = 0;
 
 	// eta with bk
 
@@ -351,6 +351,30 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 			}
 		}
 
+		if (type == 8)
+		{
+			if (iseta)
+			{
+				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_HF_up_%i", cent));
+			}
+			if (!iseta)
+			{
+				h_data[cent] = (TH1D *)datafile->Get(Form("FA_HF_up_%i", cent));
+			}
+		}
+
+		if (type == 9)
+		{
+			if (iseta)
+			{
+				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_HF_down_%i", cent));
+			}
+			if (!iseta)
+			{
+				h_data[cent] = (TH1D *)datafile->Get(Form("FA_HF_down_%i", cent));
+			}
+		}
+
 		h_mc_bk[cent] = (TH1D *)bkfile->Get(Form("Normalized_mc_bk_%i", cent));
 		h_chisquare[cent] = new TH2D(Form("h_chisquare_%i", cent), Form("Cent_%i_%i", this->cenlowlimit[cent], this->cenhighlimit[cent]), nbins_mass_shift, h_low_mass_shift, h_high_mass_shift, nbins_smear, h_low_smear, h_high_smear); // Equation here: half bin to the left and half bin to the right, bin width = range / (21-1)
 		h_chisquare_zoomin[cent] = new TH2D(Form("h_chisquare_%i_zoomin", cent), "", nbins_mass_shift, h_low_mass_shift_zoomin, h_high_mass_shift_zoomin, nbins_smear, h_low_smear_zoomin, h_high_smear_zoomin);
@@ -358,13 +382,15 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 		this->areanormalize(h_data[cent]);
 
 		h_data_bksub[cent] = (TH1D *)h_data[cent]->Clone();
+
 		h_data_bksub[cent]->Add(h_mc_bk[cent], -1);
+
 
 		for (int shift = 0; shift < nbins_mass_shift; shift++)
 		{
 			for (int smear = 0; smear < nbins_smear; smear++)
 			{
-				if (type == 1 || type == 2 || type == 3 || type == 5 || type == 6)
+				if (type == 1 || type == 2 || type == 3 || type == 5 || type == 6 || type == 8 || type == 9)
 				{
 					if (iseta)
 					{
@@ -997,6 +1023,62 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		}
 	}
 
+	if (type == 8)
+	{
+		if (iseta)
+		{
+			chi2_title = "PbPb, |#eta| < 1.0, HF up, centrality: (%i-%i)";
+			data_mc_title = "Eta cut, HF up, centrality: (%i-%i)";
+			data_data_title = "Eta_HF_up_%i_%i";
+
+			chi2_saving_path = "./newchi2/chi2plots/eta/HFup/Eta_HF_up_%i_%i.png";
+			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/HFup/Eta_HF_up_%i_%i_zoomin.png";
+			data_mc_saving_path = "./newchi2/datamc/eta/HFup/Eta_HF_up_%i_%i.png";
+			data_data_saving_path = "./newchi2/datadata/eta/Eta_HF_up_%i_%i.png";
+			contour_saving_path = "./newchi2/contour/eta/Eta_HF_up_%i_%i.png";
+		}
+		if (!iseta)
+		{
+			chi2_title = "PbPb, |#eta| < 2.4, HF up, centrality: (%i-%i)";
+			data_mc_title = "|#eta| < 2.4, HF up, centrality: (%i-%i)";
+			data_data_title = "Raw_HF_up_%i_%i";
+
+			chi2_saving_path = "./newchi2/chi2plots/raw/HFup/Raw_HF_up_%i_%i.png";
+			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/HFup/Raw_HF_up_%i_%i_zoomin.png";
+			data_mc_saving_path = "./newchi2/datamc/raw/HFup/Raw_HF_up_%i_%i.png";
+			data_data_saving_path = "./newchi2/datadata/raw/Raw_HF_up_%i_%i.png";
+			contour_saving_path = "./newchi2/contour/raw/Raw_HF_up_%i_%i.png";
+		}
+	}
+
+	if (type == 9)
+	{
+		if (iseta)
+		{
+			chi2_title = "PbPb, |#eta| < 1.0, HF down, centrality: (%i-%i)";
+			data_mc_title = "Eta cut, HF down, centrality: (%i-%i)";
+			data_data_title = "Eta_HF_down_%i_%i";
+
+			chi2_saving_path = "./newchi2/chi2plots/eta/HFdown/Eta_HF_down_%i_%i.png";
+			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/HFdown/Eta_HF_down_%i_%i_zoomin.png";
+			data_mc_saving_path = "./newchi2/datamc/eta/HFdown/Eta_HF_down_%i_%i.png";
+			data_data_saving_path = "./newchi2/datadata/eta/Eta_HF_down_%i_%i.png";
+			contour_saving_path = "./newchi2/contour/eta/Eta_HF_down_%i_%i.png";
+		}
+		if (!iseta)
+		{
+			chi2_title = "PbPb, |#eta| < 2.4, HF down, centrality: (%i-%i)";
+			data_mc_title = "|#eta| < 2.4, HF down, centrality: (%i-%i)";
+			data_data_title = "Raw_HF_down_%i_%i";
+
+			chi2_saving_path = "./newchi2/chi2plots/raw/HFdown/Raw_HF_down_%i_%i.png";
+			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/HFdown/Raw_HF_down_%i_%i_zoomin.png";
+			data_mc_saving_path = "./newchi2/datamc/raw/HFdown/Raw_HF_down_%i_%i.png";
+			data_data_saving_path = "./newchi2/datadata/raw/Raw_HF_down_%i_%i.png";
+			contour_saving_path = "./newchi2/contour/raw/Raw_HF_down_%i_%i.png";
+		}
+	}
+
 	for (int cent = 0; cent < nbins_cent; cent++)
 	{
 		if (!((cent < 4) || (cent == 10)))
@@ -1058,10 +1140,6 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		g_HI_contour_1sig_right = new TGraph(nbins_smear, contour_x_right_weighted_onesig, contour_y_HI[cent]);
 		g_HI_contour_2sig_left = new TGraph(nbins_smear, contour_x_left_weighted_twosig, contour_y_HI[cent]);
 		g_HI_contour_2sig_right = new TGraph(nbins_smear, contour_x_right_weighted_twosig, contour_y_HI[cent]);
-
-		bool iseta = false;
-		if (type == 1)
-			iseta = true;
 
 		TString T_contour_saving_path = Form(contour_saving_path, cenlowlimit[cent], cenhighlimit[cent]);
 		TString T_chi2_title = Form(chi2_title, cenlowlimit[cent], cenhighlimit[cent]);
@@ -1336,7 +1414,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			h_data_bksub[cent]->SetMarkerColor(kRed);
 			h_data_bksub[cent]->SetMarkerSize(1.5);
 			h_data_bksub[cent]->SetMarkerStyle(kFullCircle);
-			h_data_bksub[cent]->GetYaxis()->SetTitle("Normalized counts");
+			h_data_bksub[cent]->GetYaxis()->SetTitle("dN/dm");
 			h_data_bksub[cent]->GetXaxis()->SetTitle("m_{u^{+}u^{-}} (GeV)");
 
 			h_data_bksub[cent]->GetYaxis()->SetTitleFont(42);	// Times, bold
@@ -1348,11 +1426,14 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			h_data_bksub[cent]->GetXaxis()->SetTitleSize(0.05); // Title size
 			h_data_bksub[cent]->GetXaxis()->SetLabelSize(0.04); // Label size
 
-			h_data_bksub[cent]->Draw("P");
-			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerColor(kGreen);
-			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerStyle(kFullDotLarge);
-			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerSize(1.5);
-			h_mc_signal[minBinX - 1][minBinY - 1][cent]->Draw("P SAME");
+			TH1D *temp_data = ConvertToDNdx(h_data_bksub[cent]);
+			TH1D *temp_mc = ConvertToDNdx(h_mc_signal[minBinX - 1][minBinY - 1][cent]);
+
+			temp_data->Draw("P");
+			temp_mc->SetMarkerColor(kGreen);
+			temp_mc->SetMarkerStyle(kFullDotLarge);
+			temp_mc->SetMarkerSize(1.5);
+			temp_mc->Draw("P SAME");
 		}
 		if (type == 5)
 		{
@@ -1360,7 +1441,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			h_data[cent]->SetMarkerColor(kRed);
 			h_data[cent]->SetMarkerSize(1.5);
 			h_data[cent]->SetMarkerStyle(kFullCircle);
-			h_data[cent]->GetYaxis()->SetTitle("Normalized counts");
+			h_data[cent]->GetYaxis()->SetTitle("dN/dm");
 			h_data[cent]->GetXaxis()->SetTitle("m_{u^{+}u^{-}} (GeV)");
 
 			h_data[cent]->GetYaxis()->SetTitleFont(42);	  // Times, bold
@@ -1372,11 +1453,14 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			h_data[cent]->GetXaxis()->SetTitleSize(0.05); // Title size
 			h_data[cent]->GetXaxis()->SetLabelSize(0.04); // Label size
 
-			h_data[cent]->Draw("P");
-			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerColor(kGreen);
-			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerStyle(kFullDotLarge);
-			h_mc_signal[minBinX - 1][minBinY - 1][cent]->SetMarkerSize(1.5);
-			h_mc_signal[minBinX - 1][minBinY - 1][cent]->Draw("P SAME");
+			TH1D *temp_data = ConvertToDNdx(h_data[cent]);
+			TH1D *temp_mc = ConvertToDNdx(h_mc_signal[minBinX - 1][minBinY - 1][cent]);
+
+			temp_data->Draw("P");
+			temp_mc->SetMarkerColor(kGreen);
+			temp_mc->SetMarkerStyle(kFullDotLarge);
+			temp_mc->SetMarkerSize(1.5);
+			temp_mc->Draw("P SAME");
 		}
 
 		TPaveText *pt1 = new TPaveText(0.15, 0.7, 0.5, 0.8, "NDC");
@@ -1510,6 +1594,32 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		{
 			g_HI_dmass->Write("HI_dM_chi2_raw_nominal_mass_range", 2);
 			g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_mass_range", 2);
+		}
+	}
+	if (type == 8)
+	{
+		if (iseta)
+		{
+			g_HI_dmass->Write("HI_dM_chi2_eta_HF_up", 2);
+			g_HI_dwidth->Write("HI_dWidth_chi2_eta_HF_up", 2);
+		}
+		if (!iseta)
+		{
+			g_HI_dmass->Write("HI_dM_chi2_raw_HF_up", 2);
+			g_HI_dwidth->Write("HI_dWidth_chi2_raw_HF_up", 2);
+		}
+	}
+	if (type == 9)
+	{
+		if (iseta)
+		{
+			g_HI_dmass->Write("HI_dM_chi2_eta_HF_down", 2);
+			g_HI_dwidth->Write("HI_dWidth_chi2_eta_HF_down", 2);
+		}
+		if (!iseta)
+		{
+			g_HI_dmass->Write("HI_dM_chi2_raw_HF_down", 2);
+			g_HI_dwidth->Write("HI_dWidth_chi2_raw_HF_down", 2);
 		}
 	}
 
@@ -1790,7 +1900,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 		TString T_contour_saving_path = Form(contour_saving_path, runperiod);
 		TString T_chi2_title = Form(chi2_title, runperiod);
 
-		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, iseta, true, T_chi2_title, T_contour_saving_path);
+		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, iseta, true, T_chi2_title, T_contour_saving_path, type);
 
 		Double_t xMin = h_chisquare_pp[runperiod]->GetXaxis()->GetBinLowEdge(minBinX);
 		Double_t xMax = h_chisquare_pp[runperiod]->GetXaxis()->GetBinUpEdge(minBinX);
@@ -2923,7 +3033,7 @@ std::vector<double> chisquaretest::createCustomBinning(
 	return newBins;
 }
 
-void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool iseta, bool ispp, TString contourtitle, TString contoursaving)
+void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool iseta, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0)
 {
 
 	onesig_left = RemoveInvalidPoints(onesig_left);
@@ -2957,43 +3067,57 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 		onesig_left->GetXaxis()->SetRangeUser(raw_mass_shift_array_low[iteration], raw_mass_shift_array_high[iteration]);
 		onesig_left->GetYaxis()->SetRangeUser(raw_mass_smear_array_low[iteration], raw_mass_smear_array_high[iteration]);
 	}
-	/*if (ispp)
+	if (ispp)
 	{
 		if (iseta)
 		{
-			if (isbk)
-			{
-				onesig_left->GetXaxis()->SetLimits(eta_pp_mass_shift_low_with_bk, eta_pp_mass_shift_high_with_bk);
-				onesig_left->GetYaxis()->SetLimits(eta_pp_smear_low_with_bk, eta_pp_smear_high_with_bk);
-				onesig_left->GetXaxis()->SetRangeUser(eta_pp_mass_shift_low_with_bk, eta_pp_mass_shift_high_with_bk);
-				onesig_left->GetYaxis()->SetRangeUser(eta_pp_smear_low_with_bk, eta_pp_smear_high_with_bk);
-			}
-			if (!isbk)
+			if (typeofpp == 5)
 			{
 				onesig_left->GetXaxis()->SetLimits(eta_pp_mass_shift_low_without_bk, eta_pp_mass_shift_high_without_bk);
 				onesig_left->GetYaxis()->SetLimits(eta_pp_smear_low_without_bk, eta_pp_smear_high_without_bk);
 				onesig_left->GetXaxis()->SetRangeUser(eta_pp_mass_shift_low_without_bk, eta_pp_mass_shift_high_without_bk);
 				onesig_left->GetYaxis()->SetRangeUser(eta_pp_smear_low_without_bk, eta_pp_smear_high_without_bk);
 			}
+			if (typeofpp == 7)
+			{
+				onesig_left->GetXaxis()->SetLimits(eta_pp_mass_shift_low_mass_range, eta_pp_mass_shift_high_mass_range);
+				onesig_left->GetYaxis()->SetLimits(eta_pp_smear_low_mass_range, eta_pp_smear_high_mass_range);
+				onesig_left->GetXaxis()->SetRangeUser(eta_pp_mass_shift_low_mass_range, eta_pp_mass_shift_high_mass_range);
+				onesig_left->GetYaxis()->SetRangeUser(eta_pp_smear_low_mass_range, eta_pp_smear_high_mass_range);
+			}
+			else
+			{
+				onesig_left->GetXaxis()->SetLimits(eta_pp_mass_shift_low_with_bk, eta_pp_mass_shift_high_with_bk);
+				onesig_left->GetYaxis()->SetLimits(eta_pp_smear_low_with_bk, eta_pp_smear_high_with_bk);
+				onesig_left->GetXaxis()->SetRangeUser(eta_pp_mass_shift_low_with_bk, eta_pp_mass_shift_high_with_bk);
+				onesig_left->GetYaxis()->SetRangeUser(eta_pp_smear_low_with_bk, eta_pp_smear_high_with_bk);
+			}
 		}
 		if (!iseta)
 		{
-			if (isbk)
-			{
-				onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_with_bk, raw_pp_mass_shift_high_with_bk);
-				onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_with_bk, raw_pp_smear_high_with_bk);
-				onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_with_bk, raw_pp_mass_shift_high_with_bk);
-				onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_with_bk, raw_pp_smear_high_with_bk);
-			}
-			if (!isbk)
+			if (typeofpp == 5)
 			{
 				onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_without_bk, raw_pp_mass_shift_high_without_bk);
 				onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_without_bk, raw_pp_smear_high_without_bk);
 				onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_without_bk, raw_pp_mass_shift_high_without_bk);
 				onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_without_bk, raw_pp_smear_high_without_bk);
 			}
+			if (typeofpp == 7)
+			{
+				onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_mass_range, raw_pp_mass_shift_high_mass_range);
+				onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_mass_range, raw_pp_smear_high_mass_range);
+				onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_mass_range, raw_pp_mass_shift_high_mass_range);
+				onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_mass_range, raw_pp_smear_high_mass_range);
+			}
+			else
+			{
+				onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_with_bk, raw_pp_mass_shift_high_with_bk);
+				onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_with_bk, raw_pp_smear_high_with_bk);
+				onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_with_bk, raw_pp_mass_shift_high_with_bk);
+				onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_with_bk, raw_pp_smear_high_with_bk);
+			}
 		}
-	}*/
+	}
 	// not solved until I finished modify pp
 
 	TH1 *frame = onesig_left->GetHistogram(); // Get the underlying histogram for customization
@@ -3041,13 +3165,13 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	twosig_left->Draw("PL SAME");
 	// twosig_right->Draw("PL SAME");
 
-	TLegend *legend = new TLegend(0.8, 0.75, 0.9, 0.85); // x1, y1, x2, y2 in NDC (normalized device coordinates)
+	TLegend *legend = new TLegend(0.75, 0.75, 0.9, 0.85); // x1, y1, x2, y2 in NDC (normalized device coordinates)
 
 	// Add entries to the legend
-	legend->AddEntry(onesig_left, "1#sigma CL", "PL");
+	legend->AddEntry(onesig_left, "68.27% CL", "PL");
 	// legend->AddEntry(onesig_right, "1#sigma Right", "P");
 	// legend->AddEntry(twosig_left, "2#sigma Left", "P");
-	legend->AddEntry(twosig_left, "2#sigma CL", "PL");
+	legend->AddEntry(twosig_left, "95.45% CL", "PL");
 
 	legend->SetTextSize(0.03);				// Set text size
 	legend->SetTextFont(42);				// Use a modern, clean font
@@ -3264,6 +3388,10 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 		txtname = "nominal_binning";
 	if (my_case == 7)
 		txtname = "nominal_range";
+	if (my_case == 8)
+		txtname = "HF_up";
+	if (my_case == 9)
+		txtname = "HF_down";
 
 	if (!ispp)
 	{
@@ -3426,7 +3554,7 @@ TH1D *chisquaretest::reducebinpp(TH1D *h_old_data, bool isleft)
 }
 void chisquaretest::readlimit(int type, bool iseta, int cent)
 {
-	TString variation[7] = {"nominal", "tnpU", "tnpD", "acooff", "nominal_no_bk_sub", "nominal_binning", "nominal_range"};
+	TString variation[9] = {"nominal", "tnpU", "tnpD", "acooff", "nominal_no_bk_sub", "nominal_binning", "nominal_range","HF_up","HF_down"};
 	TString filename = "";
 	TString type_str = "";
 	TString savedname = "";
@@ -3522,4 +3650,41 @@ void chisquaretest::readlimitpp(int type, bool iseta)
 	placeholder_pp_mass_shift_array_high_zoomin = ranges[1];
 	placeholder_pp_mass_smear_array_low_zoomin = ranges[2];
 	placeholder_pp_mass_smear_array_high_zoomin = ranges[3];
+}
+
+TH1D *chisquaretest::ConvertToDNdx(TH1D *h2)
+{
+	// Check if the histogram exists
+	if (!h2)
+	{
+		std::cerr << "Error: Histogram does not exist!" << std::endl;
+		return nullptr;
+	}
+
+	TH1D *temp = (TH1D *)h2->Clone();
+
+	// Loop over all bins in the histograms
+	int nBins = h2->GetNbinsX();
+	for (int bin = 1; bin <= nBins; ++bin)
+	{ // Loop over bins (1 to nBins)
+		double binContent = h2->GetBinContent(bin);
+		double binWidth = h2->GetBinWidth(bin);
+
+		if (binWidth > 0)
+		{
+			// Normalize bin content by bin width
+			double normalizedContent = binContent / binWidth;
+			temp->SetBinContent(bin, normalizedContent);
+
+			// Scale the error as well (if applicable)
+			double binError = h2->GetBinError(bin);
+			double normalizedError = binError / binWidth;
+			temp->SetBinError(bin, normalizedError);
+		}
+	}
+
+	// Optionally, update the histogram y-axis title
+	temp->GetYaxis()->SetTitle("dN/dm");
+	std::cout << "Histogram converted to dN/dx." << std::endl;
+	return temp;
 }

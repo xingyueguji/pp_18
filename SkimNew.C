@@ -4,6 +4,20 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
+double getWeightFromHist(TH1D *weightHist, double pt)
+{
+   int bin = weightHist->FindBin(pt);              // Find the corresponding bin for pT
+   double weight = weightHist->GetBinContent(bin); // Get the weight
+
+   // If the weight is zero, set it to 1 (no reweighting applied)
+   if (weight == 0)
+   {
+      weight = 1.0;
+   }
+
+   return weight;
+}
+
 void SkimNew::Loop()
 {
    //   In a ROOT session, you can do:
@@ -67,6 +81,9 @@ void SkimNew::Loop()
    TH1D *FA_mass_range_inclusive = new TH1D("FA_mass_range_inclusive", "", 80, 70, 110);
    TH1D *Eta_mass_range_inclusive = new TH1D("Eta_mass_range_inclusive", "", 80, 70, 110);
 
+   TH1D *pT_spec_pp_FA = new TH1D("pT_spec_pp_FA", "", 200, 0, 200);
+   TH1D *pT_spec_pp_Eta = new TH1D("pT_spec_pp_Eta", "", 200, 0, 200);
+
    for (int i = 0; i < 22; i++)
    {
       FA_nominal[i] = new TH1D(Form("FA_nominal_%i", i), "", 120, 60, 120);
@@ -83,7 +100,6 @@ void SkimNew::Loop()
 
       FA_mass_range[i] = new TH1D(Form("FA_mass_range_%i", i), "", 80, 70, 110);
       Eta_mass_range[i] = new TH1D(Form("Eta_mass_range_%i", i), "", 80, 70, 110);
-
    }
 
    TEfficiency *e;
@@ -97,6 +113,11 @@ void SkimNew::Loop()
    e_up = (TEfficiency *)eff_f1->Get("eff_U_0_100");
    e_down = (TEfficiency *)eff_f1->Get("eff_D_0_100");
    e_acooff = (TEfficiency *)eff_f1->Get("eff_noAco_0_100");
+
+   TFile *pT_PbPb_weight = new TFile("../ZBoson_18/rootfile/pT_file.root", "READ");
+
+   TH1D *pTweight_FA = (TH1D *)pT_PbPb_weight->Get("weight_FA");
+   TH1D *pTweight_Eta = (TH1D *)pT_PbPb_weight->Get("weight_Eta");
 
    for (Long64_t jentry = 0; jentry < nentries; jentry++)
    {
@@ -195,6 +216,9 @@ void SkimNew::Loop()
          if (Z_momentum->Pt() < 1.25 && acoplanarity < 0.001)
             passesAco[0] = false;
 
+         double FA_pTweight = getWeightFromHist(pTweight_FA, Z_momentum->Pt());
+         double Eta_pTweight = getWeightFromHist(pTweight_Eta, Z_momentum->Pt());
+
          // Here for inclusive
          if (passesAco[0])
          {
@@ -281,4 +305,12 @@ void SkimNew::Loop()
    }
 
    writeout->Close();
+
+   TFile *pt_File = new TFile("../ZBoson_18/rootfile/pT_file.root", "UPDATE");
+   pt_File->cd();
+
+   pT_spec_pp_Eta->Write("", 2);
+   pT_spec_pp_FA->Write("", 2);
+
+   pt_File->Close();
 }

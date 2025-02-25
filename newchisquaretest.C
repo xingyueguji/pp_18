@@ -7,6 +7,8 @@ void newchisquaretest(int type = 1, bool iseta = 1)
 	// type 5 = Nominal_no_bk
 	// type 6 = rebinned
 	// type 7 = massrange
+	// type 8 = HF up
+	// type 9 = HF down
 
 	bool isbk = true;
 	if (type == 5)
@@ -88,6 +90,32 @@ void newchisquaretest(int type = 1, bool iseta = 1)
 			bkfile = "../ZBoson_18/rootfile/normalized/FA_mass_range.root";
 		}
 		zoominfile = "../ZBoson_18/rootfile/template_PbPb_zoomin_nominal_range.root";
+	}
+
+	if (type == 8)
+	{
+		if (iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_HF_up.root";
+		}
+		if (!iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_HF_up.root";
+		}
+		zoominfile = "../ZBoson_18/rootfile/template_PbPb_zoomin_HF_up.root";
+	}
+
+	if (type == 9)
+	{
+		if (iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_HF_down.root";
+		}
+		if (!iseta)
+		{
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_HF_down.root";
+		}
+		zoominfile = "../ZBoson_18/rootfile/template_PbPb_zoomin_HF_down.root";
 	}
 
 	if (type == 1)
