@@ -107,8 +107,8 @@ void cosmetic(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors
     g9->SetMarkerStyle(32);
     g9->SetMarkerSize(1.4);
     g9->SetLineWidth(2);
-    g9->SetLineColor(kYellow);
-    g9->SetMarkerColor(kYellow);
+    g9->SetLineColor(kGray + 2);
+    g9->SetMarkerColor(kGray + 2);
 
     // Define small shifts for each graph
     double shift2 = 0.1;  // Small right shift for g2
@@ -136,9 +136,9 @@ void cosmetic(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors
     shiftX(g3, shift3);
     shiftX(g4, shift4);
     shiftX(g5, shift5);
-    shiftX(g6, shift6);
+    //shiftX(g6, shift6);
     shiftX(g7, shift7);
-    shiftX(g8, shift8);
+    shiftX(g8, shift6);
     shiftX(g9, shift9);
 }
 
@@ -601,9 +601,9 @@ void get_systematic()
          HI_pp_dWidth_chi2_raw_nominal_uniform_rebin, HI_pp_dWidth_chi2_raw_nominal_mass_range, HI_pp_dWidth_chi2_raw_HF_up, HI_pp_dWidth_chi2_raw_HF_down, 0, 0);
 
     cosmetic(HI_sub_pp_dWidth_chi2_raw_nominal, HI_sub_pp_dWidth_chi2_raw_tnpU, HI_sub_pp_dWidth_chi2_raw_tnpD, HI_sub_pp_dWidth_chi2_raw_acooff, HI_sub_pp_dWidth_chi2_raw_nominal_no_bk,
-             HI_sub_pp_dWidth_chi2_raw_nominal_uniform_rebin, HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dM_chi2_raw_HF_up, HI_sub_pp_dM_chi2_raw_HF_down, 0, 1);
+             HI_sub_pp_dWidth_chi2_raw_nominal_uniform_rebin, HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dWidth_chi2_raw_HF_up, HI_sub_pp_dWidth_chi2_raw_HF_down, 0, 1);
     drawdiff(c_FA_dW_diff, HI_sub_pp_dWidth_chi2_raw_nominal, HI_sub_pp_dWidth_chi2_raw_tnpU, HI_sub_pp_dWidth_chi2_raw_tnpD, HI_sub_pp_dWidth_chi2_raw_acooff, HI_sub_pp_dWidth_chi2_raw_nominal_no_bk,
-             HI_sub_pp_dWidth_chi2_raw_nominal_uniform_rebin, HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dM_chi2_raw_HF_up, HI_sub_pp_dM_chi2_raw_HF_down, 0, 0);
+             HI_sub_pp_dWidth_chi2_raw_nominal_uniform_rebin, HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dWidth_chi2_raw_HF_up, HI_sub_pp_dWidth_chi2_raw_HF_down, 0, 0);
 
     // dM, eta, HI
     TGraphErrors *HI_pp_dM_chi2_eta_nominal = mergeGraphs(HI_dM_chi2_eta_nominal, pp_dM_chi2_eta_nominal);
