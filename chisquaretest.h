@@ -54,8 +54,10 @@ public:
 	double h_high_smear = highbin_smear + ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 
 	TH1D *h_mc_signal[nbins_mass_shift][nbins_smear][nbins_cent];
+	TH1D *h_mc_signal_not_rebinned[nbins_mass_shift][nbins_smear][nbins_cent];
 	TH1D *h_mc_signal_zoomin[nbins_mass_shift][nbins_smear][nbins_cent];
 	TH1D *h_data[nbins_cent];
+	TH1D *h_data_bksub_not_rebinned[nbins_cent];
 	TH1D *h_mc_bk[nbins_cent];
 	TH1D *h_data_bksub[nbins_cent];
 
@@ -381,10 +383,11 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 
 		this->areanormalize(h_data[cent]);
 
-		h_data_bksub[cent] = (TH1D *)h_data[cent]->Clone();
+		h_data_bksub[cent] = (TH1D *)h_data[cent]->Clone(Form("h_data_bksub_%i", cent));
 
 		h_data_bksub[cent]->Add(h_mc_bk[cent], -1);
-
+		// this->areanormalize(h_data_bksub[cent]);
+		h_data_bksub_not_rebinned[cent] = (TH1D *)h_data_bksub[cent]->Clone(Form("h_data_bksub_not_rebinned_%i", cent));
 
 		for (int shift = 0; shift < nbins_mass_shift; shift++)
 		{
@@ -395,11 +398,13 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 					if (iseta)
 					{
 						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, cent));
+						h_mc_signal_not_rebinned[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Clone(Form("template_Eta_nominal_clone_%i_%i_%i", shift, smear, cent));
 						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, cent));
 					}
 					if (!iseta)
 					{
 						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
+						h_mc_signal_not_rebinned[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Clone(Form("template_FA_nominal_clone_%i_%i_%i", shift, smear, cent));
 						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
 					}
 				}
@@ -432,6 +437,7 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 					}
 				}
 				this->areanormalize(h_mc_signal[shift][smear][cent]);
+				this->areanormalize(h_mc_signal_not_rebinned[shift][smear][cent]);
 				this->areanormalize(h_mc_signal_zoomin[shift][smear][cent]);
 			}
 		}
@@ -1132,6 +1138,8 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			}
 		}
 
+		cout << "Minimum is " << h_chisquare[cent]->GetBinContent(minBinX, minBinY) << endl;
+
 		// This is to export minimum region
 		this->saveChi2Region(h_chisquare[cent], minBinX, minBinY, type, iseta, cent, 3, false);
 		this->getcontour(h_chisquare[cent], 1, minBinX, minBinY, minContent, contour_x_left_onesig_HI, contour_x_right_onesig_HI);
@@ -1402,13 +1410,14 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		// This is Data and MC
 
 		c_data_mc_raw[cent]->cd();
+		c_data_mc_raw[cent]->SetTopMargin(0.06);
 		c_data_mc_raw[cent]->SetLeftMargin(0.15);
 		c_data_mc_raw[cent]->SetRightMargin(0.08);
 		c_data_mc_raw[cent]->SetBottomMargin(0.13);
 		c_data_mc_raw[cent]->SetTicks(1, 1);
 		// c_data_mc_raw[cent]->SetLogy();
 
-		if (type != 5)
+		if (type != 5 && type != 1)
 		{
 			h_data_bksub[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 			h_data_bksub[cent]->SetMarkerColor(kRed);
@@ -1434,8 +1443,18 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			temp_mc->SetMarkerStyle(kFullDotLarge);
 			temp_mc->SetMarkerSize(1.5);
 			temp_mc->Draw("P SAME");
+			TPaveText *pt1 = new TPaveText(0.15, 0.7, 0.5, 0.8, "NDC");
+			pt1->AddText("Red is data");
+			pt1->AddText("Green is best template");
+			pt1->SetTextSize(0.03);
+			pt1->SetTextAlign(22); // Center alignment
+			pt1->SetFillStyle(0);  // Make the background transparent
+			pt1->SetBorderSize(0); // Remove the border
+			pt1->SetLineColor(0);  // Remove the border line (optional)
+			pt1->SetTextColor(1);  // Set text color (default: black)
+			pt1->Draw();
 		}
-		if (type == 5)
+		else if (type == 5)
 		{
 			h_data[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 			h_data[cent]->SetMarkerColor(kRed);
@@ -1461,18 +1480,117 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			temp_mc->SetMarkerStyle(kFullDotLarge);
 			temp_mc->SetMarkerSize(1.5);
 			temp_mc->Draw("P SAME");
+			TPaveText *pt1 = new TPaveText(0.15, 0.7, 0.5, 0.8, "NDC");
+			pt1->AddText("Red is data");
+			pt1->AddText("Green is best template");
+			pt1->SetTextSize(0.03);
+			pt1->SetTextAlign(22); // Center alignment
+			pt1->SetFillStyle(0);  // Make the background transparent
+			pt1->SetBorderSize(0); // Remove the border
+			pt1->SetLineColor(0);  // Remove the border line (optional)
+			pt1->SetTextColor(1);  // Set text color (default: black)
+			pt1->Draw();
+		}
+		else if (type == 1)
+		{
+			c_data_mc_raw[cent]->SetLogy();
+			// h_data_bksub_not_rebinned[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
+			h_data_bksub_not_rebinned[cent]->SetTitleFont(62);
+			h_data_bksub_not_rebinned[cent]->SetMarkerColor(kBlack);
+			h_data_bksub_not_rebinned[cent]->SetMarkerSize(1);
+			h_data_bksub_not_rebinned[cent]->SetMarkerStyle(kFullCircle);
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitle("Normalized Counts");
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitle("m_{u^{+}u^{-}} (GeV)");
+
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitleFont(42);	 // Times, bold
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetLabelFont(42);	 // Times, bold
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitleSize(0.05); // Title size
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetLabelSize(0.04); // Label size
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitleFont(42);	 // Times, bold
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetLabelFont(42);	 // Times, bold
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitleSize(0.05); // Title size
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetLabelSize(0.04); // Label size
+			h_data_bksub_not_rebinned[cent]->SetLineWidth(1);				 // Make the outline thick
+			// this->areanormalize(h_data_bksub_not_rebinned[cent]);
+			h_data_bksub_not_rebinned[cent]->Rebin(4);
+			h_data_bksub_not_rebinned[cent]->Draw("P");
+
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerColor(kRed + 1);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerStyle(kFullCircle);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerSize(0);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillColor(kRed + 1);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Rebin(4);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillColor(kRed + 1); // Set fill color
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillStyle(3004);	  // Solid fill
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetLineWidth(1);		  // Set outline thickness
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetLineColor(kRed + 1); // Set outline color
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Draw("HIST SAME");
+
+			TFile *f_temp_signal = new TFile("../ZBoson_18/rootfile/mc_signal.root", "READ");
+			TH1D *vaccum_plot;
+			if (!iseta)
+			{
+				vaccum_plot = (TH1D *)f_temp_signal->Get(Form("FA_nominal_%i", cent));
+			}
+			else
+			{
+				vaccum_plot = (TH1D *)f_temp_signal->Get(Form("Eta_nominal_%i", cent));
+			}
+
+			this->areanormalize(vaccum_plot);
+			vaccum_plot->Rebin(4);
+
+			cout << "For vaccum, the chi2 value is " << myownfunctionchi2(h_data_bksub_not_rebinned[cent], vaccum_plot) << endl;
+			cout << "For best template, the chi2 value is " << myownfunctionchi2(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]) << endl;
+
+			/*TGraph *graph = new TGraph(vaccum_plot);
+			graph->SetLineWidth(2);
+			graph->SetLineColor(kBlue + 2);
+			graph->Draw("L SAME");*/
+
+			vaccum_plot->SetFillColor(kBlue+1); // Set fill color
+			vaccum_plot->SetFillStyle(3004);	  // Solid fill
+			vaccum_plot->SetLineWidth(1);		  // Set outline thickness
+			vaccum_plot->SetLineColor(kBlue+1); // Set outline color
+			vaccum_plot->SetLineWidth(1); // Make the outline thick
+			vaccum_plot->SetLineColor(kBlue+1);
+			vaccum_plot->SetMarkerSize(1);
+			vaccum_plot->SetMarkerStyle(kFullCircle);
+			vaccum_plot->SetMarkerColor(kBlue+1);
+			vaccum_plot->Draw("P SAME");
+
+			TPaveText *pt = new TPaveText(0.25, 0.7, 0.35, 0.8, "NDC"); // Adjust position
+			pt->SetFillColor(0);										// Transparent background
+			pt->SetTextFont(62);										// Standard font
+			pt->SetTextSize(0.03);
+			pt->SetBorderSize(0); // No border
+			pt->AddText("Nominal");
+			if (!iseta)
+				pt->AddText("|#eta| < 2.4");
+			else
+				pt->AddText("|#eta| < 1");
+			pt->Draw();
+
+			TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.85); // Upper-right position
+			leg->SetBorderSize(0);							 // Remove border
+			leg->SetFillStyle(0);							 // Transparent background
+			leg->SetTextSize(0.03);							 // Adjust text size
+			leg->SetTextFont(62);							 // Standard font
+
+			// Adding three elements as points
+			leg->AddEntry(h_data_bksub_not_rebinned[cent], "Data", "P");
+			leg->AddEntry(h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], "Best fit template", "F");
+			leg->AddEntry(vaccum_plot, "Vaccum template", "l");
+
+			leg->Draw();
+
+			h_data_bksub_not_rebinned[cent]->Draw("P SAME");
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Draw("P SAME");
+
+			CMS_lumi(c_data_mc_raw[cent], 13, 10);
 		}
 
-		TPaveText *pt1 = new TPaveText(0.15, 0.7, 0.5, 0.8, "NDC");
-		pt1->AddText("Red is data");
-		pt1->AddText("Green is best template");
-		pt1->SetTextSize(0.03);
-		pt1->SetTextAlign(22); // Center alignment
-		pt1->SetFillStyle(0);  // Make the background transparent
-		pt1->SetBorderSize(0); // Remove the border
-		pt1->SetLineColor(0);  // Remove the border line (optional)
-		pt1->SetTextColor(1);  // Set text color (default: black)
-		pt1->Draw();
+		cout << "Finished drawing" << endl;
 
 		c_data_mc_raw[cent]->SaveAs(Form(data_mc_saving_path, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 
@@ -3554,7 +3672,7 @@ TH1D *chisquaretest::reducebinpp(TH1D *h_old_data, bool isleft)
 }
 void chisquaretest::readlimit(int type, bool iseta, int cent)
 {
-	TString variation[9] = {"nominal", "tnpU", "tnpD", "acooff", "nominal_no_bk_sub", "nominal_binning", "nominal_range","HF_up","HF_down"};
+	TString variation[9] = {"nominal", "tnpU", "tnpD", "acooff", "nominal_no_bk_sub", "nominal_binning", "nominal_range", "HF_up", "HF_down"};
 	TString filename = "";
 	TString type_str = "";
 	TString savedname = "";

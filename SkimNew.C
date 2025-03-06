@@ -226,6 +226,7 @@ void SkimNew::Loop()
             FA_tnpU_inclusive->Fill(ZMass, 1.0 / efficiency_U);
             FA_tnpD_inclusive->Fill(ZMass, 1.0 / efficiency_D);
             FA_mass_range_inclusive->Fill(ZMass, 1.0 / efficiency);
+            pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0 / efficiency);
 
             if (isEtacutPassed)
             {
@@ -233,6 +234,7 @@ void SkimNew::Loop()
                Eta_tnpU_inclusive->Fill(ZMass, 1.0 / efficiency_U);
                Eta_tnpD_inclusive->Fill(ZMass, 1.0 / efficiency_D);
                Eta_mass_range_inclusive->Fill(ZMass, 1.0 / efficiency);
+               pT_spec_pp_Eta->Fill(Z_momentum->Pt(), 1.0 / efficiency);
             }
          }
 
