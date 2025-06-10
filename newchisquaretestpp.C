@@ -1,5 +1,5 @@
 #include "chisquaretest.h"
-void newchisquaretestpp(int type = 1, bool iseta = 1)
+void newchisquaretestpp(int type = 1)
 {
 
 	// type 1 = nominal
@@ -28,65 +28,32 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 
 	if (type == 1 || type == 5 || type == 6)
 	{
-		if (iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/Eta_nominal.root";
-		}
-		if (!iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/FA_nominal.root";
-		}
+		bkfile = "../ZBoson_18/rootfile/normalized/FA_nominal.root";
 	}
 
 	if (type == 2)
 	{
-		if (iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/Eta_tnpU.root";
-		}
-		if (!iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpU.root";
-		}
+		bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpU.root";
 		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_tnpU.root";
 	}
 
 	if (type == 3)
 	{
-		if (iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/Eta_tnpD.root";
-		}
-		if (!iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpD.root";
-		}
+
+		bkfile = "../ZBoson_18/rootfile/normalized/FA_tnpD.root";
 		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_tnpD.root";
 	}
 
 	if (type == 4)
 	{
-		if (iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/Eta_acoon.root";
-		}
-		if (!iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/FA_acoon.root";
-		}
+		bkfile = "../ZBoson_18/rootfile/normalized/FA_acoon.root";
 		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_acoon.root";
 	}
 
 	if (type == 7)
 	{
-		if (iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/Eta_mass_range.root";
-		}
-		if (!iseta)
-		{
-			bkfile = "../ZBoson_18/rootfile/normalized/FA_mass_range.root";
-		}
+
+		bkfile = "../ZBoson_18/rootfile/normalized/FA_mass_range.root";
 		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_nominal_range.root";
 	}
 
@@ -120,7 +87,7 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 		mcfile = "../ZBoson_18/rootfile/template_pp_nobk.root";
 	}
 
-	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, iseta,zoominfile);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, iseta, zoominfile);
 
 	// ovo->bincontentcheck(isbk);
 	ovo->RebinAllpp(iseta, type);

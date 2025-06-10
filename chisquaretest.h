@@ -7,35 +7,32 @@ class chisquaretest : public plotting_helper
 {
 public:
 	chisquaretest();
-	chisquaretest(TString s2, TString s3, int type, bool iseta, TString s4);
-	chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta, TString s4);
+	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4);
+	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4);
 	~chisquaretest();
 	Double_t myownfunctionchi2(TH1D *h1, TH1D *h2);
 	Double_t myownfunctionchi2partial(TH1D *h1, TH1D *h2, int position);
 	void calculatechisq(bool isbk, bool iszoomin = 0);
 	void calculatechisqpp(bool isbk);
-	void plottingandformatting(int type, bool iseta);
-	void plottingandformattingpp(int type, bool iseta);
+	void plottingandformatting(int type, int version);
+	void plottingandformattingpp(int type, int version);
 	void bincontentcheck(bool isbk);
-	void RebinAll(bool iseta, int type);
+	void RebinAll(int type);
 	TGraph *RemoveInvalidPoints(TGraph *originalGraph);
 	TGraph *CombineGraphsToCircle(TGraph *graph1, TGraph *graph2);
-	void RebinAllpp(bool iseta, int x);
+	void RebinAllpp(int x);
 	Double_t getuncertainty(TH2D *h_1, int type, Int_t minBinX, Int_t minBinY);
 	void getcontour(TH2D *h1, int type, Int_t minBinX, Int_t minBinY, Double_t minBinContent, Double_t *arrayleft, Double_t *arrayright);
-	void drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool iseta, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0);
+	void drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0);
 	std::vector<double> createCustomBinning(
 		TH1D *hist,
 		double range1_min, double range1_max, int rebin1,
 		double range2_min, double range2_max, int rebin2,
 		double range3_min, double range3_max, int rebin3,
 		double range4_min = -1, double range4_max = -1, int rebin4 = 1);
-	Int_t mapthreecases(int type, bool isbk, bool iseff);
-	void saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, bool iseta, int iteration, int region_size = 3, bool ispp = true);
-	TH1D *reducebin(TH1D *h_old_data, bool iseta, bool isleft);
-	TH1D *reducebinpp(TH1D *h_old_data, bool isleft);
-	void readlimit(int type, bool iseta, int cent);
-	void readlimitpp(int type, bool iseta);
+	void saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true, int version);
+	void readlimit(int type, int cent, int version);
+	void readlimitpp(int type, int version);
 	TH1D *ConvertToDNdx(TH1D *h2);
 
 	static const int nbins_mass_shift = 42;
@@ -156,11 +153,6 @@ public:
 	TFile *bkfile;
 	TFile *mcfile_zoomin;
 
-	double eta_mass_shift_array_low[nbins_cent] = {-0.4, -0.25, -0.4, -0.45, 0, 0, 0, 0, 0, 0, -0.28};
-	double eta_mass_shift_array_high[nbins_cent] = {-0.08, 0.15, 0.075, -0.05, 0, 0, 0, 0, 0, 0, -0.07};
-	double eta_mass_smear_array_low[nbins_cent] = {-0.25, -0.05, -0.15, -0.3, 0, 0, 0, 0, 0, 0, 0.03};
-	double eta_mass_smear_array_high[nbins_cent] = {0.3, 0.65, 0.65, 0.5, 0, 0, 0, 0, 0, 0, 0.36};
-
 	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.32, -0.25, 0, 0, 0, 0, 0, 0, -0.22};
 	double raw_mass_shift_array_high[nbins_cent] = {-0.02, -0.06, -0.04, 0.02, 0, 0, 0, 0, 0, 0, -0.08};
 	double raw_mass_smear_array_low[nbins_cent] = {-0.05, 0.075, -0.2, 0.15, 0, 0, 0, 0, 0, 0, 0.13};
@@ -175,27 +167,6 @@ public:
 	double placeholder_pp_mass_shift_array_high_zoomin = 0;
 	double placeholder_pp_mass_smear_array_low_zoomin = 0;
 	double placeholder_pp_mass_smear_array_high_zoomin = 0;
-
-	// eta with bk
-
-	double eta_pp_mass_shift_low_with_bk = -0.15;
-	double eta_pp_mass_shift_high_with_bk = -0.08;
-	double eta_pp_smear_low_with_bk = 0.17;
-	double eta_pp_smear_high_with_bk = 0.29;
-
-	// eta without bk
-
-	double eta_pp_mass_shift_low_without_bk = -0.15;
-	double eta_pp_mass_shift_high_without_bk = -0.07;
-	double eta_pp_smear_low_without_bk = 0.22;
-	double eta_pp_smear_high_without_bk = 0.34;
-
-	// eta mass range
-
-	double eta_pp_mass_shift_low_mass_range = -0.15;
-	double eta_pp_mass_shift_high_mass_range = -0.08;
-	double eta_pp_smear_low_mass_range = 0.11;
-	double eta_pp_smear_high_mass_range = 0.23;
 
 	// raw with bk
 
@@ -222,7 +193,7 @@ chisquaretest::chisquaretest()
 {
 }
 
-chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta, TString s4)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4)
 {
 
 	// type 1 = nominal
@@ -232,7 +203,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 	// type 5 = Nominal_no_bk
 	// type 6 = rebinned
 	// type 7 = massrange
-	
+
 	mcfilepath = s1;
 	datafilepath = s2;
 	bkfilepath = s3;
@@ -254,20 +225,10 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 		if (!((cent < 4) || (cent == 10)))
 			continue;
 
-		if (iseta)
-		{
-			this->lowbin_mass_shift = eta_mass_shift_array_low[cent];
-			this->highbin_mass_shift = eta_mass_shift_array_high[cent];
-			this->lowbin_smear = eta_mass_smear_array_low[cent];
-			this->highbin_smear = eta_mass_smear_array_high[cent];
-		}
-		if (!iseta)
-		{
-			this->lowbin_mass_shift = raw_mass_shift_array_low[cent];
-			this->highbin_mass_shift = raw_mass_shift_array_high[cent];
-			this->lowbin_smear = raw_mass_smear_array_low[cent];
-			this->highbin_smear = raw_mass_smear_array_high[cent];
-		}
+		this->lowbin_mass_shift = raw_mass_shift_array_low[cent];
+		this->highbin_mass_shift = raw_mass_shift_array_high[cent];
+		this->lowbin_smear = raw_mass_smear_array_low[cent];
+		this->highbin_smear = raw_mass_smear_array_high[cent];
 
 		this->h_low_mass_shift = lowbin_mass_shift - ((highbin_mass_shift - lowbin_mass_shift) / (nbins_mass_shift - 1)) / 2;
 		this->h_high_mass_shift = highbin_mass_shift + ((highbin_mass_shift - lowbin_mass_shift) / (nbins_mass_shift - 1)) / 2;
@@ -277,7 +238,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 
 		// Here's for zoomin
 
-		readlimit(type, iseta, cent);
+		readlimit(type, cent);
 
 		double h_low_mass_shift_zoomin = placeholder_mass_shift_array_low_zoomin - ((placeholder_mass_shift_array_high_zoomin - placeholder_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
 		double h_high_mass_shift_zoomin = placeholder_mass_shift_array_high_zoomin + ((placeholder_mass_shift_array_high_zoomin - placeholder_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
@@ -298,86 +259,40 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 
 		if (type == 1 || type == 5 || type == 6)
 		{
-			if (iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_nominal_%i", cent));
-			}
-			if (!iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("FA_nominal_%i", cent));
-			}
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_nominal_%i", cent));
 		}
 
 		if (type == 2)
 		{
-			if (iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_tnpU_%i", cent));
-			}
-			if (!iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("FA_tnpU_%i", cent));
-			}
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_tnpU_%i", cent));
 		}
 
 		if (type == 3)
 		{
-			if (iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_tnpD_%i", cent));
-			}
-			if (!iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("FA_tnpD_%i", cent));
-			}
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_tnpD_%i", cent));
 		}
 
 		if (type == 4)
 		{
-			if (iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_AcoOn_%i", cent));
-			}
-			if (!iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("FA_AcoOn_%i", cent));
-			}
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_AcoOn_%i", cent));
 		}
 
 		if (type == 7)
 		{
-			if (iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_mass_range_%i", cent));
-			}
-			if (!iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("FA_mass_range_%i", cent));
-			}
+
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_mass_range_%i", cent));
 		}
 
 		if (type == 8)
 		{
-			if (iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_HF_up_%i", cent));
-			}
-			if (!iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("FA_HF_up_%i", cent));
-			}
+
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_HF_up_%i", cent));
 		}
 
 		if (type == 9)
 		{
-			if (iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_HF_down_%i", cent));
-			}
-			if (!iseta)
-			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("FA_HF_down_%i", cent));
-			}
+
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_HF_down_%i", cent));
 		}
 
 		h_mc_bk[cent] = (TH1D *)bkfile->Get(Form("Normalized_mc_bk_%i", cent));
@@ -397,46 +312,24 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 			{
 				if (type == 1 || type == 2 || type == 3 || type == 5 || type == 6 || type == 8 || type == 9)
 				{
-					if (iseta)
-					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_not_rebinned[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Clone(Form("template_Eta_nominal_clone_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, cent));
-					}
-					if (!iseta)
-					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_not_rebinned[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Clone(Form("template_FA_nominal_clone_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
-					}
+
+					h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
+					h_mc_signal_not_rebinned[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Clone(Form("template_FA_nominal_clone_%i_%i_%i", shift, smear, cent));
+					h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
 				}
 
 				if (type == 4)
 				{
-					if (iseta)
-					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_Eta_acoon_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_acoon_%i_%i_%i", shift, smear, cent));
-					}
-					if (!iseta)
-					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, cent));
-					}
+
+					h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, cent));
+					h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, cent));
 				}
 
 				if (type == 7)
 				{
-					if (iseta)
-					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_Eta_mass_range_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_mass_range_%i_%i_%i", shift, smear, cent));
-					}
-					if (!iseta)
-					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, cent));
-					}
+
+					h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, cent));
+					h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, cent));
 				}
 
 				this->areanormalize(h_mc_signal[shift][smear][cent]);
@@ -448,7 +341,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 	}
 }
 
-chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta, TString s4)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4)
 {
 
 	// type 1 = nominal
@@ -471,54 +364,26 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 	bkfile = new TFile(bkfilepath, "READ");
 	mcfile_zoomin = new TFile(mcfile_zoomin_path, "READ");
 
-	if (iseta)
+	if (type == 5)
 	{
-		if (type == 5)
-		{
-			this->lowbin_mass_shift = eta_pp_mass_shift_low_without_bk;
-			this->highbin_mass_shift = eta_pp_mass_shift_high_without_bk;
-			this->lowbin_smear = eta_pp_smear_low_without_bk;
-			this->highbin_smear = eta_pp_smear_high_without_bk;
-		}
-		else if (type == 7)
-		{
-			this->lowbin_mass_shift = eta_pp_mass_shift_low_mass_range;
-			this->highbin_mass_shift = eta_pp_mass_shift_high_mass_range;
-			this->lowbin_smear = eta_pp_smear_low_mass_range;
-			this->highbin_smear = eta_pp_smear_high_mass_range;
-		}
-		else
-		{
-			this->lowbin_mass_shift = eta_pp_mass_shift_low_with_bk;
-			this->highbin_mass_shift = eta_pp_mass_shift_high_with_bk;
-			this->lowbin_smear = eta_pp_smear_low_with_bk;
-			this->highbin_smear = eta_pp_smear_high_with_bk;
-		}
+		this->lowbin_mass_shift = raw_pp_mass_shift_low_without_bk;
+		this->highbin_mass_shift = raw_pp_mass_shift_high_without_bk;
+		this->lowbin_smear = raw_pp_smear_low_without_bk;
+		this->highbin_smear = raw_pp_smear_high_without_bk;
 	}
-
-	if (!iseta)
+	else if (type == 7)
 	{
-		if (type == 5)
-		{
-			this->lowbin_mass_shift = raw_pp_mass_shift_low_without_bk;
-			this->highbin_mass_shift = raw_pp_mass_shift_high_without_bk;
-			this->lowbin_smear = raw_pp_smear_low_without_bk;
-			this->highbin_smear = raw_pp_smear_high_without_bk;
-		}
-		else if (type == 7)
-		{
-			this->lowbin_mass_shift = raw_pp_mass_shift_low_mass_range;
-			this->highbin_mass_shift = raw_pp_mass_shift_high_mass_range;
-			this->lowbin_smear = raw_pp_smear_low_mass_range;
-			this->highbin_smear = raw_pp_smear_high_mass_range;
-		}
-		else
-		{
-			this->lowbin_mass_shift = raw_pp_mass_shift_low_with_bk;
-			this->highbin_mass_shift = raw_pp_mass_shift_high_with_bk;
-			this->lowbin_smear = raw_pp_smear_low_with_bk;
-			this->highbin_smear = raw_pp_smear_high_with_bk;
-		}
+		this->lowbin_mass_shift = raw_pp_mass_shift_low_mass_range;
+		this->highbin_mass_shift = raw_pp_mass_shift_high_mass_range;
+		this->lowbin_smear = raw_pp_smear_low_mass_range;
+		this->highbin_smear = raw_pp_smear_high_mass_range;
+	}
+	else
+	{
+		this->lowbin_mass_shift = raw_pp_mass_shift_low_with_bk;
+		this->highbin_mass_shift = raw_pp_mass_shift_high_with_bk;
+		this->lowbin_smear = raw_pp_smear_low_with_bk;
+		this->highbin_smear = raw_pp_smear_high_with_bk;
 	}
 
 	this->h_low_mass_shift = lowbin_mass_shift - ((highbin_mass_shift - lowbin_mass_shift) / (nbins_mass_shift - 1)) / 2;
@@ -526,7 +391,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 	this->h_low_smear = lowbin_smear - ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 	this->h_high_smear = highbin_smear + ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 
-	readlimitpp(type, iseta);
+	readlimitpp(type);
 
 	double h_low_mass_shift_zoomin = placeholder_pp_mass_shift_array_low_zoomin - ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
 	double h_high_mass_shift_zoomin = placeholder_pp_mass_shift_array_high_zoomin + ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
@@ -556,92 +421,45 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 
 		if (type == 1 || type == 5 || type == 6)
 		{
-			if (iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("Eta_nominal_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_nominal_%i", runperiod));
-			}
-			if (!iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_nominal_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_nominal_%i", runperiod));
-			}
+			if (runperiod == 22)
+				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_nominal_inclusive");
+			else
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_nominal_%i", runperiod));
 		}
 
 		if (type == 2)
 		{
-			if (iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("Eta_tnpU_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_tnpU_%i", runperiod));
-			}
-			if (!iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_tnpU_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_tnpU_%i", runperiod));
-			}
+
+			if (runperiod == 22)
+				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_tnpU_inclusive");
+			else
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_tnpU_%i", runperiod));
 		}
 
 		if (type == 3)
 		{
-			if (iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("Eta_tnpD_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_tnpD_%i", runperiod));
-			}
-			if (!iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_tnpD_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_tnpD_%i", runperiod));
-			}
+
+			if (runperiod == 22)
+				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_tnpD_inclusive");
+			else
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_tnpD_%i", runperiod));
 		}
 
 		if (type == 4)
 		{
-			if (iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("Eta_AcoOn_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_AcoOn_%i", runperiod));
-			}
-			if (!iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_AcoOn_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_AcoOn_%i", runperiod));
-			}
+			if (runperiod == 22)
+				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_AcoOn_inclusive");
+			else
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_AcoOn_%i", runperiod));
 		}
 
 		if (type == 7)
 		{
-			if (iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("Eta_mass_range_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_mass_range_%i", runperiod));
-			}
-			if (!iseta)
-			{
-				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_mass_range_inclusive");
-				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_mass_range_%i", runperiod));
-			}
+
+			if (runperiod == 22)
+				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_mass_range_inclusive");
+			else
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_mass_range_%i", runperiod));
 		}
 
 		h_chisquare_pp[runperiod] = new TH2D(Form("h_chisquare_pp_%i", runperiod), Form("h_chisquare_pp_%i", runperiod), nbins_mass_shift, h_low_mass_shift, h_high_mass_shift, nbins_smear, h_low_smear, h_high_smear);
@@ -663,60 +481,30 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 			{
 				if (type == 1 || type == 2 || type == 3 || type == 5 || type == 6)
 				{
-					if (iseta)
+
+					h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
+					if (runperiod == 22)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, 10));
-						if (runperiod == 22)
-						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_nominal_%i_%i_%i", shift, smear, 10));
-						}
-					}
-					if (!iseta)
-					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
-						if (runperiod == 22)
-						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
-						}
+						h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
 					}
 				}
 
 				if (type == 4)
 				{
-					if (iseta)
+
+					h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, 10));
+					if (runperiod == 22)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_acoon_%i_%i_%i", shift, smear, 10));
-						if (runperiod == 22)
-						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_acoon_%i_%i_%i", shift, smear, 10));
-						}
-					}
-					if (!iseta)
-					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, 10));
-						if (runperiod == 22)
-						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, 10));
-						}
+						h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, 10));
 					}
 				}
 				if (type == 7)
 				{
-					if (iseta)
+
+					h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, 10));
+					if (runperiod == 22)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_mass_range_%i_%i_%i", shift, smear, 10));
-						if (runperiod == 22)
-						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_mass_range_%i_%i_%i", shift, smear, 10));
-						}
-					}
-					if (!iseta)
-					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, 10));
-						if (runperiod == 22)
-						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, 10));
-						}
+						h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, 10));
 					}
 				}
 
@@ -825,7 +613,7 @@ void chisquaretest::calculatechisqpp(bool isbk)
 	}
 }
 
-void chisquaretest::plottingandformatting(int type, bool iseta)
+void chisquaretest::plottingandformatting(int type, int version)
 {
 	TString chi2_title;
 	TString chi2_saving_path;
@@ -835,6 +623,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 	TString data_mc_saving_path;
 	TString data_data_saving_path;
 	TString contour_saving_path;
+	TString prefix;
 
 	// type 1 = nominal
 	// type 2 = tnpU
@@ -842,252 +631,137 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 	// type 4 = Acoon
 	// type 5 = nominal without bk subtraction
 
-	// Int_t my_case = mapthreecases(type, isbk, iseff);
+	if (version == 0)
+	{
+		prefix = "./newchi2/version_0";
+	}
+	if (version == 1)
+	{
+		prefix = "./newchi2/version_1";
+	}
+	if (version == 2)
+	{
+		prefix = "./newchi2/version_2";
+	}
 
 	if (type == 1)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, Nominal, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, Nominal, Cent:(%i-%i)";
-			data_data_title = "Eta_Nominal_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Nominal, centrality: (%i-%i)";
+		data_mc_title = "WholeAcceptance, Nominal, Cent:(%i-%i)";
+		data_data_title = "Raw_Nominal_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/Nominal/Eta_Nominal_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/Nominal/Eta_Nominal_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/Nominal/Eta_Nominal_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_Nominal_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_Nominal_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, Nominal, centrality: (%i-%i)";
-			data_mc_title = "WholeAcceptance, Nominal, Cent:(%i-%i)";
-			data_data_title = "Raw_Nominal_%i_%i";
-
-			chi2_saving_path = "./newchi2/chi2plots/raw/Nominal/Raw_Nominal_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/Nominal/Raw_Nominal_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/Nominal/Raw_Nominal_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_Nominal_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/raw_Nominal_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal/Raw_Nominal_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal/Raw_Nominal_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal/Raw_Nominal_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Nominal_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Nominal_%i_%i.png";
 	}
 	if (type == 2)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, tnpU, centrality: (%i-%i)";
-			data_mc_title = "Eta, tnpU, Cent:(%i-%i)";
-			data_data_title = "Eta_tnpU_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/tnpU/Eta_tnpU_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/tnpU/Eta_tnpU_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/tnpU/Eta_tnpU_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_tnpU_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_tnpU_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, tnpU, centrality: (%i-%i)";
-			data_mc_title = "WholeAcceptance, tnpU, Cent:(%i-%i)";
-			data_data_title = "Raw_tnpU_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, tnpU, centrality: (%i-%i)";
+		data_mc_title = "WholeAcceptance, tnpU, Cent:(%i-%i)";
+		data_data_title = "Raw_tnpU_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/tnpU/Raw_tnpU_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/tnpU/Raw_tnpU_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/tnpU/Raw_tnpU_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_tnpU_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/raw_tnpU_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/tnpU/Raw_tnpU_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/tnpU/Raw_tnpU_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/tnpU/Raw_tnpU_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpU_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_tnpU_%i_%i.png";
 	}
 	if (type == 3)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, tnpD, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, tnpD, Cent:(%i-%i)";
-			data_data_title = "Eta_tnpD_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/tnpD/Eta_tnpD_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/tnpD/Eta_tnpD_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/tnpD/Eta_tnpD_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_tnpD_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/eta_tnpD_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, tnpD, centrality: (%i-%i)";
-			data_mc_title = "WholeAcceptance, tnpD, Cent:(%i-%i)";
-			data_data_title = "Raw_tnpD_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, tnpD, centrality: (%i-%i)";
+		data_mc_title = "WholeAcceptance, tnpD, Cent:(%i-%i)";
+		data_data_title = "Raw_tnpD_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/tnpD/Raw_tnpD_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/tnpD/Raw_tnpD_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/tnpD/Raw_tnpD_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_tnpD_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/raw_tnpD_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/tnpD/Raw_tnpD_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/tnpD/Raw_tnpD_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/tnpD/Raw_tnpD_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpD_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_tnpD_%i_%i.png";
 	}
 	if (type == 4)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, Acoon, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, Acoon, Cent:(%i-%i)";
-			data_data_title = "Eta_Acoon_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/Acoon/Eta_Acoon_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/Acoon/Eta_Acoon_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/Acoon/Eta_Acoon_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_Acoon_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_Acoon_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, Acoon, centrality: (%i-%i)";
-			data_mc_title = "WholeAcceptance, Acoon, Cent:(%i-%i)";
-			data_data_title = "Raw_Acoon_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Acoon, centrality: (%i-%i)";
+		data_mc_title = "WholeAcceptance, Acoon, Cent:(%i-%i)";
+		data_data_title = "Raw_Acoon_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/Acoon/Raw_Acoon_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/Acoon/Raw_Acoon_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/Acoon/Raw_Acoon_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_Acoon_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/raw_Acoon_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Acoon/Raw_Acoon_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acoon/Raw_Acoon_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Acoon/Raw_Acoon_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Acoon_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Acoon_%i_%i.png";
 	}
 	if (type == 5)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, Nominal no bk, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, Nominal no bk, centrality: (%i-%i)";
-			data_data_title = "Eta_Nominal_no_bk_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/Nominal_no_bk/Eta_nominal_no_bk_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/Nominal_no_bk/Eta_nominal_no_bk_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/Nominal_no_bk/Eta_nominal_no_bk_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_nominal_no_bk_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_nominal_no_bk_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, Nominal no bk, centrality: (%i-%i)";
-			data_mc_title = "|#eta| < 2.4, Nominal no bk, centrality: (%i-%i)";
-			data_data_title = "Raw_Nominal_no_bk_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Nominal no bk, centrality: (%i-%i)";
+		data_mc_title = "|#eta| < 2.4, Nominal no bk, centrality: (%i-%i)";
+		data_data_title = "Raw_Nominal_no_bk_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_nominal_no_bk_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/raw_nominal_no_bk_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_no_bk_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_nominal_no_bk_%i_%i.png";
 	}
+
 	if (type == 6)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, Nominal uniform rebin, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, Nominal uniform rebin, centrality: (%i-%i)";
-			data_data_title = "Eta_Nominal_uniform_rebin_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_nominal_uniform_rebin_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_nominal_uniform_rebin_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, Nominal uniform rebin, centrality: (%i-%i)";
-			data_mc_title = "|#eta| < 2.4, Nominal uniform rebin, centrality: (%i-%i)";
-			data_data_title = "Raw_Nominal_uniform_rebin_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Nominal uniform rebin, centrality: (%i-%i)";
+		data_mc_title = "|#eta| < 2.4, Nominal uniform rebin, centrality: (%i-%i)";
+		data_data_title = "Raw_Nominal_uniform_rebin_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_nominal_uniform_rebin_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/raw_nominal_uniform_rebin_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_uniform_rebin_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_nominal_uniform_rebin_%i_%i.png";
 	}
 	if (type == 7)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, Nominal mass range, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, Nominal mass range, centrality: (%i-%i)";
-			data_data_title = "Eta_Nominal_mass_range_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/Nominal_mass_range/Eta_nominal_mass_range_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/Nominal_mass_range/Eta_nominal_mass_range_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/Nominal_mass_range/Eta_nominal_mass_range_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_nominal_nominal_mass_range_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_nominal_nominal_mass_range_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, Nominal mass range, centrality: (%i-%i)";
-			data_mc_title = "|#eta| < 2.4, Nominal mass range, centrality: (%i-%i)";
-			data_data_title = "Raw_Nominal_mass_range_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Nominal mass range, centrality: (%i-%i)";
+		data_mc_title = "|#eta| < 2.4, Nominal mass range, centrality: (%i-%i)";
+		data_data_title = "Raw_Nominal_mass_range_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_nominal_mass_range_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/raw_nominal_mass_range_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_mass_range_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_nominal_mass_range_%i_%i.png";
 	}
 
 	if (type == 8)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, HF up, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, HF up, centrality: (%i-%i)";
-			data_data_title = "Eta_HF_up_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/HFup/Eta_HF_up_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/HFup/Eta_HF_up_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/HFup/Eta_HF_up_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_HF_up_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_HF_up_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, HF up, centrality: (%i-%i)";
-			data_mc_title = "|#eta| < 2.4, HF up, centrality: (%i-%i)";
-			data_data_title = "Raw_HF_up_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, HF up, centrality: (%i-%i)";
+		data_mc_title = "|#eta| < 2.4, HF up, centrality: (%i-%i)";
+		data_data_title = "Raw_HF_up_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/HFup/Raw_HF_up_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/HFup/Raw_HF_up_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/HFup/Raw_HF_up_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_HF_up_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/Raw_HF_up_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/HFup/Raw_HF_up_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/HFup/Raw_HF_up_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/HFup/Raw_HF_up_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_HF_up_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/Raw_HF_up_%i_%i.png";
 	}
 
 	if (type == 9)
 	{
-		if (iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 1.0, HF down, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, HF down, centrality: (%i-%i)";
-			data_data_title = "Eta_HF_down_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/HFdown/Eta_HF_down_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/HFdown/Eta_HF_down_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/HFdown/Eta_HF_down_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_HF_down_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_HF_down_%i_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "PbPb, |#eta| < 2.4, HF down, centrality: (%i-%i)";
-			data_mc_title = "|#eta| < 2.4, HF down, centrality: (%i-%i)";
-			data_data_title = "Raw_HF_down_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, HF down, centrality: (%i-%i)";
+		data_mc_title = "|#eta| < 2.4, HF down, centrality: (%i-%i)";
+		data_data_title = "Raw_HF_down_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/HFdown/Raw_HF_down_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/HFdown/Raw_HF_down_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/HFdown/Raw_HF_down_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_HF_down_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/Raw_HF_down_%i_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/HFdown/Raw_HF_down_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/HFdown/Raw_HF_down_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/HFdown/Raw_HF_down_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_HF_down_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/Raw_HF_down_%i_%i.png";
 	}
 
 	for (int cent = 0; cent < nbins_cent; cent++)
@@ -1146,7 +820,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		cout << "Minimum is " << h_chisquare[cent]->GetBinContent(minBinX, minBinY) << endl;
 
 		// This is to export minimum region
-		this->saveChi2Region(h_chisquare[cent], minBinX, minBinY, type, iseta, cent, 3, false);
+		this->saveChi2Region(h_chisquare[cent], minBinX, minBinY, type, cent, 3, false);
 		this->getcontour(h_chisquare[cent], 1, minBinX, minBinY, minContent, contour_x_left_onesig_HI, contour_x_right_onesig_HI);
 
 		g_HI_contour_1sig_left = new TGraph(nbins_smear, contour_x_left_weighted_onesig, contour_y_HI[cent]);
@@ -1157,7 +831,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		TString T_contour_saving_path = Form(contour_saving_path, cenlowlimit[cent], cenhighlimit[cent]);
 		TString T_chi2_title = Form(chi2_title, cenlowlimit[cent], cenhighlimit[cent]);
 
-		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, cent, iseta, false, T_chi2_title, T_contour_saving_path);
+		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, cent, false, T_chi2_title, T_contour_saving_path);
 
 		Double_t xMin = h_chisquare[cent]->GetXaxis()->GetBinLowEdge(minBinX);
 		Double_t xMax = h_chisquare[cent]->GetXaxis()->GetBinUpEdge(minBinX);
@@ -1504,14 +1178,8 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Rebin(4);
 
 			TH1D *vaccum_plot;
-			if (!iseta)
-			{
-				vaccum_plot = (TH1D *)f_temp_signal->Get(Form("FA_nominal_%i", cent));
-			}
-			else
-			{
-				vaccum_plot = (TH1D *)f_temp_signal->Get(Form("Eta_nominal_%i", cent));
-			}
+
+			vaccum_plot = (TH1D *)f_temp_signal->Get(Form("FA_nominal_%i", cent));
 
 			this->areanormalize(vaccum_plot);
 			vaccum_plot->Rebin(4);
@@ -1594,10 +1262,9 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			pt->SetTextSize(0.03);
 			pt->SetBorderSize(0); // No border
 			pt->AddText("Nominal");
-			if (!iseta)
-				pt->AddText("|#eta| < 2.4");
-			else
-				pt->AddText("|#eta| < 1");
+
+			pt->AddText("|#eta| < 2.4");
+
 			pt->AddText(Form("Area 1 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 1), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 1)));
 			pt->AddText(Form("Area 2 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 2), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 2)));
 			pt->AddText(Form("Area 3 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 3), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 3)));
@@ -1641,16 +1308,16 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			h_ratio->GetYaxis()->SetTitle("Data / Template");
 			h_ratio->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV)");
 
-			h_ratio->GetYaxis()->SetTitleFont(42);	 // Times, bold
-			h_ratio->GetYaxis()->SetLabelFont(42);	 // Times, bold
-			h_ratio->GetYaxis()->SetTitleSize(0.1); // Title size
-			h_ratio->GetYaxis()->SetLabelSize(0.1); // Label size
-			h_ratio->GetXaxis()->SetTitleFont(42);	 // Times, bold
-			h_ratio->GetXaxis()->SetLabelFont(42);	 // Times, bold
-			h_ratio->GetXaxis()->SetTitleSize(0.15); // Title size
-			h_ratio->GetXaxis()->SetLabelSize(0.15); // Label size
-			h_ratio->SetLineWidth(1);				 // Make the outline thick
-			h_ratio->GetYaxis()->SetTitleOffset(0.4);  // try 0.45 to 0.6 range
+			h_ratio->GetYaxis()->SetTitleFont(42);	  // Times, bold
+			h_ratio->GetYaxis()->SetLabelFont(42);	  // Times, bold
+			h_ratio->GetYaxis()->SetTitleSize(0.1);	  // Title size
+			h_ratio->GetYaxis()->SetLabelSize(0.1);	  // Label size
+			h_ratio->GetXaxis()->SetTitleFont(42);	  // Times, bold
+			h_ratio->GetXaxis()->SetLabelFont(42);	  // Times, bold
+			h_ratio->GetXaxis()->SetTitleSize(0.15);  // Title size
+			h_ratio->GetXaxis()->SetLabelSize(0.15);  // Label size
+			h_ratio->SetLineWidth(1);				  // Make the outline thick
+			h_ratio->GetYaxis()->SetTitleOffset(0.4); // try 0.45 to 0.6 range
 
 			h_ratio_vaccum->SetLineColor(kRed);
 			h_ratio_vaccum->SetMarkerColor(kRed);
@@ -1701,134 +1368,80 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		c_data_data_bk[cent]->SaveAs(Form(data_data_saving_path, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 	}
 
-	g_HI_dmass = new TGraphErrors(5, xposition_HI, dMass_HI, xposition_err_HI, dMass_Err_HI);
-	g_HI_dwidth = new TGraphErrors(5, xposition_HI, dWidth_HI, xposition_err_HI, dWidth_Err_HI);
+	if (version == 0)
+	{
+		savingrootfilename = "All_plots_version_0.root";
+	}
+	if (version == 1)
+	{
+		savingrootfilename = "All_plots_version_1.root";
+	}
+	if (version == 2)
+	{
+		savingrootfilename = "All_plots_version_2.root";
+	}
 
-	TFile *temp = new TFile("All_plots.root", "UPDATE");
+	TFile *temp = new TFile(savingrootfilename, "UPDATE");
 	temp->cd();
 
 	if (type == 1)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_nominal", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_nominal", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_nominal", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal", 2);
-		}
+
+		g_HI_dmass->Write("HI_dM_chi2_raw_nominal", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal", 2);
 	}
 	if (type == 2)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_tnpU", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_tnpU", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_tnpU", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_tnpU", 2);
-		}
+
+		g_HI_dmass->Write("HI_dM_chi2_raw_tnpU", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_tnpU", 2);
 	}
 	if (type == 3)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_tnpD", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_tnpD", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_tnpD", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_tnpD", 2);
-		}
+		g_HI_dmass->Write("HI_dM_chi2_raw_tnpD", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_tnpD", 2);
 	}
 	if (type == 4)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_acoon", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_acoon", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_acoon", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_acoon", 2);
-		}
+
+		g_HI_dmass->Write("HI_dM_chi2_raw_acoon", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_acoon", 2);
 	}
 	if (type == 5)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_nominal_no_bk", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_nominal_no_bk", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_nominal_no_bk", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_no_bk", 2);
-		}
+
+		g_HI_dmass->Write("HI_dM_chi2_raw_nominal_no_bk", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_no_bk", 2);
 	}
 	if (type == 6)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_nominal_uniform_rebin", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_nominal_uniform_rebin", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_nominal_uniform_rebin", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_uniform_rebin", 2);
-		}
+
+		g_HI_dmass->Write("HI_dM_chi2_raw_nominal_uniform_rebin", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_uniform_rebin", 2);
 	}
 	if (type == 7)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_nominal_mass_range", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_nominal_mass_range", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_nominal_mass_range", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_mass_range", 2);
-		}
+
+		g_HI_dmass->Write("HI_dM_chi2_raw_nominal_mass_range", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_mass_range", 2);
 	}
 	if (type == 8)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_HF_up", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_HF_up", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_HF_up", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_HF_up", 2);
-		}
+
+		g_HI_dmass->Write("HI_dM_chi2_raw_HF_up", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_HF_up", 2);
 	}
 	if (type == 9)
 	{
-		if (iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_HF_down", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_HF_down", 2);
-		}
-		if (!iseta)
-		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_HF_down", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_HF_down", 2);
-		}
+
+		g_HI_dmass->Write("HI_dM_chi2_raw_HF_down", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_HF_down", 2);
 	}
 
 	temp->Close();
 }
 
-void chisquaretest::plottingandformattingpp(int type, bool iseta)
+void chisquaretest::plottingandformattingpp(int type, int version)
 {
 
 	TString chi2_title;
@@ -1846,197 +1459,111 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 	// type 4 = Acoon
 	// type 5 = nominal without bk subtraction
 
+	if (version == 0)
+	{
+		prefix = "./chi2pp/version_0";
+	}
+	if (version == 1)
+	{
+		prefix = "./chi2pp/version_1";
+	}
+	if (version == 2)
+	{
+		prefix = "./chi2pp/version_2";
+	}
+
 	if (type == 1)
 	{
-		if (iseta)
-		{
-			chi2_title = "pp, |#eta| < 1.0, Nominal, Period: (%i)";
-			data_mc_title = "Eta cut, Nominal, Period: (%i)";
-			data_data_title = "Eta_Nominal_%i";
+		chi2_title = "pp, |#eta| < 2.4, Nominal, Period: (%i)";
+		data_mc_title = "WholeAcceptance, Nominal, Period: (%i)";
+		data_data_title = "Raw_Nominal_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal/Eta_Nominal_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Nominal/Eta_Nominal_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal/Eta_Nominal_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/eta/Eta_Nominal_%i.png";
-			contour_saving_path = "./chi2pp/contour/eta/Eta_Nominal_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "pp, |#eta| < 2.4, Nominal, Period: (%i)";
-			data_mc_title = "WholeAcceptance, Nominal, Period: (%i)";
-			data_data_title = "Raw_Nominal_%i";
-
-			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal/Raw_Nominal_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Nominal/Raw_Nominal_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal/Raw_Nominal_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/raw/Raw_Nominal_%i.png";
-			contour_saving_path = "./chi2pp/contour/raw/raw_Nominal_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal/Raw_Nominal_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal/Raw_Nominal_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal/Raw_Nominal_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Nominal_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Nominal_%i.png";
 	}
 	if (type == 2)
 	{
-		if (iseta)
-		{
-			chi2_title = "pp, |#eta| < 1.0, tnpU, Period: (%i)";
-			data_mc_title = "Eta, tnpU, Period: (%i)";
-			data_data_title = "Eta_tnpU_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/tnpU/Eta_tnpU_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/tnpU/Eta_tnpU_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/tnpU/Eta_tnpU_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/eta/Eta_tnpU_%i.png";
-			contour_saving_path = "./chi2pp/contour/eta/Eta_tnpU_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "pp, |#eta| < 2.4, tnpU, Period: (%i)";
-			data_mc_title = "WholeAcceptance, tnpU, Period: (%i)";
-			data_data_title = "Raw_tnpU_%i";
+		chi2_title = "pp, |#eta| < 2.4, tnpU, Period: (%i)";
+		data_mc_title = "WholeAcceptance, tnpU, Period: (%i)";
+		data_data_title = "Raw_tnpU_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/raw/tnpU/Raw_tnpU_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/tnpU/Raw_tnpU_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/raw/tnpU/Raw_tnpU_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/raw/Raw_tnpU_%i.png";
-			contour_saving_path = "./chi2pp/contour/raw/raw_tnpU_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/tnpU/Raw_tnpU_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/tnpU/Raw_tnpU_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/tnpU/Raw_tnpU_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpU_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_tnpU_%i.png";
 	}
 	if (type == 3)
 	{
-		if (iseta)
-		{
-			chi2_title = "pp, |#eta| < 1.0, tnpD, Period: (%i)";
-			data_mc_title = "Eta cut, tnpD, Period: (%i)";
-			data_data_title = "Eta_tnpD_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/tnpD/Eta_tnpD_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/tnpD/Eta_tnpD_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/tnpD/Eta_tnpD_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/eta/Eta_tnpD_%i.png";
-			contour_saving_path = "./chi2pp/contour/eta/eta_tnpD_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "pp, |#eta| < 2.4, tnpD, Period: (%i)";
-			data_mc_title = "WholeAcceptance, tnpD, Period: (%i)";
-			data_data_title = "Raw_tnpD_%i";
+		chi2_title = "pp, |#eta| < 2.4, tnpD, Period: (%i)";
+		data_mc_title = "WholeAcceptance, tnpD, Period: (%i)";
+		data_data_title = "Raw_tnpD_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/raw/tnpD/Raw_tnpD_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/tnpD/Raw_tnpD_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/raw/tnpD/Raw_tnpD_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/raw/Raw_tnpD_%i.png";
-			contour_saving_path = "./chi2pp/contour/raw/raw_tnpD_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/tnpD/Raw_tnpD_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/tnpD/Raw_tnpD_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/tnpD/Raw_tnpD_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpD_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_tnpD_%i.png";
 	}
 	if (type == 4)
 	{
-		if (iseta)
-		{
-			chi2_title = "pp, |#eta| < 1.0, Acoon, Period: (%i)";
-			data_mc_title = "Eta cut, Acoon, Period: (%i)";
-			data_data_title = "Eta_Acoon_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/Acoon/Eta_Acoon_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Acoon/Eta_Acoon_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/Acoon/Eta_Acoon_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/eta/Eta_Acoon_%i.png";
-			contour_saving_path = "./chi2pp/contour/eta/Eta_Acoon_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "pp, |#eta| < 2.4, Acoon, Period: (%i)";
-			data_mc_title = "WholeAcceptance, Acoon, Period: (%i)";
-			data_data_title = "Raw_Acoon_%i";
+		chi2_title = "pp, |#eta| < 2.4, Acoon, Period: (%i)";
+		data_mc_title = "WholeAcceptance, Acoon, Period: (%i)";
+		data_data_title = "Raw_Acoon_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/raw/Acoon/Raw_Acoon_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Acoon/Raw_Acoon_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/raw/Acoon/Raw_Acoon_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/raw/Raw_Acoon_%i.png";
-			contour_saving_path = "./chi2pp/contour/raw/raw_Acoon_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Acoon/Raw_Acoon_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acoon/Raw_Acoon_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Acoon/Raw_Acoon_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Acoon_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Acoon_%i.png";
 	}
 
 	if (type == 5)
 	{
-		if (iseta)
-		{
-			chi2_title = "pp, |#eta| < 1.0, Nominal no bk, Period: (%i)";
-			data_mc_title = "Eta cut, Nominal no bk, Period: (%i)";
-			data_data_title = "Eta_Nominal_no_bk_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal_no_bk/Eta_nominal_no_bk_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Nominal_no_bk/Eta_nominal_no_bk_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal_no_bk/Eta_nominal_no_bk_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/eta/Eta_nominal_no_bk_%i.png";
-			contour_saving_path = "./chi2pp/contour/eta/Eta_nominal_no_bk_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "pp, |#eta| < 2.4, Nominal no bk, Period: (%i)";
-			data_mc_title = "|#eta| < 2.4, Nominal no bk, Period: (%i)";
-			data_data_title = "Raw_Nominal_no_bk_%i";
+		chi2_title = "pp, |#eta| < 2.4, Nominal no bk, Period: (%i)";
+		data_mc_title = "|#eta| < 2.4, Nominal no bk, Period: (%i)";
+		data_data_title = "Raw_Nominal_no_bk_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/raw/Raw_nominal_no_bk_%i.png";
-			contour_saving_path = "./chi2pp/contour/raw/raw_nominal_no_bk_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_no_bk_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_nominal_no_bk_%i.png";
 	}
 
 	if (type == 6)
 	{
-		if (iseta)
-		{
-			chi2_title = "pp, |#eta| < 1.0, Nominal uniform rebin , Period: (%i)";
-			data_mc_title = "Eta cut, Nominal uniform rebin, Period: (%i)";
-			data_data_title = "Eta_Nominal_uniform_rebin_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal_uniform_rebin/Eta_nominal_uniform_rebin_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/eta/Eta_nominal_uniform_rebin_%i.png";
-			contour_saving_path = "./chi2pp/contour/eta/Eta_nominal_uniform_rebin_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "pp, |#eta| < 2.4, Nominal uniform rebin, Period: (%i)";
-			data_mc_title = "|#eta| < 2.4, Nominal uniform rebin, Period: (%i)";
-			data_data_title = "Raw_Nominal_uniform_rebin_%i";
+		chi2_title = "pp, |#eta| < 2.4, Nominal uniform rebin, Period: (%i)";
+		data_mc_title = "|#eta| < 2.4, Nominal uniform rebin, Period: (%i)";
+		data_data_title = "Raw_Nominal_uniform_rebin_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/raw/Raw_nominal_uniform_rebin_%i.png";
-			contour_saving_path = "./chi2pp/contour/raw/raw_nominal_uniform_rebin_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_uniform_rebin_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_nominal_uniform_rebin_%i.png";
 	}
 
 	if (type == 7)
 	{
-		if (iseta)
-		{
-			chi2_title = "pp, |#eta| < 1.0, Nominal mass range, Period: (%i)";
-			data_mc_title = "Eta cut, Nominal mass range, Period: (%i)";
-			data_data_title = "Eta_Nominal_mass_range_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/Nominal_mass_range/Eta_nominal_mass_range_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Nominal_mass_range/Eta_nominal_mass_range_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/Nominal_mass_range/Eta_nominal_mass_range_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/eta/Eta_nominal_mass_range_%i.png";
-			contour_saving_path = "./chi2pp/contour/eta/Eta_nominal_mass_range_%i.png";
-		}
-		if (!iseta)
-		{
-			chi2_title = "pp, |#eta| < 2.4, Nominal mass range, Period: (%i)";
-			data_mc_title = "|#eta| < 2.4, Nominal mass range, Period: (%i)";
-			data_data_title = "Raw_Nominal_mass_range_%i";
+		chi2_title = "pp, |#eta| < 2.4, Nominal mass range, Period: (%i)";
+		data_mc_title = "|#eta| < 2.4, Nominal mass range, Period: (%i)";
+		data_data_title = "Raw_Nominal_mass_range_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/raw/Nominal_mass_range/Raw_nominal_mass_range_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/raw/Raw_nominal_mass_range_%i.png";
-			contour_saving_path = "./chi2pp/contour/raw/raw_nominal_mass_range_%i.png";
-		}
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal_mass_range/Raw_nominal_mass_range_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_mass_range_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_nominal_mass_range_%i.png";
 	}
 
 	for (int runperiod = 0; runperiod < 23; runperiod++)
@@ -2090,7 +1617,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 		}
 
 		// This is to export minimum region
-		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, type, iseta, runperiod, 3, true);
+		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, type, runperiod, 3, true);
 
 		this->getcontour(h_chisquare_pp[runperiod], 2, minBinX, minBinY, minContent, contour_x_left_onesig_HI, contour_x_right_onesig_HI);
 
@@ -2102,7 +1629,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 		TString T_contour_saving_path = Form(contour_saving_path, runperiod);
 		TString T_chi2_title = Form(chi2_title, runperiod);
 
-		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, iseta, true, T_chi2_title, T_contour_saving_path, type);
+		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, true, T_chi2_title, T_contour_saving_path, type);
 
 		Double_t xMin = h_chisquare_pp[runperiod]->GetXaxis()->GetBinLowEdge(minBinX);
 		Double_t xMax = h_chisquare_pp[runperiod]->GetXaxis()->GetBinUpEdge(minBinX);
@@ -2469,99 +1996,65 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 	g_pp_dmass = new TGraphErrors(22, xposition, dMass_pp, xposition_err, dMass_Err_pp);
 	g_pp_dwidth = new TGraphErrors(22, xposition, dWidth_pp, xposition_err, dWidth_Err_pp);
 
-	TFile *temp = new TFile("All_plots.root", "UPDATE");
+	TString savingrootfilename;
+
+	if (version == 0)
+	{
+		savingrootfilename = "All_plots_version_0.root";
+	}
+	if (version == 1)
+	{
+		savingrootfilename = "All_plots_version_1.root";
+	}
+	if (version == 2)
+	{
+		savingrootfilename = "All_plots_version_2.root";
+	}
+
+	TFile *temp = new TFile(savingrootfilename, "UPDATE");
 	temp->cd();
 
 	if (type == 1)
 	{
-		if (iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_eta_nominal", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_eta_nominal", 2);
-		}
-		if (!iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_raw_nominal", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal", 2);
-		}
+
+		g_pp_dmass->Write("pp_dM_chi2_raw_nominal", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal", 2);
 	}
 	if (type == 2)
 	{
-		if (iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_eta_tnpU", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_eta_tnpU", 2);
-		}
-		if (!iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_raw_tnpU", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_raw_tnpU", 2);
-		}
+
+		g_pp_dmass->Write("pp_dM_chi2_raw_tnpU", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_tnpU", 2);
 	}
 	if (type == 3)
 	{
-		if (iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_eta_tnpD", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_eta_tnpD", 2);
-		}
-		if (!iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_raw_tnpD", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_raw_tnpD", 2);
-		}
+
+		g_pp_dmass->Write("pp_dM_chi2_raw_tnpD", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_tnpD", 2);
 	}
 	if (type == 4)
 	{
-		if (iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_eta_acoon", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_eta_acoon", 2);
-		}
-		if (!iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_raw_acoon", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_raw_acoon", 2);
-		}
+
+		g_pp_dmass->Write("pp_dM_chi2_raw_acoon", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_acoon", 2);
 	}
 	if (type == 5)
 	{
-		if (iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_eta_nominal_no_bk", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_eta_nominal_no_bk", 2);
-		}
-		if (!iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_raw_nominal_no_bk", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_no_bk", 2);
-		}
+
+		g_pp_dmass->Write("pp_dM_chi2_raw_nominal_no_bk", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_no_bk", 2);
 	}
 	if (type == 6)
 	{
-		if (iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_eta_nominal_uniform_rebin", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_eta_nominal_uniform_rebin", 2);
-		}
-		if (!iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_raw_nominal_uniform_rebin", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_uniform_rebin", 2);
-		}
+		g_pp_dmass->Write("pp_dM_chi2_raw_nominal_uniform_rebin", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_uniform_rebin", 2);
 	}
+
 	if (type == 7)
 	{
-		if (iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_eta_nominal_mass_range", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_eta_nominal_mass_range", 2);
-		}
-		if (!iseta)
-		{
-			g_pp_dmass->Write("pp_dM_chi2_raw_nominal_mass_range", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_mass_range", 2);
-		}
+
+		g_pp_dmass->Write("pp_dM_chi2_raw_nominal_mass_range", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_mass_range", 2);
 	}
 
 	temp->Close();
@@ -2594,214 +2087,57 @@ void chisquaretest::bincontentcheck(bool isbk)
 	}
 }
 
-void chisquaretest::RebinAll(bool iseta, int type)
+void chisquaretest::RebinAll(int type)
 {
-
-	std::vector<double> newBinEdges_0_100 = createCustomBinning(h_data[0], 60, 80, 10, 80, 86, 4, 95, 100, 5, 100, 120, 40);
-	std::vector<double> newBinEdges_mass_range = createCustomBinning(h_data[0], 70, 80, 5, 80, 86, 4, 95, 100, 5, 100, 110, 20);
-
-	int nNewBins = newBinEdges_0_100.size() - 1;
-	int nNewBins_mass_range = newBinEdges_mass_range.size() - 1;
-
-	Double_t *binEdgesArray = &newBinEdges_0_100[0];
-	Double_t *binEdgesArray_mass_range = &newBinEdges_mass_range[0];
-
-	if (iseta)
+	if (type == 6)
 	{
-		if (type == 6)
-		{
-			for (int cent = 0; cent < nbins_cent; cent++)
-			{
-				if (!((cent < 4) || (cent == 10)))
-					continue;
-
-				h_data[cent]->Rebin(4);
-				h_data_bksub[cent]->Rebin(4);
-
-				for (int shift = 0; shift < nbins_mass_shift; shift++)
-				{
-					for (int smear = 0; smear < nbins_smear; smear++)
-					{
-
-						h_mc_signal[shift][smear][cent]->Rebin(4);
-						h_mc_signal_zoomin[shift][smear][cent]->Rebin(4);
-					}
-				}
-			}
-		}
-		else if (type == 7)
-		{
-			for (int cent = 0; cent < nbins_cent; cent++)
-			{
-				if (!((cent < 4) || (cent == 10)))
-					continue;
-
-				h_data[cent] = (TH1D *)h_data[cent]->Rebin(nNewBins_mass_range, Form("mass_array_data_witheta_rebin_%i", cent), binEdgesArray_mass_range);
-				h_data_bksub[cent] = (TH1D *)h_data_bksub[cent]->Rebin(nNewBins_mass_range, Form("normalized_mc_bk_rebinned_%i", cent), binEdgesArray_mass_range);
-
-				for (int shift = 0; shift < nbins_mass_shift; shift++)
-				{
-					for (int smear = 0; smear < nbins_smear; smear++)
-					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Rebin(nNewBins_mass_range, Form("modifiedmass_eta_without_eff_%i_%i_%i_new", shift, smear, cent), binEdgesArray_mass_range);
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)h_mc_signal_zoomin[shift][smear][cent]->Rebin(nNewBins_mass_range, Form("modifiedmass_eta_without_eff_%i_%i_%i_zoomin", shift, smear, cent), binEdgesArray_mass_range);
-					}
-				}
-			}
-		}
-		else
-		{
-			for (int cent = 0; cent < nbins_cent; cent++)
-			{
-				if (!((cent < 4) || (cent == 10)))
-					continue;
-
-				h_data[cent] = (TH1D *)h_data[cent]->Rebin(nNewBins, Form("mass_array_data_witheta_rebin_%i", cent), binEdgesArray);
-				h_data_bksub[cent] = (TH1D *)h_data_bksub[cent]->Rebin(nNewBins, Form("normalized_mc_bk_rebinned_%i", cent), binEdgesArray);
-
-				for (int shift = 0; shift < nbins_mass_shift; shift++)
-				{
-					for (int smear = 0; smear < nbins_smear; smear++)
-					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Rebin(nNewBins, Form("modifiedmass_eta_without_eff_%i_%i_%i_new", shift, smear, cent), binEdgesArray);
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)h_mc_signal_zoomin[shift][smear][cent]->Rebin(nNewBins, Form("modifiedmass_eta_without_eff_%i_%i_%i_zoomin", shift, smear, cent), binEdgesArray);
-					}
-				}
-			}
-		}
+		// Here is empty since we want to have no rebin
 	}
-
-	if (!iseta)
+	else
 	{
-		if (type == 6)
+		for (int cent = 0; cent < nbins_cent; cent++)
 		{
-			// Here is empty since we want to have no rebin
-		}
-		else
-		{
-			for (int cent = 0; cent < nbins_cent; cent++)
+			if (!((cent < 4) || (cent == 10)))
+				continue;
+
+			h_data[cent]->Rebin(4);
+			h_data_bksub[cent]->Rebin(4);
+
+			for (int shift = 0; shift < nbins_mass_shift; shift++)
 			{
-				if (!((cent < 4) || (cent == 10)))
-					continue;
-
-				h_data[cent]->Rebin(4);
-				h_data_bksub[cent]->Rebin(4);
-
-				for (int shift = 0; shift < nbins_mass_shift; shift++)
+				for (int smear = 0; smear < nbins_smear; smear++)
 				{
-					for (int smear = 0; smear < nbins_smear; smear++)
-					{
-						h_mc_signal[shift][smear][cent]->Rebin(4);
-						h_mc_signal_zoomin[shift][smear][cent]->Rebin(4);
-					}
+					h_mc_signal[shift][smear][cent]->Rebin(4);
+					h_mc_signal_zoomin[shift][smear][cent]->Rebin(4);
 				}
 			}
 		}
 	}
 }
 
-void chisquaretest::RebinAllpp(bool iseta, int type)
+void chisquaretest::RebinAllpp(int type)
 {
-	std::vector<double> newBinEdges_0_100 = createCustomBinning(h_data_pp[0], 60, 80, 10, 80, 86, 4, 95, 100, 5, 100, 120, 40);
-	std::vector<double> newBinEdges_mass_range = createCustomBinning(h_data_pp[0], 70, 80, 5, 80, 86, 4, 95, 100, 5, 100, 110, 20);
 
-	int nNewBins = newBinEdges_0_100.size() - 1;
-	int nNewBins_mass_range = newBinEdges_mass_range.size() - 1;
-
-	Double_t *binEdgesArray = &newBinEdges_0_100[0];
-	Double_t *binEdgesArray_mass_range = &newBinEdges_mass_range[0];
-
-	if (iseta)
+	if (type == 6)
 	{
-		if (type == 6)
-		{
-			for (int runperiod = 0; runperiod < 23; runperiod++)
-			{
-
-				h_data_pp[runperiod]->Rebin(4);
-				h_data_bksub_pp[runperiod]->Rebin(4);
-
-				for (int shift = 0; shift < nbins_mass_shift; shift++)
-				{
-					for (int smear = 0; smear < nbins_smear; smear++)
-					{
-						if (runperiod == 0)
-						{
-							h_mc_signal_pp_zoomin[shift][smear]->Rebin(4);
-							h_mc_signal_pp[shift][smear][runperiod]->Rebin(4);
-						}
-					}
-				}
-			}
-		}
-		else if (type == 7)
-		{
-			for (int runperiod = 0; runperiod < 23; runperiod++)
-			{
-
-				h_data_pp[runperiod] = (TH1D *)h_data_pp[runperiod]->Rebin(nNewBins_mass_range, Form("mass_array_data_witheta_rebin_%i", runperiod), binEdgesArray_mass_range);
-				h_data_bksub_pp[runperiod] = (TH1D *)h_data_bksub_pp[runperiod]->Rebin(nNewBins_mass_range, Form("normalized_mc_bk_rebinned_%i", runperiod), binEdgesArray_mass_range);
-
-				for (int shift = 0; shift < nbins_mass_shift; shift++)
-				{
-					for (int smear = 0; smear < nbins_smear; smear++)
-					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)h_mc_signal_pp[shift][smear][runperiod]->Rebin(nNewBins_mass_range, Form("modifiedmass_eta_without_eff_%i_%i_%i_new", shift, smear, runperiod), binEdgesArray_mass_range);
-						if (runperiod == 22)
-						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)h_mc_signal_pp_zoomin[shift][smear]->Rebin(nNewBins_mass_range, Form("modifiedmass_eta_without_eff_%i_%i_%i_zoomin", shift, smear, runperiod), binEdgesArray_mass_range);
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			for (int runperiod = 0; runperiod < 23; runperiod++)
-			{
-
-				h_data_pp[runperiod] = (TH1D *)h_data_pp[runperiod]->Rebin(nNewBins, Form("mass_array_data_witheta_rebin_%i", runperiod), binEdgesArray);
-				h_data_bksub_pp[runperiod] = (TH1D *)h_data_bksub_pp[runperiod]->Rebin(nNewBins, Form("normalized_mc_bk_rebinned_%i", runperiod), binEdgesArray);
-
-				for (int shift = 0; shift < nbins_mass_shift; shift++)
-				{
-					for (int smear = 0; smear < nbins_smear; smear++)
-					{
-
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)h_mc_signal_pp[shift][smear][runperiod]->Rebin(nNewBins, Form("modifiedmass_eta_without_eff_%i_%i_%i_new", shift, smear, runperiod), binEdgesArray);
-						if (runperiod == 22)
-						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)h_mc_signal_pp_zoomin[shift][smear]->Rebin(nNewBins, Form("modifiedmass_eta_without_eff_%i_%i_%i_zoomin", shift, smear, runperiod), binEdgesArray);
-						}
-					}
-				}
-			}
-		}
+		// Here is empty since we want to have no rebin
 	}
-
-	if (!iseta)
+	else
 	{
-		if (type == 6)
+		for (int runperiod = 0; runperiod < 23; runperiod++)
 		{
-			// Here is empty since we want to have no rebin
-		}
-		else
-		{
-			for (int runperiod = 0; runperiod < 23; runperiod++)
+			h_data_pp[runperiod]->Rebin(4);
+			h_data_bksub_pp[runperiod]->Rebin(4);
+
+			for (int shift = 0; shift < nbins_mass_shift; shift++)
 			{
-				h_data_pp[runperiod]->Rebin(4);
-				h_data_bksub_pp[runperiod]->Rebin(4);
-
-				for (int shift = 0; shift < nbins_mass_shift; shift++)
+				for (int smear = 0; smear < nbins_smear; smear++)
 				{
-					for (int smear = 0; smear < nbins_smear; smear++)
-					{
 
-						if (runperiod == 0)
-						{
-							h_mc_signal_pp[shift][smear][runperiod]->Rebin(4);
-							h_mc_signal_pp_zoomin[shift][smear]->Rebin(4);
-						}
+					if (runperiod == 0)
+					{
+						h_mc_signal_pp[shift][smear][runperiod]->Rebin(4);
+						h_mc_signal_pp_zoomin[shift][smear]->Rebin(4);
 					}
 				}
 			}
@@ -3287,7 +2623,7 @@ std::vector<double> chisquaretest::createCustomBinning(
 	return newBins;
 }
 
-void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool iseta, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0)
+void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0)
 {
 
 	onesig_left = RemoveInvalidPoints(onesig_left);
@@ -3307,14 +2643,7 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	temp_c1->SetTickx(1);
 	temp_c1->SetTicky(1);
 
-	if (iseta && !ispp)
-	{
-		onesig_left->GetXaxis()->SetLimits(eta_mass_shift_array_low[iteration], eta_mass_shift_array_high[iteration]);
-		onesig_left->GetYaxis()->SetLimits(eta_mass_smear_array_low[iteration], eta_mass_smear_array_high[iteration]);
-		onesig_left->GetXaxis()->SetRangeUser(eta_mass_shift_array_low[iteration], eta_mass_shift_array_high[iteration]);
-		onesig_left->GetYaxis()->SetRangeUser(eta_mass_smear_array_low[iteration], eta_mass_smear_array_high[iteration]);
-	}
-	if (!iseta && !ispp)
+	if (!ispp)
 	{
 		onesig_left->GetXaxis()->SetLimits(raw_mass_shift_array_low[iteration], raw_mass_shift_array_high[iteration]);
 		onesig_left->GetYaxis()->SetLimits(raw_mass_smear_array_low[iteration], raw_mass_smear_array_high[iteration]);
@@ -3323,53 +2652,27 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	}
 	if (ispp)
 	{
-		if (iseta)
+
+		if (typeofpp == 5)
 		{
-			if (typeofpp == 5)
-			{
-				onesig_left->GetXaxis()->SetLimits(eta_pp_mass_shift_low_without_bk, eta_pp_mass_shift_high_without_bk);
-				onesig_left->GetYaxis()->SetLimits(eta_pp_smear_low_without_bk, eta_pp_smear_high_without_bk);
-				onesig_left->GetXaxis()->SetRangeUser(eta_pp_mass_shift_low_without_bk, eta_pp_mass_shift_high_without_bk);
-				onesig_left->GetYaxis()->SetRangeUser(eta_pp_smear_low_without_bk, eta_pp_smear_high_without_bk);
-			}
-			if (typeofpp == 7)
-			{
-				onesig_left->GetXaxis()->SetLimits(eta_pp_mass_shift_low_mass_range, eta_pp_mass_shift_high_mass_range);
-				onesig_left->GetYaxis()->SetLimits(eta_pp_smear_low_mass_range, eta_pp_smear_high_mass_range);
-				onesig_left->GetXaxis()->SetRangeUser(eta_pp_mass_shift_low_mass_range, eta_pp_mass_shift_high_mass_range);
-				onesig_left->GetYaxis()->SetRangeUser(eta_pp_smear_low_mass_range, eta_pp_smear_high_mass_range);
-			}
-			else
-			{
-				onesig_left->GetXaxis()->SetLimits(eta_pp_mass_shift_low_with_bk, eta_pp_mass_shift_high_with_bk);
-				onesig_left->GetYaxis()->SetLimits(eta_pp_smear_low_with_bk, eta_pp_smear_high_with_bk);
-				onesig_left->GetXaxis()->SetRangeUser(eta_pp_mass_shift_low_with_bk, eta_pp_mass_shift_high_with_bk);
-				onesig_left->GetYaxis()->SetRangeUser(eta_pp_smear_low_with_bk, eta_pp_smear_high_with_bk);
-			}
+			onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_without_bk, raw_pp_mass_shift_high_without_bk);
+			onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_without_bk, raw_pp_smear_high_without_bk);
+			onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_without_bk, raw_pp_mass_shift_high_without_bk);
+			onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_without_bk, raw_pp_smear_high_without_bk);
 		}
-		if (!iseta)
+		if (typeofpp == 7)
 		{
-			if (typeofpp == 5)
-			{
-				onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_without_bk, raw_pp_mass_shift_high_without_bk);
-				onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_without_bk, raw_pp_smear_high_without_bk);
-				onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_without_bk, raw_pp_mass_shift_high_without_bk);
-				onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_without_bk, raw_pp_smear_high_without_bk);
-			}
-			if (typeofpp == 7)
-			{
-				onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_mass_range, raw_pp_mass_shift_high_mass_range);
-				onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_mass_range, raw_pp_smear_high_mass_range);
-				onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_mass_range, raw_pp_mass_shift_high_mass_range);
-				onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_mass_range, raw_pp_smear_high_mass_range);
-			}
-			else
-			{
-				onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_with_bk, raw_pp_mass_shift_high_with_bk);
-				onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_with_bk, raw_pp_smear_high_with_bk);
-				onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_with_bk, raw_pp_mass_shift_high_with_bk);
-				onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_with_bk, raw_pp_smear_high_with_bk);
-			}
+			onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_mass_range, raw_pp_mass_shift_high_mass_range);
+			onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_mass_range, raw_pp_smear_high_mass_range);
+			onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_mass_range, raw_pp_mass_shift_high_mass_range);
+			onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_mass_range, raw_pp_smear_high_mass_range);
+		}
+		else
+		{
+			onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_with_bk, raw_pp_mass_shift_high_with_bk);
+			onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_with_bk, raw_pp_smear_high_with_bk);
+			onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_with_bk, raw_pp_mass_shift_high_with_bk);
+			onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_with_bk, raw_pp_smear_high_with_bk);
 		}
 	}
 	// not solved until I finished modify pp
@@ -3514,69 +2817,8 @@ TGraph *chisquaretest::CombineGraphsToCircle(TGraph *graph1, TGraph *graph2)
 	TGraph *combinedGraph = new TGraph(xCombined.size(), xCombined.data(), yCombined.data());
 	return combinedGraph;
 }
-Int_t chisquaretest::mapthreecases(int type, bool isbk, bool iseff)
-{
-	// Trying to return a Int such that I don't need to deal with all those if statement.
-	if (type == 0)
-	{
-		if (isbk)
-		{
-			if (iseff)
-			{
-				// raw, bk, eff
-				return 1;
-			}
-			if (!iseff)
-			{ // raw, bk
-				return 2;
-			}
-		}
-		if (!isbk)
-		{
-			if (iseff)
-			{
-				// raw, eff
-				return 3;
-			}
-			if (!iseff)
-			{
-				// raw
-				return 4;
-			}
-		}
-	}
-	if (type == 1)
-	{
-		if (isbk)
-		{
-			if (iseff)
-			{
-				// eta, bk, eff
-				return 5;
-			}
-			if (!iseff)
-			{
-				// eta, bk
-				return 6;
-			}
-		}
-		if (!isbk)
-		{
-			if (iseff)
-			{
-				// eta, eff
-				return 7;
-			}
-			if (!iseff)
-			{
-				// eta
-				return 8;
-			}
-		}
-	}
-	return -99;
-}
-void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, bool iseta, int iteration, int region_size = 3, bool ispp = true)
+
+void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true, int version)
 {
 	if (region_size % 2 == 0)
 	{
@@ -3670,12 +2912,24 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 	if (!ispp)
 		txtname_prefix = "PbPb_";
 
-	if (iseta)
-		anotherprefix = "eta_";
-	if (!iseta)
-		anotherprefix = "FA_";
+	anotherprefix = "FA_";
 
-	std::ofstream outfile("./zoomin/" + txtname_prefix + anotherprefix + txtname + cent + ".txt");
+	TString version_prefix;
+
+	if (version == 0)
+	{
+		version_prefix = "version_0/";
+	}
+	if (version == 1)
+	{
+		version_prefix = "version_1/";
+	}
+	if (version == 2)
+	{
+		version_prefix = "version_2/";
+	}
+
+	std::ofstream outfile("./zoomin/" + version_prefix + txtname_prefix + anotherprefix + txtname + cent + ".txt");
 
 	outfile << std::fixed << std::setprecision(4); // Set fixed-point notation with 2 decimal places
 
@@ -3685,140 +2939,32 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 	outfile << "Y-axis Range: [" << y_low << ", " << y_high << "]\n";
 	outfile.close();
 }
-TH1D *chisquaretest::reducebin(TH1D *h_old_data, bool iseta, bool isleft)
+
+void chisquaretest::readlimit(int type, int cent, int version)
 {
-	if (!h_old_data)
+	TString version_prefix;
+
+	if (version == 0)
 	{
-		std::cerr << "Error: Null pointer passed to reducebin()" << std::endl;
-		return nullptr;
+		version_prefix = "version_0/";
+	}
+	if (version == 1)
+	{
+		version_prefix = "version_1/";
+	}
+	if (version == 2)
+	{
+		version_prefix = "version_2/";
 	}
 
-	int old_bins = h_old_data->GetNbinsX();
-	int bins_to_remove = (iseta) ? 2 : 5; // Remove 2 bins if iseta=true, 5 otherwise
-	int new_bins = old_bins - bins_to_remove;
-
-	if (new_bins <= 0)
-	{
-		std::cerr << "Error: Too many bins removed. No bins left!" << std::endl;
-		return nullptr;
-	}
-
-	// Retrieve bin edges
-	std::vector<double> bin_edges(old_bins + 1);
-	for (int i = 0; i <= old_bins; i++)
-	{
-		bin_edges[i] = h_old_data->GetXaxis()->GetBinLowEdge(i + 1);
-	}
-
-	// Define the new bin edges based on the removal direction
-	std::vector<double> new_bin_edges;
-	if (isleft)
-	{
-		new_bin_edges.assign(bin_edges.begin() + bins_to_remove, bin_edges.end());
-	}
-	else
-	{
-		new_bin_edges.assign(bin_edges.begin(), bin_edges.end() - bins_to_remove);
-	}
-
-	// Create the new histogram with variable binning
-	TH1D *h_new = new TH1D(Form("%s_reduced", h_old_data->GetName()), h_old_data->GetTitle(), new_bins, new_bin_edges.data());
-
-	// Copy bin contents while shifting appropriately
-	if (isleft)
-	{
-		for (int i = bins_to_remove + 1; i <= old_bins; i++)
-		{
-			int new_index = i - bins_to_remove;
-			h_new->SetBinContent(new_index, h_old_data->GetBinContent(i));
-			h_new->SetBinError(new_index, h_old_data->GetBinError(i));
-		}
-	}
-	else
-	{
-		for (int i = 1; i <= old_bins - bins_to_remove; i++)
-		{
-			h_new->SetBinContent(i, h_old_data->GetBinContent(i));
-			h_new->SetBinError(i, h_old_data->GetBinError(i));
-		}
-	}
-
-	return h_new;
-}
-
-TH1D *chisquaretest::reducebinpp(TH1D *h_old_data, bool isleft)
-{
-	if (!h_old_data)
-	{
-		std::cerr << "Error: Null pointer passed to reducebin()" << std::endl;
-		return nullptr;
-	}
-
-	int old_bins = h_old_data->GetNbinsX();
-	int bins_to_remove = 20;
-	int new_bins = old_bins - bins_to_remove;
-
-	if (new_bins <= 0)
-	{
-		std::cerr << "Error: Too many bins removed. No bins left!" << std::endl;
-		return nullptr;
-	}
-
-	// Retrieve bin edges
-	std::vector<double> bin_edges(old_bins + 1);
-	for (int i = 0; i <= old_bins; i++)
-	{
-		bin_edges[i] = h_old_data->GetXaxis()->GetBinLowEdge(i + 1);
-	}
-
-	// Define the new bin edges based on the removal direction
-	std::vector<double> new_bin_edges;
-	if (isleft)
-	{
-		new_bin_edges.assign(bin_edges.begin() + bins_to_remove, bin_edges.end());
-	}
-	else
-	{
-		new_bin_edges.assign(bin_edges.begin(), bin_edges.end() - bins_to_remove);
-	}
-
-	// Create the new histogram with variable binning
-	TH1D *h_new = new TH1D(Form("%s_pp_reduced", h_old_data->GetName()), h_old_data->GetTitle(), new_bins, new_bin_edges.data());
-
-	// Copy bin contents while shifting appropriately
-	if (isleft)
-	{
-		for (int i = bins_to_remove + 1; i <= old_bins; i++)
-		{
-			int new_index = i - bins_to_remove;
-			h_new->SetBinContent(new_index, h_old_data->GetBinContent(i));
-			h_new->SetBinError(new_index, h_old_data->GetBinError(i));
-		}
-	}
-	else
-	{
-		for (int i = 1; i <= old_bins - bins_to_remove; i++)
-		{
-			h_new->SetBinContent(i, h_old_data->GetBinContent(i));
-			h_new->SetBinError(i, h_old_data->GetBinError(i));
-		}
-	}
-
-	return h_new;
-}
-void chisquaretest::readlimit(int type, bool iseta, int cent)
-{
 	TString variation[9] = {"nominal", "tnpU", "tnpD", "acoon", "nominal_no_bk_sub", "nominal_binning", "nominal_range", "HF_up", "HF_down"};
 	TString filename = "";
 	TString type_str = "";
 	TString savedname = "";
 
-	if (iseta == 1)
-		type_str = "eta_";
-	if (iseta == 0)
-		type_str = "FA_";
+	type_str = "FA_";
 
-	filename = TString("./zoomin/") + TString("PbPb_") + type_str + variation[type - 1] + "_" + Form("%i-%i.txt", this->cenlowlimit[cent], this->cenhighlimit[cent]);
+	filename = TString("./zoomin/") + version_prefix + TString("PbPb_") + type_str + variation[type - 1] + "_" + Form("%i-%i.txt", this->cenlowlimit[cent], this->cenhighlimit[cent]);
 
 	std::ifstream file(filename);
 	if (!file)
@@ -3856,19 +3002,31 @@ void chisquaretest::readlimit(int type, bool iseta, int cent)
 	placeholder_mass_smear_array_high_zoomin = ranges[3];
 }
 
-void chisquaretest::readlimitpp(int type, bool iseta)
+void chisquaretest::readlimitpp(int type, int version)
 {
+	TString version_prefix;
+
+	if (version == 0)
+	{
+		version_prefix = "version_0/";
+	}
+	if (version == 1)
+	{
+		version_prefix = "version_1/";
+	}
+	if (version == 2)
+	{
+		version_prefix = "version_2/";
+	}
+
 	TString variation[7] = {"nominal", "tnpU", "tnpD", "acoon", "nominal_no_bk_sub", "nominal_binning", "nominal_range"};
 	TString filename = "";
 	TString type_str = "";
 	TString savedname = "";
 
-	if (iseta == 1)
-		type_str = "eta_";
-	if (iseta == 0)
-		type_str = "FA_";
+	type_str = "FA_";
 
-	filename = TString("./zoomin/") + TString("pp_") + type_str + variation[type - 1] + "_" + Form("%i.txt", 22);
+	filename = TString("./zoomin/") + version_prefix + TString("pp_") + type_str + variation[type - 1] + "_" + Form("%i.txt", 22);
 
 	std::ifstream file(filename);
 	if (!file)
