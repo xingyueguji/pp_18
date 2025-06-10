@@ -1,11 +1,14 @@
+#include "chisquaretest.h"
 void newchisquaretestpp(int type = 1, bool iseta = 1)
 {
 
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acooff
-	// type 5 = nominal - bk
+	// type 4 = Acoon
+	// type 5 = Nominal_no_bk
+	// type 6 = rebinned
+	// type 7 = massrange
 
 	bool isbk = true;
 	if (type == 5)
@@ -65,13 +68,13 @@ void newchisquaretestpp(int type = 1, bool iseta = 1)
 	{
 		if (iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/Eta_acooff.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_acoon.root";
 		}
 		if (!iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/FA_acooff.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_acoon.root";
 		}
-		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_acooff.root";
+		zoominfile = "../ZBoson_18/rootfile/template_pp_zoomin_acoon.root";
 	}
 
 	if (type == 7)

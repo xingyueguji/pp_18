@@ -1,0 +1,239 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run ROOT Script - Instance 1 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(1,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 2 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(2,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 3 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(3,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 4 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(4,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 5 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(5,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 6 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(6,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 7 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(7,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 1 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(1,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 2 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(2,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 3 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(3,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 4 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(4,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 5 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(5,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 6 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(6,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - Instance 7 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretestpp.C(7,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 1 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(1,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 2 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(2,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 3 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(3,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 4 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(4,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 5 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(5,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 6 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(6,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 7 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(7,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 8 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(8,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 9 (0)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(9,0)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 1 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(1,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 2 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(2,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 3 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(3,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 4 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(4,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 5 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(5,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 6 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(6,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 7 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(7,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 8 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(8,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run ROOT Script - new 9 (1)",
+            "type": "shell",
+            "command": "root -b -q 'newchisquaretest.C(9,1)'",
+            "presentation": { "panel": "dedicated" }
+        },
+        {
+            "label": "Run All ROOT Scripts",
+            "dependsOn": [
+                "Run ROOT Script - Instance 1 (0)",
+                "Run ROOT Script - Instance 2 (0)",
+                "Run ROOT Script - Instance 3 (0)",
+                "Run ROOT Script - Instance 4 (0)",
+                "Run ROOT Script - Instance 5 (0)",
+                "Run ROOT Script - Instance 6 (0)",
+                "Run ROOT Script - Instance 7 (0)",
+                "Run ROOT Script - Instance 1 (1)",
+                "Run ROOT Script - Instance 2 (1)",
+                "Run ROOT Script - Instance 3 (1)",
+                "Run ROOT Script - Instance 4 (1)",
+                "Run ROOT Script - Instance 5 (1)",
+                "Run ROOT Script - Instance 6 (1)",
+                "Run ROOT Script - Instance 7 (1)",
+                "Run ROOT Script - new 1 (0)",
+                "Run ROOT Script - new 2 (0)",
+                "Run ROOT Script - new 3 (0)",
+                "Run ROOT Script - new 4 (0)",
+                "Run ROOT Script - new 5 (0)",
+                "Run ROOT Script - new 6 (0)",
+                "Run ROOT Script - new 7 (0)",
+                "Run ROOT Script - new 8 (0)",
+                "Run ROOT Script - new 9 (0)",
+                "Run ROOT Script - new 1 (1)",
+                "Run ROOT Script - new 2 (1)",
+                "Run ROOT Script - new 3 (1)",
+                "Run ROOT Script - new 4 (1)",
+                "Run ROOT Script - new 5 (1)",
+                "Run ROOT Script - new 6 (1)",
+                "Run ROOT Script - new 7 (1)",
+                "Run ROOT Script - new 8 (1)",
+                "Run ROOT Script - new 9 (1)"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

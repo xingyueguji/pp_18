@@ -10,7 +10,7 @@ public:
   void compositeplot(TH1D *h_1, TH1D *h_2, TH1D *h_3, TH1D *h_4, TH1D *h_5, TH1D *h_6, int x, int opt);
   void acoplot(TH1D *h_1, TH1D *h_2, int x, bool rapiditycut);
   void savehistogram(TH1D *h_1, TH1D *h_2, TH1D *h_3, int x, TFile *f1);
-  //void setTDRStyle();
+  // void setTDRStyle();
 
   double ttbar_XS = 69.0;
   double Wjet_XS = 21159;
@@ -33,6 +33,10 @@ plotting_helper::plotting_helper()
 
 void plotting_helper::areanormalize(TH1D *h_1)
 {
+  if (h_1 == nullptr)
+  {
+    return;
+  }
   double normalization_factor = h_1->Integral("width");
   h_1->Scale(1 / normalization_factor);
 }
@@ -326,4 +330,3 @@ void plotting_helper::savehistogram(TH1D *h_1, TH1D *h_2, TH1D *h_3, int x, TFil
 
   tdrStyle->cd();
 }*/
-

@@ -4,18 +4,11 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
-double getWeightFromHist(TH1D *weightHist, double pt)
+double getWeightFromHist(TF1 *weightfucntion, double pt)
 {
-   int bin = weightHist->FindBin(pt);              // Find the corresponding bin for pT
-   double weight = weightHist->GetBinContent(bin); // Get the weight
+   double ratio = weightfucntion->Eval(pt); // Find the corresponding bin for pT
 
-   // If the weight is zero, set it to 1 (no reweighting applied)
-   if (weight == 0)
-   {
-      weight = 1.0;
-   }
-
-   return weight;
+   return ratio;
 }
 
 void SkimNew::Loop()
@@ -54,8 +47,8 @@ void SkimNew::Loop()
    TH1D *FA_nominal[22];
    TH1D *Eta_nominal[22];
 
-   TH1D *FA_AcoOff[22];
-   TH1D *Eta_AcoOff[22];
+   TH1D *FA_AcoOn[22];
+   TH1D *Eta_AcoOn[22];
 
    TH1D *FA_tnpU[22];
    TH1D *Eta_tnpU[22];
@@ -69,8 +62,8 @@ void SkimNew::Loop()
    TH1D *FA_nominal_inclusive = new TH1D("FA_nominal_inclusive", "", 120, 60, 120);
    TH1D *Eta_nominal_inclusive = new TH1D("Eta_nominal_inclusive", "", 120, 60, 120);
 
-   TH1D *FA_AcoOff_inclusive = new TH1D("FA_AcoOff_inclusive", "", 120, 60, 120);
-   TH1D *Eta_AcoOff_inclusive = new TH1D("Eta_AcoOff_inclusive", "", 120, 60, 120);
+   TH1D *FA_AcoOn_inclusive = new TH1D("FA_AcoOn_inclusive", "", 120, 60, 120);
+   TH1D *Eta_AcoOn_inclusive = new TH1D("Eta_AcoOn_inclusive", "", 120, 60, 120);
 
    TH1D *FA_tnpU_inclusive = new TH1D("FA_tnpU_inclusive", "", 120, 60, 120);
    TH1D *Eta_tnpU_inclusive = new TH1D("Eta_tnpU_inclusive", "", 120, 60, 120);
@@ -89,8 +82,8 @@ void SkimNew::Loop()
       FA_nominal[i] = new TH1D(Form("FA_nominal_%i", i), "", 120, 60, 120);
       Eta_nominal[i] = new TH1D(Form("Eta_nominal_%i", i), "", 120, 60, 120);
 
-      FA_AcoOff[i] = new TH1D(Form("FA_AcoOff_%i", i), "", 120, 60, 120);
-      Eta_AcoOff[i] = new TH1D(Form("Eta_AcoOff_%i", i), "", 120, 60, 120);
+      FA_AcoOn[i] = new TH1D(Form("FA_AcoOn_%i", i), "", 120, 60, 120);
+      Eta_AcoOn[i] = new TH1D(Form("Eta_AcoOn_%i", i), "", 120, 60, 120);
 
       FA_tnpU[i] = new TH1D(Form("FA_tnpU_%i", i), "", 120, 60, 120);
       Eta_tnpU[i] = new TH1D(Form("Eta_tnpU_%i", i), "", 120, 60, 120);
@@ -105,19 +98,19 @@ void SkimNew::Loop()
    TEfficiency *e;
    TEfficiency *e_up;
    TEfficiency *e_down;
-   TEfficiency *e_acooff;
+   TEfficiency *e_acoon;
 
    TFile *eff_f1 = new TFile("../ZBoson_18/rootfile/mc_eff.root", "READ");
 
    e = (TEfficiency *)eff_f1->Get("eff_0_100");
    e_up = (TEfficiency *)eff_f1->Get("eff_U_0_100");
    e_down = (TEfficiency *)eff_f1->Get("eff_D_0_100");
-   e_acooff = (TEfficiency *)eff_f1->Get("eff_noAco_0_100");
+   e_acoon = (TEfficiency *)eff_f1->Get("eff_withAco_0_100");
 
    TFile *pT_PbPb_weight = new TFile("../ZBoson_18/rootfile/pT_file.root", "READ");
 
-   TH1D *pTweight_FA = (TH1D *)pT_PbPb_weight->Get("weight_FA");
-   TH1D *pTweight_Eta = (TH1D *)pT_PbPb_weight->Get("weight_Eta");
+   TF1 *pTweight_FA = (TF1 *)pT_PbPb_weight->Get("FA_ratio_fit");
+   TF1 *pTweight_Eta = (TF1 *)pT_PbPb_weight->Get("Eta_ratio_fit");
 
    for (Long64_t jentry = 0; jentry < nentries; jentry++)
    {
@@ -209,7 +202,7 @@ void SkimNew::Loop()
          double efficiency = getEfficiency(e, Z_momentum->Rapidity(), Z_momentum->Pt());
          double efficiency_U = getEfficiency(e_up, Z_momentum->Rapidity(), Z_momentum->Pt());
          double efficiency_D = getEfficiency(e_down, Z_momentum->Rapidity(), Z_momentum->Pt());
-         double efficiency_acooff = getEfficiency(e_acooff, Z_momentum->Rapidity(), Z_momentum->Pt());
+         double efficiency_acoon = getEfficiency(e_acoon, Z_momentum->Rapidity(), Z_momentum->Pt());
 
          float acoplanarity = 1 - TMath::Abs(TMath::ACos(TMath::Cos(muonplus_momentum->Phi() - muonminus_momentum->Phi()))) / TMath::Pi();
          bool passesAco[3] = {1, 1, 1};
@@ -220,29 +213,30 @@ void SkimNew::Loop()
          double Eta_pTweight = getWeightFromHist(pTweight_Eta, Z_momentum->Pt());
 
          // Here for inclusive
-         if (passesAco[0])
-         {
-            FA_nominal_inclusive->Fill(ZMass, 1.0 / efficiency);
-            FA_tnpU_inclusive->Fill(ZMass, 1.0 / efficiency_U);
-            FA_tnpD_inclusive->Fill(ZMass, 1.0 / efficiency_D);
-            FA_mass_range_inclusive->Fill(ZMass, 1.0 / efficiency);
-            pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0 / efficiency);
 
-            if (isEtacutPassed)
-            {
-               Eta_nominal_inclusive->Fill(ZMass, 1.0 / efficiency);
-               Eta_tnpU_inclusive->Fill(ZMass, 1.0 / efficiency_U);
-               Eta_tnpD_inclusive->Fill(ZMass, 1.0 / efficiency_D);
-               Eta_mass_range_inclusive->Fill(ZMass, 1.0 / efficiency);
-               pT_spec_pp_Eta->Fill(Z_momentum->Pt(), 1.0 / efficiency);
-            }
-         }
-
-         FA_AcoOff_inclusive->Fill(ZMass, 1.0 / efficiency_acooff);
+         FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
+         FA_tnpU_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_U);
+         FA_tnpD_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_D);
+         FA_mass_range_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
+         pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0 / efficiency);
 
          if (isEtacutPassed)
          {
-            Eta_AcoOff_inclusive->Fill(ZMass, 1.0 / efficiency_acooff);
+            Eta_nominal_inclusive->Fill(ZMass, 1.0 * Eta_pTweight / efficiency);
+            Eta_tnpU_inclusive->Fill(ZMass, 1.0 * Eta_pTweight / efficiency_U);
+            Eta_tnpD_inclusive->Fill(ZMass, 1.0 * Eta_pTweight / efficiency_D);
+            Eta_mass_range_inclusive->Fill(ZMass, 1.0 * Eta_pTweight / efficiency);
+            pT_spec_pp_Eta->Fill(Z_momentum->Pt(), 1.0 / efficiency);
+         }
+
+         if (passesAco[0])
+         {
+            FA_AcoOn_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_acoon);
+
+            if (isEtacutPassed)
+            {
+               Eta_AcoOn_inclusive->Fill(ZMass, 1.0 * Eta_pTweight / efficiency_acoon);
+            }
          }
 
          // Fill the run number based then
@@ -251,27 +245,28 @@ void SkimNew::Loop()
          {
             if (runNb >= runlowerlimit[runindex] && runNb <= runupperlimit[runindex])
             {
-               if (passesAco[0])
-               {
-                  FA_nominal[runindex]->Fill(ZMass, 1.0 / efficiency);
-                  FA_tnpU[runindex]->Fill(ZMass, 1.0 / efficiency_U);
-                  FA_tnpD[runindex]->Fill(ZMass, 1.0 / efficiency_D);
-                  FA_mass_range[runindex]->Fill(ZMass, 1.0 / efficiency);
 
-                  if (isEtacutPassed)
-                  {
-                     Eta_nominal[runindex]->Fill(ZMass, 1.0 / efficiency);
-                     Eta_tnpU[runindex]->Fill(ZMass, 1.0 / efficiency_U);
-                     Eta_tnpD[runindex]->Fill(ZMass, 1.0 / efficiency_D);
-                     Eta_mass_range[runindex]->Fill(ZMass, 1.0 / efficiency);
-                  }
-               }
-
-               FA_AcoOff[runindex]->Fill(ZMass, 1.0 / efficiency_acooff);
+               FA_nominal[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
+               FA_tnpU[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency_U);
+               FA_tnpD[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency_D);
+               FA_mass_range[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
 
                if (isEtacutPassed)
                {
-                  Eta_AcoOff[runindex]->Fill(ZMass, 1.0 / efficiency_acooff);
+                  Eta_nominal[runindex]->Fill(ZMass, 1.0 * Eta_pTweight / efficiency);
+                  Eta_tnpU[runindex]->Fill(ZMass, 1.0 * Eta_pTweight / efficiency_U);
+                  Eta_tnpD[runindex]->Fill(ZMass, 1.0 * Eta_pTweight / efficiency_D);
+                  Eta_mass_range[runindex]->Fill(ZMass, 1.0 * Eta_pTweight / efficiency);
+               }
+               if (passesAco[0])
+               {
+
+                  FA_AcoOn[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency_acoon);
+
+                  if (isEtacutPassed)
+                  {
+                     Eta_AcoOn[runindex]->Fill(ZMass, 1.0 * Eta_pTweight / efficiency_acoon);
+                  }
                }
             }
          }
@@ -283,8 +278,8 @@ void SkimNew::Loop()
 
    FA_nominal_inclusive->Write("", 2);
    Eta_nominal_inclusive->Write("", 2);
-   FA_AcoOff_inclusive->Write("", 2);
-   Eta_AcoOff_inclusive->Write("", 2);
+   FA_AcoOn_inclusive->Write("", 2);
+   Eta_AcoOn_inclusive->Write("", 2);
    FA_tnpU_inclusive->Write("", 2);
    Eta_tnpU_inclusive->Write("", 2);
    FA_tnpD_inclusive->Write("", 2);
@@ -296,8 +291,8 @@ void SkimNew::Loop()
    {
       FA_nominal[j]->Write("", 2);
       Eta_nominal[j]->Write("", 2);
-      FA_AcoOff[j]->Write("", 2);
-      Eta_AcoOff[j]->Write("", 2);
+      FA_AcoOn[j]->Write("", 2);
+      Eta_AcoOn[j]->Write("", 2);
       FA_tnpU[j]->Write("", 2);
       Eta_tnpU[j]->Write("", 2);
       FA_tnpD[j]->Write("", 2);

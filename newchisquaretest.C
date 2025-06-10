@@ -1,3 +1,4 @@
+#include "chisquaretest.h"
 void newchisquaretest(int type = 1, bool iseta = 1)
 {
 	// type 1 = nominal
@@ -70,13 +71,16 @@ void newchisquaretest(int type = 1, bool iseta = 1)
 	{
 		if (iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/Eta_acooff.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/Eta_acoon.root";
+
 		}
 		if (!iseta)
 		{
-			bkfile = "../ZBoson_18/rootfile/normalized/FA_acooff.root";
+			bkfile = "../ZBoson_18/rootfile/normalized/FA_acoon.root";
+
 		}
-		zoominfile = "../ZBoson_18/rootfile/template_PbPb_zoomin_acooff.root";
+		zoominfile = "../ZBoson_18/rootfile/template_PbPb_zoomin_acoon.root";
+
 	}
 
 	if (type == 7)
@@ -134,6 +138,7 @@ void newchisquaretest(int type = 1, bool iseta = 1)
 	}
 
 	datafile = "../ZBoson_18/rootfile/data_file.root";
+	mcfile = new TFile("../ZBoson_18/rootfile/template_PbPb.root", "READ");
 	// datafile = "../ZBoson_18/rootfile/shift_-0.150_smear_0.0075_fixed_modified_signal_100.root";
 
 	chisquaretest *ovo = new chisquaretest(datafile, bkfile, type, iseta,zoominfile);

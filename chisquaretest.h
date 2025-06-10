@@ -1,3 +1,4 @@
+#pragma once
 #include "plotting_helper.h"
 #include "tdrStyle.C"
 #include "CMS_lumi.C"
@@ -10,6 +11,7 @@ public:
 	chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta, TString s4);
 	~chisquaretest();
 	Double_t myownfunctionchi2(TH1D *h1, TH1D *h2);
+	Double_t myownfunctionchi2partial(TH1D *h1, TH1D *h2, int position);
 	void calculatechisq(bool isbk, bool iszoomin = 0);
 	void calculatechisqpp(bool isbk);
 	void plottingandformatting(int type, bool iseta);
@@ -159,10 +161,10 @@ public:
 	double eta_mass_smear_array_low[nbins_cent] = {-0.25, -0.05, -0.15, -0.3, 0, 0, 0, 0, 0, 0, 0.03};
 	double eta_mass_smear_array_high[nbins_cent] = {0.3, 0.65, 0.65, 0.5, 0, 0, 0, 0, 0, 0, 0.36};
 
-	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.32, -0.24, 0, 0, 0, 0, 0, 0, -0.22};
+	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.32, -0.25, 0, 0, 0, 0, 0, 0, -0.22};
 	double raw_mass_shift_array_high[nbins_cent] = {-0.02, -0.06, -0.04, 0.02, 0, 0, 0, 0, 0, 0, -0.08};
-	double raw_mass_smear_array_low[nbins_cent] = {0.05, 0.175, -0.1, 0.2, 0, 0, 0, 0, 0, 0, 0.22};
-	double raw_mass_smear_array_high[nbins_cent] = {0.4, 0.6, 0.4, 0.7, 0, 0, 0, 0, 0, 0, 0.45};
+	double raw_mass_smear_array_low[nbins_cent] = {-0.05, 0.075, -0.2, 0.15, 0, 0, 0, 0, 0, 0, 0.13};
+	double raw_mass_smear_array_high[nbins_cent] = {0.3, 0.5, 0.3, 0.65, 0, 0, 0, 0, 0, 0, 0.36};
 
 	double placeholder_mass_shift_array_low_zoomin = 0;
 	double placeholder_mass_shift_array_high_zoomin = 0;
@@ -176,66 +178,67 @@ public:
 
 	// eta with bk
 
-	double eta_pp_mass_shift_low_with_bk = -0.14;
-	double eta_pp_mass_shift_high_with_bk = -0.06;
-	double eta_pp_smear_low_with_bk = 0.2;
-	double eta_pp_smear_high_with_bk = 0.32;
+	double eta_pp_mass_shift_low_with_bk = -0.15;
+	double eta_pp_mass_shift_high_with_bk = -0.08;
+	double eta_pp_smear_low_with_bk = 0.17;
+	double eta_pp_smear_high_with_bk = 0.29;
 
 	// eta without bk
 
 	double eta_pp_mass_shift_low_without_bk = -0.15;
-	double eta_pp_mass_shift_high_without_bk = -0.06;
-	double eta_pp_smear_low_without_bk = 0.23;
-	double eta_pp_smear_high_without_bk = 0.37;
+	double eta_pp_mass_shift_high_without_bk = -0.07;
+	double eta_pp_smear_low_without_bk = 0.22;
+	double eta_pp_smear_high_without_bk = 0.34;
 
 	// eta mass range
 
-	double eta_pp_mass_shift_low_mass_range = -0.14;
-	double eta_pp_mass_shift_high_mass_range = -0.07;
-	double eta_pp_smear_low_mass_range = 0.13;
-	double eta_pp_smear_high_mass_range = 0.25;
+	double eta_pp_mass_shift_low_mass_range = -0.15;
+	double eta_pp_mass_shift_high_mass_range = -0.08;
+	double eta_pp_smear_low_mass_range = 0.11;
+	double eta_pp_smear_high_mass_range = 0.23;
 
 	// raw with bk
 
-	double raw_pp_mass_shift_low_with_bk = -0.105;
-	double raw_pp_mass_shift_high_with_bk = -0.05;
-	double raw_pp_smear_low_with_bk = 0.2;
-	double raw_pp_smear_high_with_bk = 0.3;
+	double raw_pp_mass_shift_low_with_bk = -0.13;
+	double raw_pp_mass_shift_high_with_bk = -0.06;
+	double raw_pp_smear_low_with_bk = 0.0;
+	double raw_pp_smear_high_with_bk = +0.1;
 
 	// raw without bk
 
-	double raw_pp_mass_shift_low_without_bk = -0.09;
-	double raw_pp_mass_shift_high_without_bk = -0.05;
-	double raw_pp_smear_low_without_bk = 0.28;
-	double raw_pp_smear_high_without_bk = 0.36;
+	double raw_pp_mass_shift_low_without_bk = -0.12;
+	double raw_pp_mass_shift_high_without_bk = -0.065;
+	double raw_pp_smear_low_without_bk = 0.07;
+	double raw_pp_smear_high_without_bk = +0.13;
 
 	// raw mass range
 
-	double raw_pp_mass_shift_low_mass_range = -0.1;
-	double raw_pp_mass_shift_high_mass_range = -0.05;
-	double raw_pp_smear_low_mass_range = 0.16;
-	double raw_pp_smear_high_mass_range = 0.22;
+	double raw_pp_mass_shift_low_mass_range = -0.12;
+	double raw_pp_mass_shift_high_mass_range = -0.07;
+	double raw_pp_smear_low_mass_range = 0.01;
+	double raw_pp_smear_high_mass_range = 0.12;
 };
 chisquaretest::chisquaretest()
 {
 }
 
-chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TString s4)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool iseta, TString s4)
 {
 
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acooff
+	// type 4 = AcoOn
 	// type 5 = Nominal_no_bk
 	// type 6 = rebinned
 	// type 7 = massrange
-
+	
+	mcfilepath = s1;
 	datafilepath = s2;
 	bkfilepath = s3;
 	TString mcfilepathzoomin = s4;
 
-	mcfile = new TFile("../ZBoson_18/rootfile/template_PbPb.root", "READ");
+	mcfile = new TFile(mcfilepath, "READ");
 	datafile = new TFile(datafilepath, "READ");
 	bkfile = new TFile(bkfilepath, "READ");
 	mcfile_zoomin = new TFile(mcfilepathzoomin, "READ");
@@ -333,11 +336,11 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 		{
 			if (iseta)
 			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_AcoOff_%i", cent));
+				h_data[cent] = (TH1D *)datafile->Get(Form("Eta_AcoOn_%i", cent));
 			}
 			if (!iseta)
 			{
-				h_data[cent] = (TH1D *)datafile->Get(Form("FA_AcoOff_%i", cent));
+				h_data[cent] = (TH1D *)datafile->Get(Form("FA_AcoOn_%i", cent));
 			}
 		}
 
@@ -384,9 +387,8 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 		this->areanormalize(h_data[cent]);
 
 		h_data_bksub[cent] = (TH1D *)h_data[cent]->Clone(Form("h_data_bksub_%i", cent));
-
 		h_data_bksub[cent]->Add(h_mc_bk[cent], -1);
-		// this->areanormalize(h_data_bksub[cent]);
+		this->areanormalize(h_data_bksub[cent]);
 		h_data_bksub_not_rebinned[cent] = (TH1D *)h_data_bksub[cent]->Clone(Form("h_data_bksub_not_rebinned_%i", cent));
 
 		for (int shift = 0; shift < nbins_mass_shift; shift++)
@@ -413,13 +415,13 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 				{
 					if (iseta)
 					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_Eta_acooff_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_acooff_%i_%i_%i", shift, smear, cent));
+						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_Eta_acoon_%i_%i_%i", shift, smear, cent));
+						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_acoon_%i_%i_%i", shift, smear, cent));
 					}
 					if (!iseta)
 					{
-						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_acooff_%i_%i_%i", shift, smear, cent));
-						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acooff_%i_%i_%i", shift, smear, cent));
+						h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, cent));
+						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, cent));
 					}
 				}
 
@@ -436,8 +438,10 @@ chisquaretest::chisquaretest(TString s2, TString s3, int type, bool iseta, TStri
 						h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_mass_range_%i_%i_%i", shift, smear, cent));
 					}
 				}
+
 				this->areanormalize(h_mc_signal[shift][smear][cent]);
-				this->areanormalize(h_mc_signal_not_rebinned[shift][smear][cent]);
+				if (type == 1 || type == 2 || type == 3 || type == 5 || type == 6 || type == 8 || type == 9)
+					this->areanormalize(h_mc_signal_not_rebinned[shift][smear][cent]);
 				this->areanormalize(h_mc_signal_zoomin[shift][smear][cent]);
 			}
 		}
@@ -450,7 +454,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acooff
+	// type 4 = Acoon
 	// type 5 = Nominal_no_bk
 	// type 6 = rebinned
 	// type 7 = massrange
@@ -609,16 +613,16 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 			if (iseta)
 			{
 				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("Eta_AcoOff_inclusive");
+					h_data_pp[runperiod] = (TH1D *)datafile->Get("Eta_AcoOn_inclusive");
 				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_AcoOff_%i", runperiod));
+					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("Eta_AcoOn_%i", runperiod));
 			}
 			if (!iseta)
 			{
 				if (runperiod == 22)
-					h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_AcoOff_inclusive");
+					h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_AcoOn_inclusive");
 				else
-					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_AcoOff_%i", runperiod));
+					h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_AcoOn_%i", runperiod));
 			}
 		}
 
@@ -647,6 +651,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 
 		h_data_bksub_pp[runperiod] = (TH1D *)h_data_pp[runperiod]->Clone();
 		h_data_bksub_pp[runperiod]->Add(h_mc_bk_pp, -1);
+		this->areanormalize(h_data_bksub_pp[runperiod]);
 		h_data_bksub_pp[runperiod]->SetName(Form("%s_bksub", h_data_pp[runperiod]->GetName()));
 
 		xposition[runperiod] = runperiod + 1;
@@ -680,18 +685,18 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, bool 
 				{
 					if (iseta)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_acooff_%i_%i_%i", shift, smear, 10));
+						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_Eta_acoon_%i_%i_%i", shift, smear, 10));
 						if (runperiod == 22)
 						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_acooff_%i_%i_%i", shift, smear, 10));
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_Eta_acoon_%i_%i_%i", shift, smear, 10));
 						}
 					}
 					if (!iseta)
 					{
-						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acooff_%i_%i_%i", shift, smear, 10));
+						h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, 10));
 						if (runperiod == 22)
 						{
-							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acooff_%i_%i_%i", shift, smear, 10));
+							h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, 10));
 						}
 					}
 				}
@@ -834,7 +839,7 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acooff
+	// type 4 = Acoon
 	// type 5 = nominal without bk subtraction
 
 	// Int_t my_case = mapthreecases(type, isbk, iseff);
@@ -874,9 +879,9 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			data_mc_title = "Eta, tnpU, Cent:(%i-%i)";
 			data_data_title = "Eta_tnpU_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/tnpU/Raw_tnpU_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/tnpU/Raw_tnpU_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/tnpU/Raw_tnpU_%i_%i.png";
+			chi2_saving_path = "./newchi2/chi2plots/eta/tnpU/Eta_tnpU_%i_%i.png";
+			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/tnpU/Eta_tnpU_%i_%i_zoomin.png";
+			data_mc_saving_path = "./newchi2/datamc/eta/tnpU/Eta_tnpU_%i_%i.png";
 			data_data_saving_path = "./newchi2/datadata/eta/Eta_tnpU_%i_%i.png";
 			contour_saving_path = "./newchi2/contour/eta/Eta_tnpU_%i_%i.png";
 		}
@@ -924,27 +929,27 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 	{
 		if (iseta)
 		{
-			chi2_title = "PbPb, |#eta| < 1.0, Acooff, centrality: (%i-%i)";
-			data_mc_title = "Eta cut, Acooff, Cent:(%i-%i)";
-			data_data_title = "Eta_Acooff_%i_%i";
+			chi2_title = "PbPb, |#eta| < 1.0, Acoon, centrality: (%i-%i)";
+			data_mc_title = "Eta cut, Acoon, Cent:(%i-%i)";
+			data_data_title = "Eta_Acoon_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/eta/Acooff/Eta_Acooff_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/Acooff/Eta_Acooff_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/eta/Acooff/Eta_Acooff_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/eta/Eta_Acooff_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/eta/Eta_Acooff_%i_%i.png";
+			chi2_saving_path = "./newchi2/chi2plots/eta/Acoon/Eta_Acoon_%i_%i.png";
+			chi2_saving_path_zoomin = "./newchi2/chi2plots/eta/Acoon/Eta_Acoon_%i_%i_zoomin.png";
+			data_mc_saving_path = "./newchi2/datamc/eta/Acoon/Eta_Acoon_%i_%i.png";
+			data_data_saving_path = "./newchi2/datadata/eta/Eta_Acoon_%i_%i.png";
+			contour_saving_path = "./newchi2/contour/eta/Eta_Acoon_%i_%i.png";
 		}
 		if (!iseta)
 		{
-			chi2_title = "PbPb, |#eta| < 2.4, Acooff, centrality: (%i-%i)";
-			data_mc_title = "WholeAcceptance, Acooff, Cent:(%i-%i)";
-			data_data_title = "Raw_Acooff_%i_%i";
+			chi2_title = "PbPb, |#eta| < 2.4, Acoon, centrality: (%i-%i)";
+			data_mc_title = "WholeAcceptance, Acoon, Cent:(%i-%i)";
+			data_data_title = "Raw_Acoon_%i_%i";
 
-			chi2_saving_path = "./newchi2/chi2plots/raw/Acooff/Raw_Acooff_%i_%i.png";
-			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/Acooff/Raw_Acooff_%i_%i_zoomin.png";
-			data_mc_saving_path = "./newchi2/datamc/raw/Acooff/Raw_Acooff_%i_%i.png";
-			data_data_saving_path = "./newchi2/datadata/raw/Raw_Acooff_%i_%i.png";
-			contour_saving_path = "./newchi2/contour/raw/raw_Acooff_%i_%i.png";
+			chi2_saving_path = "./newchi2/chi2plots/raw/Acoon/Raw_Acoon_%i_%i.png";
+			chi2_saving_path_zoomin = "./newchi2/chi2plots/raw/Acoon/Raw_Acoon_%i_%i_zoomin.png";
+			data_mc_saving_path = "./newchi2/datamc/raw/Acoon/Raw_Acoon_%i_%i.png";
+			data_data_saving_path = "./newchi2/datadata/raw/Raw_Acoon_%i_%i.png";
+			contour_saving_path = "./newchi2/contour/raw/raw_Acoon_%i_%i.png";
 		}
 	}
 	if (type == 5)
@@ -1493,40 +1498,11 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 		}
 		else if (type == 1)
 		{
-			c_data_mc_raw[cent]->SetLogy();
-			// h_data_bksub_not_rebinned[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
-			h_data_bksub_not_rebinned[cent]->SetTitleFont(62);
-			h_data_bksub_not_rebinned[cent]->SetMarkerColor(kBlack);
-			h_data_bksub_not_rebinned[cent]->SetMarkerSize(1);
-			h_data_bksub_not_rebinned[cent]->SetMarkerStyle(kFullCircle);
-			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitle("Normalized Counts");
-			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitle("m_{u^{+}u^{-}} (GeV)");
-
-			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitleFont(42);	 // Times, bold
-			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetLabelFont(42);	 // Times, bold
-			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitleSize(0.05); // Title size
-			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetLabelSize(0.04); // Label size
-			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitleFont(42);	 // Times, bold
-			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetLabelFont(42);	 // Times, bold
-			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitleSize(0.05); // Title size
-			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetLabelSize(0.04); // Label size
-			h_data_bksub_not_rebinned[cent]->SetLineWidth(1);				 // Make the outline thick
-			// this->areanormalize(h_data_bksub_not_rebinned[cent]);
-			h_data_bksub_not_rebinned[cent]->Rebin(4);
-			h_data_bksub_not_rebinned[cent]->Draw("P");
-
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerColor(kRed + 1);
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerStyle(kFullCircle);
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerSize(0);
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillColor(kRed + 1);
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Rebin(4);
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillColor(kRed + 1); // Set fill color
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillStyle(3004);	  // Solid fill
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetLineWidth(1);		  // Set outline thickness
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetLineColor(kRed + 1); // Set outline color
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Draw("HIST SAME");
-
 			TFile *f_temp_signal = new TFile("../ZBoson_18/rootfile/mc_signal.root", "READ");
+
+			h_data_bksub_not_rebinned[cent]->Rebin(4);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Rebin(4);
+
 			TH1D *vaccum_plot;
 			if (!iseta)
 			{
@@ -1540,6 +1516,56 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			this->areanormalize(vaccum_plot);
 			vaccum_plot->Rebin(4);
 
+			TH1D *h_ratio = (TH1D *)h_data_bksub_not_rebinned[cent]->Clone("h_ratio");
+			TH1D *h_ratio_vaccum = (TH1D *)h_data_bksub_not_rebinned[cent]->Clone("h_ratio_vaccum");
+
+			double tmargin = gPad->GetTopMargin();
+			double bmargin = gPad->GetBottomMargin();
+			double lmargin = gPad->GetLeftMargin();
+			double rmargin = gPad->GetRightMargin();
+
+			TPad *pad1 = new TPad("pad1", "Top pad", 0, 0.25, 1, 1.0);
+			pad1->SetTopMargin(tmargin);
+			pad1->SetBottomMargin(0.02); // override bottom only
+			pad1->SetLeftMargin(lmargin);
+			pad1->SetRightMargin(rmargin);
+			pad1->SetLogy();
+			pad1->Draw();
+			pad1->cd(); // Go to top pad
+			// h_data_bksub_not_rebinned[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
+			h_data_bksub_not_rebinned[cent]->SetTitleFont(62);
+			h_data_bksub_not_rebinned[cent]->SetMarkerColor(kBlack);
+			h_data_bksub_not_rebinned[cent]->SetMarkerSize(1);
+			h_data_bksub_not_rebinned[cent]->SetMarkerStyle(kFullCircle);
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitle("Normalized Counts");
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitle("");
+
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitleFont(42);	 // Times, bold
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetLabelFont(42);	 // Times, bold
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetTitleSize(0.05); // Title size
+			h_data_bksub_not_rebinned[cent]->GetYaxis()->SetLabelSize(0.04); // Label size
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitleFont(42);	 // Times, bold
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetLabelFont(42);	 // Times, bold
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetTitleSize(0.05); // Title size
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetLabelSize(0.04); // Label size
+			h_data_bksub_not_rebinned[cent]->SetLineWidth(1);				 // Make the outline thick
+			h_data_bksub_not_rebinned[cent]->GetXaxis()->SetLabelSize(0);	 // Hide X label
+
+			// this->areanormalize(h_data_bksub_not_rebinned[cent]);
+
+			h_data_bksub_not_rebinned[cent]->Draw("P");
+
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerColor(kBlue + 1);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerStyle(kFullCircle);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetMarkerSize(0);
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillColor(kBlue + 1);
+
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillColor(kBlue + 1); // Set fill color
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetFillStyle(3004);	   // Solid fill
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetLineWidth(1);		   // Set outline thickness
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->SetLineColor(kBlue + 1); // Set outline color
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Draw("HIST SAME");
+
 			cout << "For vaccum, the chi2 value is " << myownfunctionchi2(h_data_bksub_not_rebinned[cent], vaccum_plot) << endl;
 			cout << "For best template, the chi2 value is " << myownfunctionchi2(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]) << endl;
 
@@ -1548,18 +1574,21 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			graph->SetLineColor(kBlue + 2);
 			graph->Draw("L SAME");*/
 
-			vaccum_plot->SetFillColor(kBlue+1); // Set fill color
-			vaccum_plot->SetFillStyle(3004);	  // Solid fill
-			vaccum_plot->SetLineWidth(1);		  // Set outline thickness
-			vaccum_plot->SetLineColor(kBlue+1); // Set outline color
-			vaccum_plot->SetLineWidth(1); // Make the outline thick
-			vaccum_plot->SetLineColor(kBlue+1);
-			vaccum_plot->SetMarkerSize(1);
-			vaccum_plot->SetMarkerStyle(kFullCircle);
-			vaccum_plot->SetMarkerColor(kBlue+1);
-			vaccum_plot->Draw("P SAME");
+			const int nBins = vaccum_plot->GetNbinsX();
+			std::vector<double> x, y;
 
-			TPaveText *pt = new TPaveText(0.25, 0.7, 0.35, 0.8, "NDC"); // Adjust position
+			for (int i = 1; i <= nBins; i++)
+			{												// Bins start at 1
+				x.push_back(vaccum_plot->GetBinCenter(i));	// X values = bin centers
+				y.push_back(vaccum_plot->GetBinContent(i)); // Y values = bin content
+			}
+
+			TSpline3 *spline = new TSpline3("spline", x.data(), y.data(), nBins, "b1e1", 0, 0);
+
+			spline->SetLineWidth(2);		// Set outline thickness
+			spline->SetLineColor(kRed + 1); // Set outline color
+
+			TPaveText *pt = new TPaveText(0.25, 0.6, 0.35, 0.8, "NDC"); // Adjust position
 			pt->SetFillColor(0);										// Transparent background
 			pt->SetTextFont(62);										// Standard font
 			pt->SetTextSize(0.03);
@@ -1569,6 +1598,10 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 				pt->AddText("|#eta| < 2.4");
 			else
 				pt->AddText("|#eta| < 1");
+			pt->AddText(Form("Area 1 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 1), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 1)));
+			pt->AddText(Form("Area 2 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 2), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 2)));
+			pt->AddText(Form("Area 3 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 3), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 3)));
+			pt->AddText(Form("Vaccum is %.3f, %.3f", this->myownfunctionchi2(h_data_bksub_not_rebinned[cent], vaccum_plot), this->myownfunctionchi2(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent])));
 			pt->Draw();
 
 			TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.85); // Upper-right position
@@ -1580,14 +1613,65 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 			// Adding three elements as points
 			leg->AddEntry(h_data_bksub_not_rebinned[cent], "Data", "P");
 			leg->AddEntry(h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], "Best fit template", "F");
-			leg->AddEntry(vaccum_plot, "Vaccum template", "l");
+			leg->AddEntry(spline, "Vaccum template", "l");
 
 			leg->Draw();
 
+			spline->SetNpx(1000);
+			spline->Draw("C SAME");
+			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Draw("HIST SAME");
 			h_data_bksub_not_rebinned[cent]->Draw("P SAME");
-			h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]->Draw("P SAME");
 
-			CMS_lumi(c_data_mc_raw[cent], 13, 10);
+			CMS_lumi(pad1, 13, 10);
+
+			c_data_mc_raw[cent]->cd();
+			c_data_mc_raw[cent]->SetBottomMargin(0.01);
+			TPad *pad2 = new TPad("pad2", "Ratio pad", 0, 0.02, 1, 0.25);
+			pad2->SetTopMargin(0.03);	 // tiny top margin
+			pad2->SetBottomMargin(0.35); // room for axis title
+			pad2->SetLeftMargin(lmargin);
+			pad2->SetRightMargin(rmargin);
+			pad2->Draw();
+			pad2->cd();
+
+			h_ratio->Divide(h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent]);
+			h_ratio_vaccum->Divide(vaccum_plot);
+
+			h_ratio->SetTitle("");
+			h_ratio->GetYaxis()->SetTitle("Data / Template");
+			h_ratio->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV)");
+
+			h_ratio->GetYaxis()->SetTitleFont(42);	 // Times, bold
+			h_ratio->GetYaxis()->SetLabelFont(42);	 // Times, bold
+			h_ratio->GetYaxis()->SetTitleSize(0.1); // Title size
+			h_ratio->GetYaxis()->SetLabelSize(0.1); // Label size
+			h_ratio->GetXaxis()->SetTitleFont(42);	 // Times, bold
+			h_ratio->GetXaxis()->SetLabelFont(42);	 // Times, bold
+			h_ratio->GetXaxis()->SetTitleSize(0.15); // Title size
+			h_ratio->GetXaxis()->SetLabelSize(0.15); // Label size
+			h_ratio->SetLineWidth(1);				 // Make the outline thick
+			h_ratio->GetYaxis()->SetTitleOffset(0.4);  // try 0.45 to 0.6 range
+
+			h_ratio_vaccum->SetLineColor(kRed);
+			h_ratio_vaccum->SetMarkerColor(kRed);
+			h_ratio_vaccum->SetMarkerStyle(kFullCircle);
+			h_ratio_vaccum->SetMarkerSize(1);
+
+			h_ratio->SetLineColor(kBlue);
+			h_ratio->SetMarkerStyle(kFullCircle);
+			h_ratio->SetMarkerSize(1);
+			h_ratio->SetMarkerColor(kBlue);
+
+			h_ratio->SetMinimum(0.5);
+			h_ratio->SetMaximum(1.5);
+			h_ratio->Draw("P");
+
+			h_ratio_vaccum->Draw("P SAME");
+
+			TLine *line = new TLine(h_ratio->GetXaxis()->GetXmin(), 1.0,
+									h_ratio->GetXaxis()->GetXmax(), 1.0);
+			line->SetLineStyle(2);
+			line->Draw("SAME");
 		}
 
 		cout << "Finished drawing" << endl;
@@ -1666,13 +1750,13 @@ void chisquaretest::plottingandformatting(int type, bool iseta)
 	{
 		if (iseta)
 		{
-			g_HI_dmass->Write("HI_dM_chi2_eta_acooff", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_eta_acooff", 2);
+			g_HI_dmass->Write("HI_dM_chi2_eta_acoon", 2);
+			g_HI_dwidth->Write("HI_dWidth_chi2_eta_acoon", 2);
 		}
 		if (!iseta)
 		{
-			g_HI_dmass->Write("HI_dM_chi2_raw_acooff", 2);
-			g_HI_dwidth->Write("HI_dWidth_chi2_raw_acooff", 2);
+			g_HI_dmass->Write("HI_dM_chi2_raw_acoon", 2);
+			g_HI_dwidth->Write("HI_dWidth_chi2_raw_acoon", 2);
 		}
 	}
 	if (type == 5)
@@ -1759,7 +1843,7 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acooff
+	// type 4 = Acoon
 	// type 5 = nominal without bk subtraction
 
 	if (type == 1)
@@ -1847,27 +1931,27 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 	{
 		if (iseta)
 		{
-			chi2_title = "pp, |#eta| < 1.0, Acooff, Period: (%i)";
-			data_mc_title = "Eta cut, Acooff, Period: (%i)";
-			data_data_title = "Eta_Acooff_%i";
+			chi2_title = "pp, |#eta| < 1.0, Acoon, Period: (%i)";
+			data_mc_title = "Eta cut, Acoon, Period: (%i)";
+			data_data_title = "Eta_Acoon_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/eta/Acooff/Eta_Acooff_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Acooff/Eta_Acooff_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/eta/Acooff/Eta_Acooff_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/eta/Eta_Acooff_%i.png";
-			contour_saving_path = "./chi2pp/contour/eta/Eta_Acooff_%i.png";
+			chi2_saving_path = "./chi2pp/chi2plots/eta/Acoon/Eta_Acoon_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/eta/Acoon/Eta_Acoon_zoomin.png";
+			data_mc_saving_path = "./chi2pp/datamc/eta/Acoon/Eta_Acoon_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/eta/Eta_Acoon_%i.png";
+			contour_saving_path = "./chi2pp/contour/eta/Eta_Acoon_%i.png";
 		}
 		if (!iseta)
 		{
-			chi2_title = "pp, |#eta| < 2.4, Acooff, Period: (%i)";
-			data_mc_title = "WholeAcceptance, Acooff, Period: (%i)";
-			data_data_title = "Raw_Acooff_%i";
+			chi2_title = "pp, |#eta| < 2.4, Acoon, Period: (%i)";
+			data_mc_title = "WholeAcceptance, Acoon, Period: (%i)";
+			data_data_title = "Raw_Acoon_%i";
 
-			chi2_saving_path = "./chi2pp/chi2plots/raw/Acooff/Raw_Acooff_%i.png";
-			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Acooff/Raw_Acooff_zoomin.png";
-			data_mc_saving_path = "./chi2pp/datamc/raw/Acooff/Raw_Acooff_%i.png";
-			data_data_saving_path = "./chi2pp/datadata/raw/Raw_Acooff_%i.png";
-			contour_saving_path = "./chi2pp/contour/raw/raw_Acooff_%i.png";
+			chi2_saving_path = "./chi2pp/chi2plots/raw/Acoon/Raw_Acoon_%i.png";
+			chi2_saving_path_zoomin = "./chi2pp/chi2plots/raw/Acoon/Raw_Acoon_zoomin.png";
+			data_mc_saving_path = "./chi2pp/datamc/raw/Acoon/Raw_Acoon_%i.png";
+			data_data_saving_path = "./chi2pp/datadata/raw/Raw_Acoon_%i.png";
+			contour_saving_path = "./chi2pp/contour/raw/raw_Acoon_%i.png";
 		}
 	}
 
@@ -2431,13 +2515,13 @@ void chisquaretest::plottingandformattingpp(int type, bool iseta)
 	{
 		if (iseta)
 		{
-			g_pp_dmass->Write("pp_dM_chi2_eta_acooff", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_eta_acooff", 2);
+			g_pp_dmass->Write("pp_dM_chi2_eta_acoon", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_eta_acoon", 2);
 		}
 		if (!iseta)
 		{
-			g_pp_dmass->Write("pp_dM_chi2_raw_acooff", 2);
-			g_pp_dwidth->Write("pp_dWidth_chi2_raw_acooff", 2);
+			g_pp_dmass->Write("pp_dM_chi2_raw_acoon", 2);
+			g_pp_dwidth->Write("pp_dWidth_chi2_raw_acoon", 2);
 		}
 	}
 	if (type == 5)
@@ -2941,6 +3025,58 @@ Double_t chisquaretest::myownfunctionchi2(TH1D *h1, TH1D *h2)
 
 	Double_t chi2 = 0;
 	for (int i = 1; i <= nbinsh1; i++)
+	{
+		double num = TMath::Power((h1->GetBinContent(i) - h2->GetBinContent(i)), 2);
+		double den = TMath::Power((h1->GetBinError(i)), 2) + TMath::Power((h2->GetBinError(i)), 2);
+		// double den = TMath::Power((h1->GetBinError(i)), 2) + TMath::Power((h2->GetBinError(i)), 2);
+
+		if (TMath::Power((h1->GetBinContent(i)), 1) <= 0)
+		{
+			std::cerr << "Warning: Bin " << i << " has zero errors/missing bins/ missing bins after bksub for data. Not Skipped" << std::endl;
+			// continue; // Skip this bin to avoid division by zero
+		}
+
+		chi2 += num / den;
+	}
+
+	Double_t ndf = nbinsh1 - 2;
+
+	return chi2;
+}
+
+Double_t chisquaretest::myownfunctionchi2partial(TH1D *h1, TH1D *h2, int position)
+{
+	int nbinsh1 = h1->GetNbinsX();
+	int nbinsh2 = h2->GetNbinsX();
+
+	if (nbinsh1 != nbinsh2)
+	{
+		std::cerr << "Warning: h1 and h2 have different bin numbers!" << nbinsh1 << " " << nbinsh2 << std::endl;
+		return -99; // Optionally, return an error value
+	}
+
+	Double_t chi2 = 0;
+
+	int binstart = 0;
+	int binend = 0;
+
+	if (position == 1)
+	{
+		binstart = 1;
+		binend = 10;
+	}
+	else if (position == 2)
+	{
+		binstart = 11;
+		binend = 20;
+	}
+	else if (position == 3)
+	{
+		binstart = 21;
+		binend = 30;
+	}
+
+	for (int i = binstart; i <= binend; i++)
 	{
 		double num = TMath::Power((h1->GetBinContent(i) - h2->GetBinContent(i)), 2);
 		double den = TMath::Power((h1->GetBinError(i)), 2) + TMath::Power((h2->GetBinError(i)), 2);
@@ -3499,7 +3635,7 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 	if (my_case == 3)
 		txtname = "tnpD";
 	if (my_case == 4)
-		txtname = "acooff";
+		txtname = "acoon";
 	if (my_case == 5)
 		txtname = "nominal_no_bk_sub";
 	if (my_case == 6)
@@ -3672,7 +3808,7 @@ TH1D *chisquaretest::reducebinpp(TH1D *h_old_data, bool isleft)
 }
 void chisquaretest::readlimit(int type, bool iseta, int cent)
 {
-	TString variation[9] = {"nominal", "tnpU", "tnpD", "acooff", "nominal_no_bk_sub", "nominal_binning", "nominal_range", "HF_up", "HF_down"};
+	TString variation[9] = {"nominal", "tnpU", "tnpD", "acoon", "nominal_no_bk_sub", "nominal_binning", "nominal_range", "HF_up", "HF_down"};
 	TString filename = "";
 	TString type_str = "";
 	TString savedname = "";
@@ -3722,7 +3858,7 @@ void chisquaretest::readlimit(int type, bool iseta, int cent)
 
 void chisquaretest::readlimitpp(int type, bool iseta)
 {
-	TString variation[7] = {"nominal", "tnpU", "tnpD", "acooff", "nominal_no_bk_sub", "nominal_binning", "nominal_range"};
+	TString variation[7] = {"nominal", "tnpU", "tnpD", "acoon", "nominal_no_bk_sub", "nominal_binning", "nominal_range"};
 	TString filename = "";
 	TString type_str = "";
 	TString savedname = "";

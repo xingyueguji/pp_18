@@ -16,23 +16,22 @@ void run_chi2()
     newchisquaretest(4, 0);
     newchisquaretest(5, 0);
     newchisquaretest(6, 0);
-    newchisquaretest(7, 0);*/
+    newchisquaretest(7, 0);
+    newchisquaretest(8, 0);
+    newchisquaretest(9, 0);*/
 
     
 
 
-    newchisquaretest(1, 1);
+    //newchisquaretest(1, 1);
     /*newchisquaretest(2, 1);
-    newchisquaretest(3, 1);
-    newchisquaretest(4, 1);
-    newchisquaretest(5, 1);
+    newchisquaretest(3, 1);*/
+    //newchisquaretest(4, 1);
+    /*newchisquaretest(5, 1);
     newchisquaretest(6, 1);
-    newchisquaretest(7, 1);*/
-
-    /*newchisquaretest(8, 0);
-    newchisquaretest(9, 0);
+    newchisquaretest(7, 1);
     newchisquaretest(8, 1);
-    newchisquaretest(9, 1);*/ 
+    newchisquaretest(9, 1);*/
 
 
 
@@ -42,10 +41,10 @@ void run_chi2()
     newchisquaretestpp(4, 0);
     newchisquaretestpp(5, 0);
     newchisquaretestpp(6, 0);
-    newchisquaretestpp(7, 0);
+    newchisquaretestpp(7, 0);*/
 
 
-    newchisquaretestpp(1, 1);
+    /*newchisquaretestpp(1, 1);
     newchisquaretestpp(2, 1);
     newchisquaretestpp(3, 1);
     newchisquaretestpp(4, 1);

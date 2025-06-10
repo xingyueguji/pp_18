@@ -81,7 +81,8 @@
         "get_run_groups.C": "cpp",
         "backgroundcheck.C": "cpp",
         "get_systematic_stack.C": "cpp",
-        "pTreweight.C": "cpp"
+        "pTreweight.C": "cpp",
+        "plot_vectors.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
