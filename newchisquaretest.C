@@ -30,6 +30,7 @@ void newchisquaretest(int type = 1, int version = 0)
 	TString bkfile;
 	TString zoominfile;
 	TString prefix;
+
 	if (version == 0)
 	{
 		mcfile = "../ZBoson_18/rootfile/version_0/template_PbPb.root";
@@ -107,11 +108,11 @@ void newchisquaretest(int type = 1, int version = 0)
 	}
 
 	datafile = "../ZBoson_18/rootfile/data_file.root";
-	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, zoominfile);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, zoominfile, version, 1);
 
 	// ovo->bincontentcheck(isbk);
 	ovo->RebinAll(type);
 	ovo->calculatechisq(isbk, 0);
 	ovo->calculatechisq(isbk, 1);
-	ovo->plottingandformatting(type);
+	ovo->plottingandformatting(type, version);
 }

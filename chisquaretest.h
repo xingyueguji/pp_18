@@ -7,8 +7,8 @@ class chisquaretest : public plotting_helper
 {
 public:
 	chisquaretest();
-	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4);
-	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4);
+	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version, int useless);
+	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version);
 	~chisquaretest();
 	Double_t myownfunctionchi2(TH1D *h1, TH1D *h2);
 	Double_t myownfunctionchi2partial(TH1D *h1, TH1D *h2, int position);
@@ -30,7 +30,7 @@ public:
 		double range2_min, double range2_max, int rebin2,
 		double range3_min, double range3_max, int rebin3,
 		double range4_min = -1, double range4_max = -1, int rebin4 = 1);
-	void saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true, int version);
+	void saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true, int version = 2);
 	void readlimit(int type, int cent, int version);
 	void readlimitpp(int type, int version);
 	TH1D *ConvertToDNdx(TH1D *h2);
@@ -193,7 +193,7 @@ chisquaretest::chisquaretest()
 {
 }
 
-chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version, int useless)
 {
 
 	// type 1 = nominal
@@ -238,7 +238,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 
 		// Here's for zoomin
 
-		readlimit(type, cent);
+		readlimit(type, cent, version);
 
 		double h_low_mass_shift_zoomin = placeholder_mass_shift_array_low_zoomin - ((placeholder_mass_shift_array_high_zoomin - placeholder_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
 		double h_high_mass_shift_zoomin = placeholder_mass_shift_array_high_zoomin + ((placeholder_mass_shift_array_high_zoomin - placeholder_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
@@ -341,7 +341,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	}
 }
 
-chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version)
 {
 
 	// type 1 = nominal
@@ -391,7 +391,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	this->h_low_smear = lowbin_smear - ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 	this->h_high_smear = highbin_smear + ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 
-	readlimitpp(type);
+	readlimitpp(type, version);
 
 	double h_low_mass_shift_zoomin = placeholder_pp_mass_shift_array_low_zoomin - ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
 	double h_high_mass_shift_zoomin = placeholder_pp_mass_shift_array_high_zoomin + ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
@@ -820,7 +820,7 @@ void chisquaretest::plottingandformatting(int type, int version)
 		cout << "Minimum is " << h_chisquare[cent]->GetBinContent(minBinX, minBinY) << endl;
 
 		// This is to export minimum region
-		this->saveChi2Region(h_chisquare[cent], minBinX, minBinY, type, cent, 3, false);
+		this->saveChi2Region(h_chisquare[cent], minBinX, minBinY, type, cent, 3, false, version);
 		this->getcontour(h_chisquare[cent], 1, minBinX, minBinY, minContent, contour_x_left_onesig_HI, contour_x_right_onesig_HI);
 
 		g_HI_contour_1sig_left = new TGraph(nbins_smear, contour_x_left_weighted_onesig, contour_y_HI[cent]);
@@ -1265,10 +1265,11 @@ void chisquaretest::plottingandformatting(int type, int version)
 
 			pt->AddText("|#eta| < 2.4");
 
-			pt->AddText(Form("Area 1 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 1), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 1)));
-			pt->AddText(Form("Area 2 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 2), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 2)));
-			pt->AddText(Form("Area 3 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 3), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 3)));
-			pt->AddText(Form("Vaccum is %.3f, %.3f", this->myownfunctionchi2(h_data_bksub_not_rebinned[cent], vaccum_plot), this->myownfunctionchi2(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent])));
+			pt->AddText("Left: vaccum, Right: best template");
+			pt->AddText(Form("Region 1 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 1), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 1)));
+			pt->AddText(Form("Region 2 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 2), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 2)));
+			pt->AddText(Form("Region 3 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 3), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 3)));
+			pt->AddText(Form("Total is %.3f, %.3f", this->myownfunctionchi2(h_data_bksub_not_rebinned[cent], vaccum_plot), this->myownfunctionchi2(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent])));
 			pt->Draw();
 
 			TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.85); // Upper-right position
@@ -1368,6 +1369,8 @@ void chisquaretest::plottingandformatting(int type, int version)
 		c_data_data_bk[cent]->SaveAs(Form(data_data_saving_path, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 	}
 
+	TString savingrootfilename;
+
 	if (version == 0)
 	{
 		savingrootfilename = "All_plots_version_0.root";
@@ -1383,6 +1386,9 @@ void chisquaretest::plottingandformatting(int type, int version)
 
 	TFile *temp = new TFile(savingrootfilename, "UPDATE");
 	temp->cd();
+
+	g_HI_dmass = new TGraphErrors(5, xposition_HI, dMass_HI, xposition_err_HI, dMass_Err_HI);
+	g_HI_dwidth = new TGraphErrors(5, xposition_HI, dWidth_HI, xposition_err_HI, dWidth_Err_HI);
 
 	if (type == 1)
 	{
@@ -1452,6 +1458,8 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 	TString data_mc_saving_path;
 	TString data_data_saving_path;
 	TString contour_saving_path;
+
+	TString prefix;
 
 	// type 1 = nominal
 	// type 2 = tnpU
@@ -1617,7 +1625,7 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 		}
 
 		// This is to export minimum region
-		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, type, runperiod, 3, true);
+		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, type, runperiod, 3, true, version);
 
 		this->getcontour(h_chisquare_pp[runperiod], 2, minBinX, minBinY, minContent, contour_x_left_onesig_HI, contour_x_right_onesig_HI);
 
@@ -1906,7 +1914,7 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 		c_data_mc_raw_pp[runperiod]->SetBottomMargin(0.13);
 		c_data_mc_raw_pp[runperiod]->SetTicks(1, 1);
 		// c_data_mc_raw_pp[runperiod]->SetLogy();
-		if (type != 5)
+		if (type != 5 && type != 1)
 		{
 			h_data_bksub_pp[runperiod]->SetTitle(Form(data_mc_title, runperiod));
 			h_data_bksub_pp[runperiod]->SetMarkerColor(kRed);
@@ -1958,17 +1966,189 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerSize(1.5);
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->Draw("P SAME");
 		}
+		if (type == 1)
+		{
+			TFile *f_temp_signal = new TFile("../ZBoson_18/rootfile/mc_signal.root", "READ");
 
-		TPaveText *pt1 = new TPaveText(0.15, 0.7, 0.5, 0.8, "NDC");
-		pt1->AddText("Red is data");
-		pt1->AddText("Green is best template");
-		pt1->SetTextSize(0.03);
-		pt1->SetTextAlign(22); // Center alignment
-		pt1->SetFillStyle(0);  // Make the background transparent
-		pt1->SetBorderSize(0); // Remove the border
-		pt1->SetLineColor(0);  // Remove the border line (optional)
-		pt1->SetTextColor(1);  // Set text color (default: black)
-		pt1->Draw();
+			TH1D *vaccum_plot;
+
+			vaccum_plot = (TH1D *)f_temp_signal->Get(Form("FA_nominal_%i", 10));
+
+			this->areanormalize(vaccum_plot);
+			vaccum_plot->Rebin(4);
+
+			TH1D *h_ratio = (TH1D *)h_data_pp[runperiod]->Clone("h_ratio");
+			TH1D *h_ratio_vaccum = (TH1D *)h_data_pp[runperiod]->Clone("h_ratio_vaccum");
+
+			double tmargin = gPad->GetTopMargin();
+			double bmargin = gPad->GetBottomMargin();
+			double lmargin = gPad->GetLeftMargin();
+			double rmargin = gPad->GetRightMargin();
+
+			TPad *pad1 = new TPad("pad1", "Top pad", 0, 0.25, 1, 1.0);
+			pad1->SetTopMargin(tmargin);
+			pad1->SetBottomMargin(0.02); // override bottom only
+			pad1->SetLeftMargin(lmargin);
+			pad1->SetRightMargin(rmargin);
+			pad1->SetLogy();
+			pad1->Draw();
+			pad1->cd(); // Go to top pad
+			// h_data_bksub_not_rebinned[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
+			h_data_pp[runperiod]->SetTitleFont(62);
+			h_data_pp[runperiod]->SetMarkerColor(kBlack);
+			h_data_pp[runperiod]->SetMarkerSize(1);
+			h_data_pp[runperiod]->SetMarkerStyle(kFullCircle);
+			h_data_pp[runperiod]->GetYaxis()->SetTitle("Normalized Counts");
+			h_data_pp[runperiod]->GetXaxis()->SetTitle("");
+
+			h_data_pp[runperiod]->GetYaxis()->SetTitleFont(42);	 // Times, bold
+			h_data_pp[runperiod]->GetYaxis()->SetLabelFont(42);	 // Times, bold
+			h_data_pp[runperiod]->GetYaxis()->SetTitleSize(0.05); // Title size
+			h_data_pp[runperiod]->GetYaxis()->SetLabelSize(0.04); // Label size
+			h_data_pp[runperiod]->GetXaxis()->SetTitleFont(42);	 // Times, bold
+			h_data_pp[runperiod]->GetXaxis()->SetLabelFont(42);	 // Times, bold
+			h_data_pp[runperiod]->GetXaxis()->SetTitleSize(0.05); // Title size
+			h_data_pp[runperiod]->GetXaxis()->SetLabelSize(0.04); // Label size
+			h_data_pp[runperiod]->SetLineWidth(1);				 // Make the outline thick
+			h_data_pp[runperiod]->GetXaxis()->SetLabelSize(0);	 // Hide X label
+
+			// this->areanormalize(h_data_bksub_not_rebinned[cent]);
+
+			h_data_pp[runperiod]->Draw("P");
+
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerColor(kBlue + 1);
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerStyle(kFullCircle);
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerSize(0);
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetFillColor(kBlue + 1);
+
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetFillColor(kBlue + 1); // Set fill color
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetFillStyle(3004);	   // Solid fill
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetLineWidth(1);		   // Set outline thickness
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetLineColor(kBlue + 1); // Set outline color
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->Draw("HIST SAME");
+
+			cout << "For vaccum, the chi2 value is " << myownfunctionchi2(h_data_pp[runperiod], vaccum_plot) << endl;
+			cout << "For best template, the chi2 value is " << myownfunctionchi2(h_data_pp[runperiod], h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]) << endl;
+
+			/*TGraph *graph = new TGraph(vaccum_plot);
+			graph->SetLineWidth(2);
+			graph->SetLineColor(kBlue + 2);
+			graph->Draw("L SAME");*/
+
+			const int nBins = vaccum_plot->GetNbinsX();
+			std::vector<double> x, y;
+
+			for (int i = 1; i <= nBins; i++)
+			{												// Bins start at 1
+				x.push_back(vaccum_plot->GetBinCenter(i));	// X values = bin centers
+				y.push_back(vaccum_plot->GetBinContent(i)); // Y values = bin content
+			}
+
+			TSpline3 *spline = new TSpline3("spline", x.data(), y.data(), nBins, "b1e1", 0, 0);
+
+			spline->SetLineWidth(2);		// Set outline thickness
+			spline->SetLineColor(kRed + 1); // Set outline color
+
+			TPaveText *pt = new TPaveText(0.25, 0.6, 0.35, 0.8, "NDC"); // Adjust position
+			pt->SetFillColor(0);										// Transparent background
+			pt->SetTextFont(62);										// Standard font
+			pt->SetTextSize(0.03);
+			pt->SetBorderSize(0); // No border
+			pt->AddText("Nominal");
+
+			pt->AddText("|#eta| < 2.4");
+
+			pt->AddText("Left: vaccum, Right: best template");
+			pt->AddText(Form("Region 1 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_pp[runperiod], vaccum_plot, 1), this->myownfunctionchi2partial(h_data_pp[runperiod], h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod], 1)));
+			pt->AddText(Form("Region 2 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_pp[runperiod], vaccum_plot, 2), this->myownfunctionchi2partial(h_data_pp[runperiod], h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod], 2)));
+			pt->AddText(Form("Region 3 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_pp[runperiod], vaccum_plot, 3), this->myownfunctionchi2partial(h_data_pp[runperiod], h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod], 3)));
+			pt->AddText(Form("Total is %.3f, %.3f", this->myownfunctionchi2(h_data_pp[runperiod], vaccum_plot), this->myownfunctionchi2(h_data_pp[runperiod], h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod])));
+			pt->Draw();
+
+			TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.85); // Upper-right position
+			leg->SetBorderSize(0);							 // Remove border
+			leg->SetFillStyle(0);							 // Transparent background
+			leg->SetTextSize(0.03);							 // Adjust text size
+			leg->SetTextFont(62);							 // Standard font
+
+			// Adding three elements as points
+			leg->AddEntry(h_data_pp[runperiod], "Data", "P");
+			leg->AddEntry(h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod], "Best fit template", "F");
+			leg->AddEntry(spline, "Vaccum template", "l");
+
+			leg->Draw();
+
+			spline->SetNpx(1000);
+			spline->Draw("C SAME");
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->Draw("HIST SAME");
+			h_data_pp[runperiod]->Draw("P SAME");
+
+			CMS_lumi(pad1, 13, 10);
+
+			c_data_mc_raw_pp[runperiod]->cd();
+			c_data_mc_raw_pp[runperiod]->SetBottomMargin(0.01);
+			TPad *pad2 = new TPad("pad2", "Ratio pad", 0, 0.02, 1, 0.25);
+			pad2->SetTopMargin(0.03);	 // tiny top margin
+			pad2->SetBottomMargin(0.35); // room for axis title
+			pad2->SetLeftMargin(lmargin);
+			pad2->SetRightMargin(rmargin);
+			pad2->Draw();
+			pad2->cd();
+
+			h_ratio->Divide(h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]);
+			h_ratio_vaccum->Divide(vaccum_plot);
+
+			h_ratio->SetTitle("");
+			h_ratio->GetYaxis()->SetTitle("Data / Template");
+			h_ratio->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-}} (GeV)");
+
+			h_ratio->GetYaxis()->SetTitleFont(42);	  // Times, bold
+			h_ratio->GetYaxis()->SetLabelFont(42);	  // Times, bold
+			h_ratio->GetYaxis()->SetTitleSize(0.1);	  // Title size
+			h_ratio->GetYaxis()->SetLabelSize(0.1);	  // Label size
+			h_ratio->GetXaxis()->SetTitleFont(42);	  // Times, bold
+			h_ratio->GetXaxis()->SetLabelFont(42);	  // Times, bold
+			h_ratio->GetXaxis()->SetTitleSize(0.15);  // Title size
+			h_ratio->GetXaxis()->SetLabelSize(0.15);  // Label size
+			h_ratio->SetLineWidth(1);				  // Make the outline thick
+			h_ratio->GetYaxis()->SetTitleOffset(0.4); // try 0.45 to 0.6 range
+
+			h_ratio_vaccum->SetLineColor(kRed);
+			h_ratio_vaccum->SetMarkerColor(kRed);
+			h_ratio_vaccum->SetMarkerStyle(kFullCircle);
+			h_ratio_vaccum->SetMarkerSize(1);
+
+			h_ratio->SetLineColor(kBlue);
+			h_ratio->SetMarkerStyle(kFullCircle);
+			h_ratio->SetMarkerSize(1);
+			h_ratio->SetMarkerColor(kBlue);
+
+			h_ratio->SetMinimum(0.5);
+			h_ratio->SetMaximum(1.5);
+			h_ratio->Draw("P");
+
+			h_ratio_vaccum->Draw("P SAME");
+
+			TLine *line = new TLine(h_ratio->GetXaxis()->GetXmin(), 1.0,
+									h_ratio->GetXaxis()->GetXmax(), 1.0);
+			line->SetLineStyle(2);
+			line->Draw("SAME");
+		}
+
+		if (type != 1)
+		{
+
+			TPaveText *pt1 = new TPaveText(0.15, 0.7, 0.5, 0.8, "NDC");
+			pt1->AddText("Red is data");
+			pt1->AddText("Green is best template");
+			pt1->SetTextSize(0.03);
+			pt1->SetTextAlign(22); // Center alignment
+			pt1->SetFillStyle(0);  // Make the background transparent
+			pt1->SetBorderSize(0); // Remove the border
+			pt1->SetLineColor(0);  // Remove the border line (optional)
+			pt1->SetTextColor(1);  // Set text color (default: black)
+			pt1->Draw();
+		}
 
 		c_data_mc_raw_pp[runperiod]->SaveAs(Form(data_mc_saving_path, runperiod));
 
@@ -2000,7 +2180,7 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 
 	if (version == 0)
 	{
-		savingrootfilename = "All_plots_version_0.root";
+		savingrootfilename = "./All_plots_version_0.root";
 	}
 	if (version == 1)
 	{
@@ -2818,7 +2998,7 @@ TGraph *chisquaretest::CombineGraphsToCircle(TGraph *graph1, TGraph *graph2)
 	return combinedGraph;
 }
 
-void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true, int version)
+void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true, int version = 2)
 {
 	if (region_size % 2 == 0)
 	{

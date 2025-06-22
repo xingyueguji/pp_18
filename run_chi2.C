@@ -10,47 +10,27 @@ void run_chi2()
     // shift_-0.2_0.0_smear_0.0_0.006_modified_signal_21_21_100.root
     // jobID_3_shift_-0.5_0.2_smear_0.0_0.015_modified_signal_21_21_1000.root
 
-    newchisquaretest(1, 0);
-    /*newchisquaretest(2, 0);
-    newchisquaretest(3, 0);
-    newchisquaretest(4, 0);
-    newchisquaretest(5, 0);
-    newchisquaretest(6, 0);
-    newchisquaretest(7, 0);
-    newchisquaretest(8, 0);
-    newchisquaretest(9, 0);*/
+    /*newchisquaretest(1, 0);
+    cout << "we are here " << endl;
+    newchisquaretest(1, 1);*/
 
+    newchisquaretest(1, 2);
+    newchisquaretest(2, 2);
+    newchisquaretest(3, 2);
+    newchisquaretest(4, 2);
+    newchisquaretest(5, 2);
+
+    newchisquaretest(7, 2);
+    newchisquaretest(8, 2);
+    newchisquaretest(9, 2);
+
+    newchisquaretestpp(1, 2);
+    newchisquaretestpp(2, 2);
+    newchisquaretestpp(3, 2);
+    newchisquaretestpp(4, 2);
+    newchisquaretestpp(5, 2);
     
-
-
-    //newchisquaretest(1, 1);
-    /*newchisquaretest(2, 1);
-    newchisquaretest(3, 1);*/
-    //newchisquaretest(4, 1);
-    /*newchisquaretest(5, 1);
-    newchisquaretest(6, 1);
-    newchisquaretest(7, 1);
-    newchisquaretest(8, 1);
-    newchisquaretest(9, 1);*/
-
-
-
-    /*newchisquaretestpp(1, 0);
-    newchisquaretestpp(2, 0);
-    newchisquaretestpp(3, 0);
-    newchisquaretestpp(4, 0);
-    newchisquaretestpp(5, 0);
-    newchisquaretestpp(6, 0);
-    newchisquaretestpp(7, 0);*/
-
-
-    /*newchisquaretestpp(1, 1);
-    newchisquaretestpp(2, 1);
-    newchisquaretestpp(3, 1);
-    newchisquaretestpp(4, 1);
-    newchisquaretestpp(5, 1);
-    newchisquaretestpp(6, 1);
-    newchisquaretestpp(7, 1);*/
+    newchisquaretestpp(7, 2);
 
 
     cout << "Finished" << endl;
