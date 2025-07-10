@@ -23,7 +23,7 @@ public:
 	void RebinAllpp(int x);
 	Double_t getuncertainty(TH2D *h_1, int type, Int_t minBinX, Int_t minBinY);
 	void getcontour(TH2D *h1, int type, Int_t minBinX, Int_t minBinY, Double_t minBinContent, Double_t *arrayleft, Double_t *arrayright);
-	void drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0);
+	void drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0, TFile *f1 = nullptr);
 	std::vector<double> createCustomBinning(
 		TH1D *hist,
 		double range1_min, double range1_max, int rebin1,
@@ -55,6 +55,7 @@ public:
 	TH1D *h_mc_signal[nbins_mass_shift][nbins_smear][nbins_cent];
 	TH1D *h_mc_signal_not_rebinned[nbins_mass_shift][nbins_smear][nbins_cent];
 	TH1D *h_mc_signal_zoomin[nbins_mass_shift][nbins_smear][nbins_cent];
+	TH1D *h_mc_signal_zoomin_not_rebinned[nbins_mass_shift][nbins_smear][nbins_cent];
 	TH1D *h_data[nbins_cent];
 	TH1D *h_data_bksub_not_rebinned[nbins_cent];
 	TH1D *h_mc_bk[nbins_cent];
@@ -101,6 +102,7 @@ public:
 
 	TH1D *h_mc_signal_pp[nbins_mass_shift][nbins_smear][23];
 	TH1D *h_mc_signal_pp_zoomin[nbins_mass_shift][nbins_smear];
+	TH1D *h_mc_signal_pp_zoomin_not_rebinned[nbins_mass_shift][nbins_smear];
 	TH1D *h_data_pp[23];
 	TH1D *h_mc_bk_pp;
 	TH1D *h_data_bksub_pp[23];
@@ -155,7 +157,7 @@ public:
 
 	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.32, -0.25, 0, 0, 0, 0, 0, 0, -0.22};
 	double raw_mass_shift_array_high[nbins_cent] = {-0.02, -0.06, -0.04, 0.02, 0, 0, 0, 0, 0, 0, -0.08};
-	double raw_mass_smear_array_low[nbins_cent] = {-0.05, 0.075, -0.2, 0.15, 0, 0, 0, 0, 0, 0, 0.13};
+	double raw_mass_smear_array_low[nbins_cent] = {-0.05, 0.075, -0.2, 0.15, 0, 0, 0, 0, 0, 0, 0.1};
 	double raw_mass_smear_array_high[nbins_cent] = {0.3, 0.5, 0.3, 0.65, 0, 0, 0, 0, 0, 0, 0.36};
 
 	double placeholder_mass_shift_array_low_zoomin = 0;
@@ -316,6 +318,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 					h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
 					h_mc_signal_not_rebinned[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Clone(Form("template_FA_nominal_clone_%i_%i_%i", shift, smear, cent));
 					h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
+					h_mc_signal_zoomin_not_rebinned[shift][smear][cent] = (TH1D *)h_mc_signal_zoomin[shift][smear][cent]->Clone(Form("template_FA_nominal_zoomin_clone_%i_%i_%i", shift, smear, cent));
 				}
 
 				if (type == 4)
@@ -357,8 +360,6 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	bkfilepath = s3;
 	TString mcfile_zoomin_path = s4;
 
-	cout << "mcfilepath is " << mcfilepath << endl;
-
 	mcfile = new TFile(mcfilepath, "READ");
 	datafile = new TFile(datafilepath, "READ");
 	bkfile = new TFile(bkfilepath, "READ");
@@ -397,8 +398,6 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	double h_high_mass_shift_zoomin = placeholder_pp_mass_shift_array_high_zoomin + ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
 	double h_low_smear_zoomin = placeholder_pp_mass_smear_array_low_zoomin - ((placeholder_pp_mass_smear_array_high_zoomin - placeholder_pp_mass_smear_array_low_zoomin) / (nbins_smear - 1)) / 2;
 	double h_high_smear_zoomin = placeholder_pp_mass_smear_array_high_zoomin + ((placeholder_pp_mass_smear_array_high_zoomin - placeholder_pp_mass_smear_array_low_zoomin) / (nbins_smear - 1)) / 2;
-
-	cout << "x low is " << h_low_mass_shift_zoomin << "x high is " << h_high_mass_shift_zoomin << "y low is " << h_low_smear_zoomin << "y high is " << h_high_smear_zoomin << endl;
 
 	h_mc_bk_pp = (TH1D *)bkfile->Get("Normalized_mc_bk_10");
 
@@ -486,6 +485,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 					if (runperiod == 22)
 					{
 						h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
+						h_mc_signal_pp_zoomin_not_rebinned[shift][smear] = (TH1D *)h_mc_signal_pp_zoomin[shift][smear]->Clone(Form("h_mc_signal_pp_zoomin_not_rebinned_clone_%i_%i", shift, smear));
 					}
 				}
 
@@ -526,7 +526,6 @@ void chisquaretest::calculatechisq(bool isbk, bool iszoomin = 0)
 		if (!((cent < 4) || (cent == 10)))
 			continue;
 
-		cout << "Now running File " << cenlowlimit[cent] << " " << cenhighlimit[cent] << endl;
 		for (int i = 1; i <= h_data[cent]->GetNbinsX(); i++)
 		{
 			if (TMath::Power((h_data[cent]->GetBinError(i)), 2) == 0)
@@ -831,7 +830,9 @@ void chisquaretest::plottingandformatting(int type, int version)
 		TString T_contour_saving_path = Form(contour_saving_path, cenlowlimit[cent], cenhighlimit[cent]);
 		TString T_chi2_title = Form(chi2_title, cenlowlimit[cent], cenhighlimit[cent]);
 
-		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, cent, false, T_chi2_title, T_contour_saving_path);
+		TFile *contourfile = new TFile("./contourrootfile/everything.root", "UPDATE");
+
+		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, cent, false, T_chi2_title, T_contour_saving_path, 0, contourfile);
 
 		Double_t xMin = h_chisquare[cent]->GetXaxis()->GetBinLowEdge(minBinX);
 		Double_t xMax = h_chisquare[cent]->GetXaxis()->GetBinUpEdge(minBinX);
@@ -1011,6 +1012,19 @@ void chisquaretest::plottingandformatting(int type, int version)
 
 		Double_t xCenter_zoomin = h_chisquare_zoomin[cent]->GetXaxis()->GetBinCenter(minBinX_zoomin);
 		Double_t yCenter_zoomin = h_chisquare_zoomin[cent]->GetYaxis()->GetBinCenter(minBinY_zoomin);
+
+		if (version == 2)
+		{
+			if (type == 1)
+			{
+				// I only need the nominal best fit template
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				besttemplate->cd();
+				h_mc_signal_zoomin_not_rebinned[minBinX_zoomin - 1][minBinY_zoomin - 1][cent]->Write("", 2);
+				besttemplate->Close();
+			}
+		}
+		cout << "Zoom in local min is " << xCenter_zoomin << " " << yCenter_zoomin << endl;
 
 		TBox *box1_zoomin = new TBox(xMin_zoomin, yMin_zoomin, xMax_zoomin, yMax_zoomin);
 		box1_zoomin->SetLineColor(kRed);
@@ -1637,7 +1651,9 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 		TString T_contour_saving_path = Form(contour_saving_path, runperiod);
 		TString T_chi2_title = Form(chi2_title, runperiod);
 
-		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, true, T_chi2_title, T_contour_saving_path, type);
+		TFile *contourfile = new TFile("./contourrootfile/everything.root", "UPDATE");
+
+		this->drawcontour(g_HI_contour_1sig_left, g_HI_contour_1sig_right, g_HI_contour_2sig_left, g_HI_contour_2sig_right, runperiod, true, T_chi2_title, T_contour_saving_path, type, contourfile);
 
 		Double_t xMin = h_chisquare_pp[runperiod]->GetXaxis()->GetBinLowEdge(minBinX);
 		Double_t xMax = h_chisquare_pp[runperiod]->GetXaxis()->GetBinUpEdge(minBinX);
@@ -1814,6 +1830,18 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 
 			Double_t xCenter_zoomin = h_chisquare_pp_zoomin->GetXaxis()->GetBinCenter(minBinX_zoomin);
 			Double_t yCenter_zoomin = h_chisquare_pp_zoomin->GetYaxis()->GetBinCenter(minBinY_zoomin);
+
+			if (version == 2)
+			{
+				if (type == 1)
+				{
+					// I only need the nominal best fit template
+					TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+					besttemplate->cd();
+					h_mc_signal_pp_zoomin_not_rebinned[minBinX_zoomin - 1][minBinY_zoomin - 1]->Write("", 2);
+					besttemplate->Close();
+				}
+			}
 
 			TBox *box1_zoomin = new TBox(xMin_zoomin, yMin_zoomin, xMax_zoomin, yMax_zoomin);
 			box1_zoomin->SetLineColor(kRed);
@@ -2001,16 +2029,16 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 			h_data_pp[runperiod]->GetYaxis()->SetTitle("Normalized Counts");
 			h_data_pp[runperiod]->GetXaxis()->SetTitle("");
 
-			h_data_pp[runperiod]->GetYaxis()->SetTitleFont(42);	 // Times, bold
-			h_data_pp[runperiod]->GetYaxis()->SetLabelFont(42);	 // Times, bold
+			h_data_pp[runperiod]->GetYaxis()->SetTitleFont(42);	  // Times, bold
+			h_data_pp[runperiod]->GetYaxis()->SetLabelFont(42);	  // Times, bold
 			h_data_pp[runperiod]->GetYaxis()->SetTitleSize(0.05); // Title size
 			h_data_pp[runperiod]->GetYaxis()->SetLabelSize(0.04); // Label size
-			h_data_pp[runperiod]->GetXaxis()->SetTitleFont(42);	 // Times, bold
-			h_data_pp[runperiod]->GetXaxis()->SetLabelFont(42);	 // Times, bold
+			h_data_pp[runperiod]->GetXaxis()->SetTitleFont(42);	  // Times, bold
+			h_data_pp[runperiod]->GetXaxis()->SetLabelFont(42);	  // Times, bold
 			h_data_pp[runperiod]->GetXaxis()->SetTitleSize(0.05); // Title size
 			h_data_pp[runperiod]->GetXaxis()->SetLabelSize(0.04); // Label size
-			h_data_pp[runperiod]->SetLineWidth(1);				 // Make the outline thick
-			h_data_pp[runperiod]->GetXaxis()->SetLabelSize(0);	 // Hide X label
+			h_data_pp[runperiod]->SetLineWidth(1);				  // Make the outline thick
+			h_data_pp[runperiod]->GetXaxis()->SetLabelSize(0);	  // Hide X label
 
 			// this->areanormalize(h_data_bksub_not_rebinned[cent]);
 
@@ -2022,8 +2050,8 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetFillColor(kBlue + 1);
 
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetFillColor(kBlue + 1); // Set fill color
-			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetFillStyle(3004);	   // Solid fill
-			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetLineWidth(1);		   // Set outline thickness
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetFillStyle(3004);	  // Solid fill
+			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetLineWidth(1);		  // Set outline thickness
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetLineColor(kBlue + 1); // Set outline color
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->Draw("HIST SAME");
 
@@ -2803,7 +2831,7 @@ std::vector<double> chisquaretest::createCustomBinning(
 	return newBins;
 }
 
-void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0)
+void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0, TFile *f1 = nullptr)
 {
 
 	onesig_left = RemoveInvalidPoints(onesig_left);
@@ -2921,6 +2949,12 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	// Draw the legend
 	legend->Draw();
 	temp_c1->SaveAs(contoursaving);
+	if (f1 != nullptr)
+	{
+		f1->cd();
+		temp_c1->Write(contourtitle, 2);
+		f1->Close();
+	}
 }
 
 TGraph *chisquaretest::RemoveInvalidPoints(TGraph *originalGraph)

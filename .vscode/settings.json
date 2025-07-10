@@ -82,7 +82,11 @@
         "backgroundcheck.C": "cpp",
         "get_systematic_stack.C": "cpp",
         "pTreweight.C": "cpp",
-        "plot_vectors.C": "cpp"
+        "plot_vectors.C": "cpp",
+        "pesudo-experiment.C": "cpp",
+        "pseudo_experiment.C": "cpp",
+        "get_mass_range_sys.C": "cpp",
+        "get_combined_contour.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
