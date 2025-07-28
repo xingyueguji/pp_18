@@ -155,9 +155,9 @@ public:
 	TFile *bkfile;
 	TFile *mcfile_zoomin;
 
-	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.32, -0.25, 0, 0, 0, 0, 0, 0, -0.22};
+	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.34, -0.25, 0, 0, 0, 0, 0, 0, -0.22};
 	double raw_mass_shift_array_high[nbins_cent] = {-0.02, -0.06, -0.04, 0.02, 0, 0, 0, 0, 0, 0, -0.08};
-	double raw_mass_smear_array_low[nbins_cent] = {-0.05, 0.075, -0.2, 0.15, 0, 0, 0, 0, 0, 0, 0.1};
+	double raw_mass_smear_array_low[nbins_cent] = {-0.1, 0.055, -0.2, 0.1, 0, 0, 0, 0, 0, 0, 0.06};
 	double raw_mass_smear_array_high[nbins_cent] = {0.3, 0.5, 0.3, 0.65, 0, 0, 0, 0, 0, 0, 0.36};
 
 	double placeholder_mass_shift_array_low_zoomin = 0;
