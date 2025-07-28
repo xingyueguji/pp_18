@@ -80,22 +80,16 @@ void pTreweight()
     TH1D *PbPb_FA = (TH1D *)f1->Get("pT_spec_FA");
     TH1D *pp_FA = (TH1D *)f1->Get("pT_spec_pp_FA");
 
-    TH1D *PbPb_Eta = (TH1D *)f1->Get("pT_spec_Eta");
-    TH1D *pp_Eta = (TH1D *)f1->Get("pT_spec_pp_Eta");
 
     PbPb_FA->Rebin(4);
     pp_FA->Rebin(4);
-    PbPb_Eta->Rebin(4);
-    pp_Eta->Rebin(4);
 
     ovo->areanormalize(PbPb_FA);
     ovo->areanormalize(pp_FA);
-    ovo->areanormalize(PbPb_Eta);
-    ovo->areanormalize(pp_Eta);
+
 
     // Clone PbPb histograms to store weights
     TH1D *weight_FA = new TH1D("weight_FA", "", 50, 0, 200);
-    TH1D *weight_Eta = new TH1D("weight_Eta", "", 50, 0, 200);
 
     // Compute weights for FA
     for (int i = 1; i <= PbPb_FA->GetNbinsX(); i++)
@@ -121,31 +115,7 @@ void pTreweight()
         }
     }
 
-    // Compute weights for Eta
-    for (int i = 1; i <= PbPb_Eta->GetNbinsX(); i++)
-    {
-        double PbPb_val = PbPb_Eta->GetBinContent(i);
-        double pp_val = pp_Eta->GetBinContent(i);
-        double PbPb_err = PbPb_Eta->GetBinError(i);
-        double pp_err = pp_Eta->GetBinError(i);
-
-        if (pp_val > 0 && PbPb_val > 0)
-        {
-            double ratio = PbPb_val / pp_val;
-            double ratio_err = ratio * sqrt(pow(PbPb_err / PbPb_val, 2) + pow(pp_err / pp_val, 2));
-
-            weight_Eta->SetBinContent(i, ratio);
-            weight_Eta->SetBinError(i, ratio_err);
-        }
-        else
-        {
-            weight_Eta->SetBinContent(i, 0);
-            weight_Eta->SetBinError(i, 0);
-        }
-    }
-
     drawandsave(f1, PbPb_FA, pp_FA, weight_FA, false);
-    drawandsave(f1, PbPb_Eta, pp_Eta, weight_Eta, true);
 
     std::cout << "pT reweighting histograms saved in pT_reweight.root" << std::endl;
 }

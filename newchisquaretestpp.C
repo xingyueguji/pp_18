@@ -5,13 +5,14 @@ void newchisquaretestpp(int type = 1, int version = 2)
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acoon
-	// type 5 = Nominal_no_bk
-	// type 6 = rebinned
+	// type 4 = AcoUp
+	// type 5 = AcoDown
+	// type 6 = Nominal_no_bk
 	// type 7 = massrange
 
 	bool isbk = true;
-	if (type == 5)
+
+	if (type == 6)
 	{
 		isbk = false;
 	}
@@ -40,7 +41,7 @@ void newchisquaretestpp(int type = 1, int version = 2)
 		prefix = "../ZBoson_18/rootfile/version_2/";
 	}
 
-	if (type == 1 || type == 5 || type == 6)
+	if (type == 1 || type == 6)
 	{
 		bkfile = "../ZBoson_18/rootfile/normalized/FA_nominal.root";
 	}
@@ -60,8 +61,14 @@ void newchisquaretestpp(int type = 1, int version = 2)
 
 	if (type == 4)
 	{
-		bkfile = "../ZBoson_18/rootfile/normalized/FA_acoon.root";
-		zoominfile = prefix + "template_pp_zoomin_acoon.root";
+		bkfile = "../ZBoson_18/rootfile/normalized/FA_acoup.root";
+		zoominfile = prefix + "template_pp_zoomin_acoup.root";
+	}
+
+	if (type == 5)
+	{
+		bkfile = "../ZBoson_18/rootfile/normalized/FA_acodown.root";
+		zoominfile = prefix + "template_pp_zoomin_acodown.root";
 	}
 
 	if (type == 7)
@@ -76,14 +83,9 @@ void newchisquaretestpp(int type = 1, int version = 2)
 		zoominfile = prefix + "template_pp_zoomin_nominal.root";
 	}
 
-	if (type == 5)
-	{
-		zoominfile = prefix + "template_pp_zoomin_nominal_no_bksub.root";
-	}
-
 	if (type == 6)
 	{
-		zoominfile = prefix + "template_pp_zoomin_nominal_binning.root";
+		zoominfile = prefix + "template_pp_zoomin_nominal_no_bksub.root";
 	}
 
 	datafile = "./new_pp_data_file_stability_readonly.root";
@@ -92,7 +94,7 @@ void newchisquaretestpp(int type = 1, int version = 2)
 	{
 		mcfile = prefix + "template_pp_mass_range.root";
 	}
-	else if (type != 5)
+	else if (type != 6)
 	{
 		mcfile = prefix + "template_pp_bk.root";
 	}

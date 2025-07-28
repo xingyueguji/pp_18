@@ -201,10 +201,12 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = AcoOn
-	// type 5 = Nominal_no_bk
-	// type 6 = rebinned
+	// type 4 = AcoUp
+	// type 5 = AcoDown
+	// type 6 = Nominal_no_bk
 	// type 7 = massrange
+	// type 8 = HF up
+	// type 9 = HF down
 
 	mcfilepath = s1;
 	datafilepath = s2;
@@ -259,7 +261,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 		c_data_data_bk[cent] = new TCanvas(Form("c_data_data_bk_%i", cent), "", 800, 600);
 		c_contour_HI[cent] = new TCanvas(Form("c_contour_HI_%i", cent), "", 800, 600);
 
-		if (type == 1 || type == 5 || type == 6)
+		if (type == 1 || type == 6)
 		{
 			h_data[cent] = (TH1D *)datafile->Get(Form("FA_nominal_%i", cent));
 		}
@@ -276,9 +278,14 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 
 		if (type == 4)
 		{
-			h_data[cent] = (TH1D *)datafile->Get(Form("FA_AcoOn_%i", cent));
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_AcoUp_%i", cent));
 		}
 
+		if (type == 5)
+		{
+			h_data[cent] = (TH1D *)datafile->Get(Form("FA_AcoDown_%i", cent));
+		}
+		// 6 missing for bk removal
 		if (type == 7)
 		{
 
@@ -302,7 +309,6 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 		h_chisquare_zoomin[cent] = new TH2D(Form("h_chisquare_%i_zoomin", cent), "", nbins_mass_shift, h_low_mass_shift_zoomin, h_high_mass_shift_zoomin, nbins_smear, h_low_smear_zoomin, h_high_smear_zoomin);
 
 		this->areanormalize(h_data[cent]);
-
 		h_data_bksub[cent] = (TH1D *)h_data[cent]->Clone(Form("h_data_bksub_%i", cent));
 		h_data_bksub[cent]->Add(h_mc_bk[cent], -1);
 		this->areanormalize(h_data_bksub[cent]);
@@ -312,9 +318,8 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 		{
 			for (int smear = 0; smear < nbins_smear; smear++)
 			{
-				if (type == 1 || type == 2 || type == 3 || type == 5 || type == 6 || type == 8 || type == 9)
+				if (type == 1 || type == 2 || type == 3 || type == 6 || type == 8 || type == 9)
 				{
-
 					h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
 					h_mc_signal_not_rebinned[shift][smear][cent] = (TH1D *)h_mc_signal[shift][smear][cent]->Clone(Form("template_FA_nominal_clone_%i_%i_%i", shift, smear, cent));
 					h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, cent));
@@ -324,8 +329,15 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 				if (type == 4)
 				{
 
-					h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, cent));
-					h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, cent));
+					h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_acoup_%i_%i_%i", shift, smear, cent));
+					h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoup_%i_%i_%i", shift, smear, cent));
+				}
+
+				if (type == 5)
+				{
+
+					h_mc_signal[shift][smear][cent] = (TH1D *)mcfile->Get(Form("template_FA_acodown_%i_%i_%i", shift, smear, cent));
+					h_mc_signal_zoomin[shift][smear][cent] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acodown_%i_%i_%i", shift, smear, cent));
 				}
 
 				if (type == 7)
@@ -336,7 +348,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 				}
 
 				this->areanormalize(h_mc_signal[shift][smear][cent]);
-				if (type == 1 || type == 2 || type == 3 || type == 5 || type == 6 || type == 8 || type == 9)
+				if (type == 1 || type == 2 || type == 3 || type == 6 || type == 8 || type == 9)
 					this->areanormalize(h_mc_signal_not_rebinned[shift][smear][cent]);
 				this->areanormalize(h_mc_signal_zoomin[shift][smear][cent]);
 			}
@@ -350,9 +362,9 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acoon
-	// type 5 = Nominal_no_bk
-	// type 6 = rebinned
+	// type 4 = AcoUp
+	// type 5 = AcoDown
+	// type 6 = Nominal_no_bk
 	// type 7 = massrange
 
 	mcfilepath = s1;
@@ -365,7 +377,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	bkfile = new TFile(bkfilepath, "READ");
 	mcfile_zoomin = new TFile(mcfile_zoomin_path, "READ");
 
-	if (type == 5)
+	if (type == 6)
 	{
 		this->lowbin_mass_shift = raw_pp_mass_shift_low_without_bk;
 		this->highbin_mass_shift = raw_pp_mass_shift_high_without_bk;
@@ -418,7 +430,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 		c_data_mc_raw_pp[runperiod] = new TCanvas(Form("c_data_mc_raw_pp_%i", runperiod), "", 800, 600);
 		c_data_data_bk_pp[runperiod] = new TCanvas(Form("c_data_data_bk_pp_%i", runperiod), "", 800, 600);
 
-		if (type == 1 || type == 5 || type == 6)
+		if (type == 1 || type == 6)
 		{
 			if (runperiod == 22)
 				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_nominal_inclusive");
@@ -447,9 +459,17 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 		if (type == 4)
 		{
 			if (runperiod == 22)
-				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_AcoOn_inclusive");
+				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_AcoUp_inclusive");
 			else
-				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_AcoOn_%i", runperiod));
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_AcoUp_%i", runperiod));
+		}
+
+		if (type == 5)
+		{
+			if (runperiod == 22)
+				h_data_pp[runperiod] = (TH1D *)datafile->Get("FA_AcoDown_inclusive");
+			else
+				h_data_pp[runperiod] = (TH1D *)datafile->Get(Form("FA_AcoDown_%i", runperiod));
 		}
 
 		if (type == 7)
@@ -478,7 +498,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 		{
 			for (int smear = 0; smear < nbins_smear; smear++)
 			{
-				if (type == 1 || type == 2 || type == 3 || type == 5 || type == 6)
+				if (type == 1 || type == 2 || type == 3 || type == 6)
 				{
 
 					h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_nominal_%i_%i_%i", shift, smear, 10));
@@ -492,12 +512,23 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 				if (type == 4)
 				{
 
-					h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, 10));
+					h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acoup_%i_%i_%i", shift, smear, 10));
 					if (runperiod == 22)
 					{
-						h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoon_%i_%i_%i", shift, smear, 10));
+						h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acoup_%i_%i_%i", shift, smear, 10));
 					}
 				}
+
+				if (type == 5)
+				{
+
+					h_mc_signal_pp[shift][smear][runperiod] = (TH1D *)mcfile->Get(Form("template_FA_acodown_%i_%i_%i", shift, smear, 10));
+					if (runperiod == 22)
+					{
+						h_mc_signal_pp_zoomin[shift][smear] = (TH1D *)mcfile_zoomin->Get(Form("template_FA_acodown_%i_%i_%i", shift, smear, 10));
+					}
+				}
+
 				if (type == 7)
 				{
 
@@ -627,8 +658,12 @@ void chisquaretest::plottingandformatting(int type, int version)
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acoon
-	// type 5 = nominal without bk subtraction
+	// type 4 = AcoUp
+	// type 5 = AcoDown
+	// type 6 = Nominal_no_bk
+	// type 7 = massrange
+	// type 8 = HF up
+	// type 9 = HF down
 
 	if (version == 0)
 	{
@@ -684,17 +719,32 @@ void chisquaretest::plottingandformatting(int type, int version)
 	if (type == 4)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, Acoon, centrality: (%i-%i)";
-		data_mc_title = "WholeAcceptance, Acoon, Cent:(%i-%i)";
-		data_data_title = "Raw_Acoon_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, AcoUp, centrality: (%i-%i)";
+		data_mc_title = "WholeAcceptance, AcoUp, Cent:(%i-%i)";
+		data_data_title = "Raw_Acoup_%i_%i";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/Acoon/Raw_Acoon_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acoon/Raw_Acoon_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Acoon/Raw_Acoon_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_Acoon_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_Acoon_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/Acoup/Raw_Acoup_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acoup/Raw_Acoup_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Acoup/Raw_Acoup_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Acoup_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Acoup_%i_%i.png";
 	}
+
 	if (type == 5)
+	{
+
+		chi2_title = "PbPb, |#eta| < 2.4, Acodown, centrality: (%i-%i)";
+		data_mc_title = "WholeAcceptance, Acodown, Cent:(%i-%i)";
+		data_data_title = "Raw_Acodown_%i_%i";
+
+		chi2_saving_path = prefix + "/chi2plots/raw/Acodown/Raw_Acodown_%i_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acodown/Raw_Acodown_%i_%i_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Acodown/Raw_Acodown_%i_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Acodown_%i_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Acodown_%i_%i.png";
+	}
+
+	if (type == 6)
 	{
 
 		chi2_title = "PbPb, |#eta| < 2.4, Nominal no bk, centrality: (%i-%i)";
@@ -708,19 +758,6 @@ void chisquaretest::plottingandformatting(int type, int version)
 		contour_saving_path = prefix + "/contour/raw/raw_nominal_no_bk_%i_%i.png";
 	}
 
-	if (type == 6)
-	{
-
-		chi2_title = "PbPb, |#eta| < 2.4, Nominal uniform rebin, centrality: (%i-%i)";
-		data_mc_title = "|#eta| < 2.4, Nominal uniform rebin, centrality: (%i-%i)";
-		data_data_title = "Raw_Nominal_uniform_rebin_%i_%i";
-
-		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_uniform_rebin_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_nominal_uniform_rebin_%i_%i.png";
-	}
 	if (type == 7)
 	{
 
@@ -1021,7 +1058,10 @@ void chisquaretest::plottingandformatting(int type, int version)
 				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
 				besttemplate->cd();
 				h_mc_signal_zoomin_not_rebinned[minBinX_zoomin - 1][minBinY_zoomin - 1][cent]->Write("", 2);
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_cent_%i", cent));
 				besttemplate->Close();
+				delete vec;
 			}
 		}
 		cout << "Zoom in local min is " << xCenter_zoomin << " " << yCenter_zoomin << endl;
@@ -1110,7 +1150,7 @@ void chisquaretest::plottingandformatting(int type, int version)
 		c_data_mc_raw[cent]->SetTicks(1, 1);
 		// c_data_mc_raw[cent]->SetLogy();
 
-		if (type != 5 && type != 1)
+		if (type != 6 && type != 1)
 		{
 			h_data_bksub[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 			h_data_bksub[cent]->SetMarkerColor(kRed);
@@ -1147,7 +1187,7 @@ void chisquaretest::plottingandformatting(int type, int version)
 			pt1->SetTextColor(1);  // Set text color (default: black)
 			pt1->Draw();
 		}
-		else if (type == 5)
+		else if (type == 6)
 		{
 			h_data[cent]->SetTitle(Form(data_mc_title, this->cenlowlimit[cent], this->cenhighlimit[cent]));
 			h_data[cent]->SetMarkerColor(kRed);
@@ -1424,20 +1464,20 @@ void chisquaretest::plottingandformatting(int type, int version)
 	if (type == 4)
 	{
 
-		g_HI_dmass->Write("HI_dM_chi2_raw_acoon", 2);
-		g_HI_dwidth->Write("HI_dWidth_chi2_raw_acoon", 2);
+		g_HI_dmass->Write("HI_dM_chi2_raw_acoup", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_acoup", 2);
 	}
 	if (type == 5)
 	{
 
-		g_HI_dmass->Write("HI_dM_chi2_raw_nominal_no_bk", 2);
-		g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_no_bk", 2);
+		g_HI_dmass->Write("HI_dM_chi2_raw_acodown", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_acodown", 2);
 	}
 	if (type == 6)
 	{
 
-		g_HI_dmass->Write("HI_dM_chi2_raw_nominal_uniform_rebin", 2);
-		g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_uniform_rebin", 2);
+		g_HI_dmass->Write("HI_dM_chi2_raw_nominal_no_bk", 2);
+		g_HI_dwidth->Write("HI_dWidth_chi2_raw_nominal_no_bk", 2);
 	}
 	if (type == 7)
 	{
@@ -1478,8 +1518,10 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
-	// type 4 = Acoon
-	// type 5 = nominal without bk subtraction
+	// type 4 = AcoUp
+	// type 5 = AcoDown
+	// type 6 = Nominal_no_bk
+	// type 7 = massrange
 
 	if (version == 0)
 	{
@@ -1532,21 +1574,36 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpD_%i.png";
 		contour_saving_path = prefix + "/contour/raw/raw_tnpD_%i.png";
 	}
+
 	if (type == 4)
 	{
 
-		chi2_title = "pp, |#eta| < 2.4, Acoon, Period: (%i)";
-		data_mc_title = "WholeAcceptance, Acoon, Period: (%i)";
-		data_data_title = "Raw_Acoon_%i";
+		chi2_title = "pp, |#eta| < 2.4, Acoup, Period: (%i)";
+		data_mc_title = "WholeAcceptance, Acoup, Period: (%i)";
+		data_data_title = "Raw_Acoup_%i";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/Acoon/Raw_Acoon_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acoon/Raw_Acoon_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Acoon/Raw_Acoon_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_Acoon_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_Acoon_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/Acoup/Raw_Acoup_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acoup/Raw_Acoup_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Acoup/Raw_Acoup_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Acoup_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Acoup_%i.png";
 	}
 
 	if (type == 5)
+	{
+
+		chi2_title = "pp, |#eta| < 2.4, Acodown, Period: (%i)";
+		data_mc_title = "WholeAcceptance, Acodown, Period: (%i)";
+		data_data_title = "Raw_Acodown_%i";
+
+		chi2_saving_path = prefix + "/chi2plots/raw/Acodown/Raw_Acodown_%i.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acodown/Raw_Acodown_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Acodown/Raw_Acodown_%i.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Acodown_%i.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Acodown_%i.png";
+	}
+
+	if (type == 6)
 	{
 
 		chi2_title = "pp, |#eta| < 2.4, Nominal no bk, Period: (%i)";
@@ -1558,20 +1615,6 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 		data_mc_saving_path = prefix + "/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%i.png";
 		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_no_bk_%i.png";
 		contour_saving_path = prefix + "/contour/raw/raw_nominal_no_bk_%i.png";
-	}
-
-	if (type == 6)
-	{
-
-		chi2_title = "pp, |#eta| < 2.4, Nominal uniform rebin, Period: (%i)";
-		data_mc_title = "|#eta| < 2.4, Nominal uniform rebin, Period: (%i)";
-		data_data_title = "Raw_Nominal_uniform_rebin_%i";
-
-		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Nominal_uniform_rebin/Raw_nominal_uniform_rebin_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_uniform_rebin_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_nominal_uniform_rebin_%i.png";
 	}
 
 	if (type == 7)
@@ -1839,7 +1882,10 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 					TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
 					besttemplate->cd();
 					h_mc_signal_pp_zoomin_not_rebinned[minBinX_zoomin - 1][minBinY_zoomin - 1]->Write("", 2);
+					TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+					vec->Write(Form("pp_local_min_period_%i", runperiod));
 					besttemplate->Close();
+					delete vec;
 				}
 			}
 
@@ -1942,7 +1988,7 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 		c_data_mc_raw_pp[runperiod]->SetBottomMargin(0.13);
 		c_data_mc_raw_pp[runperiod]->SetTicks(1, 1);
 		// c_data_mc_raw_pp[runperiod]->SetLogy();
-		if (type != 5 && type != 1)
+		if (type != 6 && type != 1)
 		{
 			h_data_bksub_pp[runperiod]->SetTitle(Form(data_mc_title, runperiod));
 			h_data_bksub_pp[runperiod]->SetMarkerColor(kRed);
@@ -1967,7 +2013,7 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->SetMarkerSize(1.5);
 			h_mc_signal_pp[minBinX - 1][minBinY - 1][runperiod]->Draw("P SAME");
 		}
-		if (type == 5)
+		if (type == 6)
 		{
 			h_data_pp[runperiod]->SetTitle(Form(data_mc_title, runperiod));
 			h_data_pp[runperiod]->SetMarkerColor(kRed);
@@ -2201,8 +2247,17 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 		c_data_data_bk_pp[runperiod]->SaveAs(Form(data_data_saving_path, runperiod));
 	}
 
-	g_pp_dmass = new TGraphErrors(22, xposition, dMass_pp, xposition_err, dMass_Err_pp);
-	g_pp_dwidth = new TGraphErrors(22, xposition, dWidth_pp, xposition_err, dWidth_Err_pp);
+	g_pp_dmass = new TGraphErrors(23, xposition, dMass_pp, xposition_err, dMass_Err_pp);
+	g_pp_dwidth = new TGraphErrors(23, xposition, dWidth_pp, xposition_err, dWidth_Err_pp);
+
+	for (int i = 0; i < g_pp_dmass->GetN(); ++i)
+	{
+		double x, y;
+		g_pp_dwidth->GetPoint(i, x, y);
+		/*std::cout << "Point " << i << ": x = " << x << ", y = " << y
+				  << ", x_err = " << g_pp_dwidth->GetErrorX(i)
+				  << ", y_err = " << g_pp_dwidth->GetErrorY(i) << std::endl;*/
+	}
 
 	TString savingrootfilename;
 
@@ -2243,19 +2298,20 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 	if (type == 4)
 	{
 
-		g_pp_dmass->Write("pp_dM_chi2_raw_acoon", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_raw_acoon", 2);
+		g_pp_dmass->Write("pp_dM_chi2_raw_acoup", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_acoup", 2);
 	}
 	if (type == 5)
 	{
 
-		g_pp_dmass->Write("pp_dM_chi2_raw_nominal_no_bk", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_no_bk", 2);
+		g_pp_dmass->Write("pp_dM_chi2_raw_acodown", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_acodown", 2);
 	}
 	if (type == 6)
 	{
-		g_pp_dmass->Write("pp_dM_chi2_raw_nominal_uniform_rebin", 2);
-		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_uniform_rebin", 2);
+
+		g_pp_dmass->Write("pp_dM_chi2_raw_nominal_no_bk", 2);
+		g_pp_dwidth->Write("pp_dWidth_chi2_raw_nominal_no_bk", 2);
 	}
 
 	if (type == 7)
@@ -2297,27 +2353,19 @@ void chisquaretest::bincontentcheck(bool isbk)
 
 void chisquaretest::RebinAll(int type)
 {
-	if (type == 6)
+	for (int cent = 0; cent < nbins_cent; cent++)
 	{
-		// Here is empty since we want to have no rebin
-	}
-	else
-	{
-		for (int cent = 0; cent < nbins_cent; cent++)
+		if (!((cent < 4) || (cent == 10)))
+			continue;
+
+		h_data[cent]->Rebin(4);
+		h_data_bksub[cent]->Rebin(4);
+		for (int shift = 0; shift < nbins_mass_shift; shift++)
 		{
-			if (!((cent < 4) || (cent == 10)))
-				continue;
-
-			h_data[cent]->Rebin(4);
-			h_data_bksub[cent]->Rebin(4);
-
-			for (int shift = 0; shift < nbins_mass_shift; shift++)
+			for (int smear = 0; smear < nbins_smear; smear++)
 			{
-				for (int smear = 0; smear < nbins_smear; smear++)
-				{
-					h_mc_signal[shift][smear][cent]->Rebin(4);
-					h_mc_signal_zoomin[shift][smear][cent]->Rebin(4);
-				}
+				h_mc_signal[shift][smear][cent]->Rebin(4);
+				h_mc_signal_zoomin[shift][smear][cent]->Rebin(4);
 			}
 		}
 	}
@@ -2326,27 +2374,20 @@ void chisquaretest::RebinAll(int type)
 void chisquaretest::RebinAllpp(int type)
 {
 
-	if (type == 6)
+	for (int runperiod = 0; runperiod < 23; runperiod++)
 	{
-		// Here is empty since we want to have no rebin
-	}
-	else
-	{
-		for (int runperiod = 0; runperiod < 23; runperiod++)
+		h_data_pp[runperiod]->Rebin(4);
+		h_data_bksub_pp[runperiod]->Rebin(4);
+
+		for (int shift = 0; shift < nbins_mass_shift; shift++)
 		{
-			h_data_pp[runperiod]->Rebin(4);
-			h_data_bksub_pp[runperiod]->Rebin(4);
-
-			for (int shift = 0; shift < nbins_mass_shift; shift++)
+			for (int smear = 0; smear < nbins_smear; smear++)
 			{
-				for (int smear = 0; smear < nbins_smear; smear++)
-				{
 
-					if (runperiod == 0)
-					{
-						h_mc_signal_pp[shift][smear][runperiod]->Rebin(4);
-						h_mc_signal_pp_zoomin[shift][smear]->Rebin(4);
-					}
+				if (runperiod == 0)
+				{
+					h_mc_signal_pp[shift][smear][runperiod]->Rebin(4);
+					h_mc_signal_pp_zoomin[shift][smear]->Rebin(4);
 				}
 			}
 		}
@@ -2861,7 +2902,7 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	if (ispp)
 	{
 
-		if (typeofpp == 5)
+		if (typeofpp == 6)
 		{
 			onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_without_bk, raw_pp_mass_shift_high_without_bk);
 			onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_without_bk, raw_pp_smear_high_without_bk);
@@ -2893,9 +2934,9 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	onesig_left->GetYaxis()->SetTitle("Smeared Amount (GeV)");
 
 	onesig_left->SetMarkerSize(2);
-	onesig_left->SetMarkerColor(kGreen - 3);
-	onesig_left->SetLineWidth(3);		   // Set line width to 2
-	onesig_left->SetLineColor(kGreen - 3); // Set line color to blue
+	onesig_left->SetMarkerColor(kBlue - 3);
+	onesig_left->SetLineWidth(3);		  // Set line width to 2
+	onesig_left->SetLineColor(kBlue - 3); // Set line color to blue
 	onesig_left->SetLineStyle(2);
 	onesig_left->SetMarkerStyle(21);
 
@@ -3091,11 +3132,11 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 	if (my_case == 3)
 		txtname = "tnpD";
 	if (my_case == 4)
-		txtname = "acoon";
+		txtname = "acoup";
 	if (my_case == 5)
-		txtname = "nominal_no_bk_sub";
+		txtname = "acodown";
 	if (my_case == 6)
-		txtname = "nominal_binning";
+		txtname = "nominal_no_bk_sub";
 	if (my_case == 7)
 		txtname = "nominal_range";
 	if (my_case == 8)
@@ -3145,6 +3186,8 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 
 	std::ofstream outfile("./zoomin/" + version_prefix + txtname_prefix + anotherprefix + txtname + cent + ".txt");
 
+	cout << "File name is " << version_prefix + txtname_prefix + anotherprefix + txtname + cent << endl;
+
 	outfile << std::fixed << std::setprecision(4); // Set fixed-point notation with 2 decimal places
 
 	outfile << "Local Minimum Bin: (" << binX_min << ", " << binY_min << ")\n";
@@ -3171,7 +3214,7 @@ void chisquaretest::readlimit(int type, int cent, int version)
 		version_prefix = "version_2/";
 	}
 
-	TString variation[9] = {"nominal", "tnpU", "tnpD", "acoon", "nominal_no_bk_sub", "nominal_binning", "nominal_range", "HF_up", "HF_down"};
+	TString variation[9] = {"nominal", "tnpU", "tnpD", "acoup", "acodown", "nominal_no_bk_sub", "nominal_range", "HF_up", "HF_down"};
 	TString filename = "";
 	TString type_str = "";
 	TString savedname = "";
@@ -3209,7 +3252,7 @@ void chisquaretest::readlimit(int type, int cent, int version)
 	file.close();
 
 	// Debug print
-	std::cout << "Extracted ranges: [" << ranges[0] << ", " << ranges[1] << ", " << ranges[2] << ", " << ranges[3] << "]" << std::endl;
+	// std::cout << "Extracted ranges: [" << ranges[0] << ", " << ranges[1] << ", " << ranges[2] << ", " << ranges[3] << "]" << std::endl;
 	placeholder_mass_shift_array_low_zoomin = ranges[0];
 	placeholder_mass_shift_array_high_zoomin = ranges[1];
 	placeholder_mass_smear_array_low_zoomin = ranges[2];
@@ -3233,7 +3276,7 @@ void chisquaretest::readlimitpp(int type, int version)
 		version_prefix = "version_2/";
 	}
 
-	TString variation[7] = {"nominal", "tnpU", "tnpD", "acoon", "nominal_no_bk_sub", "nominal_binning", "nominal_range"};
+	TString variation[7] = {"nominal", "tnpU", "tnpD", "acoup", "acodown", "nominal_no_bk_sub", "nominal_range"};
 	TString filename = "";
 	TString type_str = "";
 	TString savedname = "";

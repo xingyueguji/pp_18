@@ -86,7 +86,9 @@
         "pesudo-experiment.C": "cpp",
         "pseudo_experiment.C": "cpp",
         "get_mass_range_sys.C": "cpp",
-        "get_combined_contour.C": "cpp"
+        "get_combined_contour.C": "cpp",
+        "get_combined_contour copy.C": "cpp",
+        "get_combined_contour_test.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
