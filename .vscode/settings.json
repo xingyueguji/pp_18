@@ -88,7 +88,14 @@
         "get_mass_range_sys.C": "cpp",
         "get_combined_contour.C": "cpp",
         "get_combined_contour copy.C": "cpp",
-        "get_combined_contour_test.C": "cpp"
+        "get_combined_contour_test.C": "cpp",
+        "tdrStyle copy.C": "cpp",
+        "get_final_plots.C": "cpp",
+        "get_final_result.C": "cpp",
+        "Add_theory_prediction.C": "cpp",
+        "ppmc.C": "cpp",
+        "skimmc.C": "cpp",
+        "get_scan_on_PbPb_and_pp_mc.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

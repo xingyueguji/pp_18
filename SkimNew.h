@@ -322,6 +322,7 @@ void SkimNew::ToggleBranches()
    fChain->SetBranchStatus("Reco_mu_trig", 1);
    fChain->SetBranchStatus("HLTriggers", 1);
    fChain->SetBranchStatus("runNb", 1);
+   fChain->SetBranchStatus("Reco_mu_isTightCutBased", 1);
    /*fChain->SetBranchStatus("",1);
    fChain->SetBranchStatus("",1);
    fChain->SetBranchStatus("",1);*/

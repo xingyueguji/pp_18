@@ -1063,6 +1063,77 @@ void chisquaretest::plottingandformatting(int type, int version)
 				besttemplate->Close();
 				delete vec;
 			}
+			if (type == 2)
+			{
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				besttemplate->cd();
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_tnpU_cent_%i", cent));
+				besttemplate->Close();
+				delete vec;
+			}
+			if (type == 3)
+			{
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				besttemplate->cd();
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_tnpD_cent_%i", cent));
+				besttemplate->Close();
+				delete vec;
+			}
+			if (type == 4)
+			{
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_AcoUp_cent_%i", cent));
+				besttemplate->Close();
+				delete vec;
+			}
+			if (type == 5)
+			{
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				besttemplate->cd();
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_AcoDown_cent_%i", cent));
+				besttemplate->Close();
+				delete vec;
+			}
+			if (type == 6)
+			{
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				besttemplate->cd();
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_no_bk_cent_%i", cent));
+				besttemplate->Close();
+				delete vec;
+			}
+			if (type == 7)
+			{
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				besttemplate->cd();
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_massrange_cent_%i", cent));
+				besttemplate->Close();
+				delete vec;
+			}
+			if (type == 8)
+			{
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				besttemplate->cd();
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_HFup_cent_%i", cent));
+				besttemplate->Close();
+				delete vec;
+			}
+			if (type == 9)
+			{
+				TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+				besttemplate->cd();
+				TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+				vec->Write(Form("PbPb_local_min_HFdown_cent_%i", cent));
+				besttemplate->Close();
+				delete vec;
+			}
 		}
 		cout << "Zoom in local min is " << xCenter_zoomin << " " << yCenter_zoomin << endl;
 
@@ -1884,6 +1955,60 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 					h_mc_signal_pp_zoomin_not_rebinned[minBinX_zoomin - 1][minBinY_zoomin - 1]->Write("", 2);
 					TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
 					vec->Write(Form("pp_local_min_period_%i", runperiod));
+					besttemplate->Close();
+					delete vec;
+				}
+				if (type == 2)
+				{
+					TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+					besttemplate->cd();
+					TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+					vec->Write(Form("pp_local_min_tnpU_period_%i", runperiod));
+					besttemplate->Close();
+					delete vec;
+				}
+				if (type == 3)
+				{
+					TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+					besttemplate->cd();
+					TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+					vec->Write(Form("pp_local_min_tnpD_period_%i", runperiod));
+					besttemplate->Close();
+					delete vec;
+				}
+				if (type == 4)
+				{
+					TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+					besttemplate->cd();
+					TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+					vec->Write(Form("pp_local_min_AcoUp_period_%i", runperiod));
+					besttemplate->Close();
+					delete vec;
+				}
+				if (type == 5)
+				{
+					TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+					besttemplate->cd();
+					TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+					vec->Write(Form("pp_local_min_AcoDown_period_%i", runperiod));
+					besttemplate->Close();
+					delete vec;
+				}
+				if (type == 6)
+				{
+					TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+					besttemplate->cd();
+					TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+					vec->Write(Form("pp_local_min_no_bk_period_%i", runperiod));
+					besttemplate->Close();
+					delete vec;
+				}
+				if (type == 7)
+				{
+					TFile *besttemplate = new TFile("./bestfittemplaterootfile/template.root", "UPDATE");
+					besttemplate->cd();
+					TVector2 *vec = new TVector2(xCenter_zoomin, yCenter_zoomin);
+					vec->Write(Form("pp_local_min_massrange_period_%i", runperiod));
 					besttemplate->Close();
 					delete vec;
 				}

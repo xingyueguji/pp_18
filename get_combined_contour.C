@@ -1,3 +1,5 @@
+#include "tdrStyle.C"
+
 TVectorD fit_ellipse(TGraph *g)
 {
     TVectorD ellipse;
@@ -221,7 +223,7 @@ TVectorD ConicToParametric(const TVectorD &conic)
     ellipse[3] = b;     // ellipse's "semiminor" axis along "y"
     ellipse[4] = theta; // ellipse's axes rotation angle (in degrees)
 
-    cout << "x is " << ellipse[0] << " y is " << ellipse[1] << " semimajor x is " << ellipse[2] << " semimajor y is " << ellipse[3] << " angle is " << ellipse[4] << endl;
+    // cout << "x is " << ellipse[0] << " y is " << ellipse[1] << " semimajor x is " << ellipse[2] << " semimajor y is " << ellipse[3] << " angle is " << ellipse[4] << endl;
 
     return ellipse;
 }
@@ -436,7 +438,7 @@ TEllipse *CombineEllipsesFromVectors(const TVectorD &v1, const TVectorD &v2)
         }
     }
 
-    std::cout << "covSum matrix elements:" << std::endl;
+    /*std::cout << "covSum matrix elements:" << std::endl;
     for (int i = 0; i < covSum.GetNrows(); ++i)
     {
         for (int j = 0; j < covSum.GetNcols(); ++j)
@@ -444,7 +446,7 @@ TEllipse *CombineEllipsesFromVectors(const TVectorD &v1, const TVectorD &v2)
             std::cout << covSum(i, j) << "\t";
         }
         std::cout << std::endl;
-    }
+    }*/
 
     TMatrixDEigen eigen(covSum);
     TVectorD evals = eigen.GetEigenValuesRe();
@@ -462,8 +464,18 @@ TEllipse *CombineEllipsesFromVectors(const TVectorD &v1, const TVectorD &v2)
     if (theta_comb < 0)
         theta_comb += 180.0;
 
-    double xc = v1[0] - v2[0];
-    double yc = v1[1] - v2[1];
+    double xc, yc = 0;
+
+    if (v1[0] == v2[0] && v1[1] == v2[1])
+    {
+        xc = v1[0];
+        yc = v1[1];
+    }
+    else
+    {
+        xc = v1[0] - v2[0];
+        yc = v1[1] - v2[1];
+    }
 
     TEllipse *result = new TEllipse(xc, yc, a_comb, b_comb, 0, 360, theta_comb);
     result->SetLineColor(kRed);
@@ -472,8 +484,20 @@ TEllipse *CombineEllipsesFromVectors(const TVectorD &v1, const TVectorD &v2)
     return result;
 }
 
-void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Savename)
+void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Savename, const TVector2 &sys_1, const TVector2 &sys_2, const TVector2 &sys_3,
+                            const TVector2 &sys_4, const TVector2 &sys_5, const TVector2 &sys_6, const TVector2 &sys_7, const TVector2 &sys_8, const TVector2 &pp_sys_1, const TVector2 &pp_sys_2, const TVector2 &pp_sys_3, const TVector2 &pp_sys_4, const TVector2 &pp_sys_5,
+                            const TVector2 &pp_sys_6, const TString &type, const TString &name)
 {
+    auto EllipseToVector = [](TEllipse *e) -> TVectorD
+    {
+        TVectorD v(5);
+        v[0] = e->GetX1();
+        v[1] = e->GetY1();
+        v[2] = e->GetR1();
+        v[3] = e->GetR2();
+        v[4] = e->GetTheta();
+        return v;
+    };
     auto CreateAxisLine = [](double angle_deg, double xmin, double xmax, double ymin, double ymax)
     {
         double angle_rad = angle_deg * TMath::DegToRad();
@@ -497,6 +521,240 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
         double x_proj = proj * cos_theta;
         double y_proj = proj * sin_theta;
         return new TLine(x0, y0, x_proj, y_proj);
+    };
+
+    auto CreateScaledEllipseFromSystematic = [](const TVector2 &syst_point, TEllipse *nominal_ellipse, const TString &type) -> TEllipse *
+    {
+        // Extract nominal center and axes
+        double x0 = nominal_ellipse->GetX1();
+        double y0 = nominal_ellipse->GetY1();
+        double a0 = nominal_ellipse->GetR1();       // semi-major axis
+        double b0 = nominal_ellipse->GetR2();       // semi-minor axis
+        double theta = nominal_ellipse->GetTheta(); // degrees
+
+        if (type == "normal")
+        {
+            // Shift systematic point relative to nominal center
+            double dx = syst_point.X() - x0;
+            double dy = syst_point.Y() - y0;
+
+            // Convert angle to radians
+            double theta_rad = theta * TMath::DegToRad();
+
+            // Rotate the point into the ellipse's local frame
+            double x_rot = dx * std::cos(theta_rad) + dy * std::sin(theta_rad);
+            double y_rot = -dx * std::sin(theta_rad) + dy * std::cos(theta_rad);
+
+            // Compute distance in "ellipse units"
+            double u = x_rot / a0;
+            double v = y_rot / b0;
+            double scaling = std::sqrt(u * u + v * v);
+
+            // Create new ellipse with scaled axes
+            auto new_ellipse = new TEllipse(x0, y0, a0 * scaling, b0 * scaling, 0, 360, theta);
+            new_ellipse->SetLineStyle(2); // dashed
+            new_ellipse->SetLineColor(kBlue + 2);
+            new_ellipse->SetLineWidth(2);
+            new_ellipse->SetFillStyle(0); // hollow
+
+            return new_ellipse;
+        }
+        if (type == "degen")
+        {
+            // Direction vector from nominal to systematic
+            double dx = syst_point.X() - x0;
+            double dy = syst_point.Y() - y0;
+
+            // Length from center to syst point
+            double half_length = std::sqrt(dx * dx + dy * dy);
+
+            // Angle of the line in degrees
+            double angle_deg = std::atan2(dy, dx) * TMath::RadToDeg();
+
+            // Create a degenerate ellipse (minor axis = 0) oriented along that direction
+            auto new_ellipse = new TEllipse(x0, y0, half_length, 0.001, 0, 360, angle_deg);
+            new_ellipse->SetLineStyle(2); // dashed
+            new_ellipse->SetLineColor(kRed + 1);
+            new_ellipse->SetLineWidth(2);
+            new_ellipse->SetFillStyle(0); // hollow
+            return new_ellipse;
+        }
+        else
+        {
+            Error("CreateScaledEllipseFromSystematic", "Unknown type '%s'", type.Data());
+            return nullptr;
+        }
+    };
+
+    auto CreateCombinedEnvelope = [](const TVectorD &nominal,
+                                     const std::vector<std::pair<TEllipse *, TEllipse *>> &updown_pairs,
+                                     const std::vector<TEllipse *> &single_systs) -> TEllipse *
+    {
+        auto EllipseToVector = [](TEllipse *e) -> TVectorD
+        {
+            TVectorD v(5);
+            v[0] = e->GetX1();    // x center
+            v[1] = e->GetY1();    // y center
+            v[2] = e->GetR1();    // major axis
+            v[3] = e->GetR2();    // minor axis
+            v[4] = e->GetTheta(); // angle (deg)
+            return v;
+        };
+
+        std::vector<TVectorD> syst_vectors;
+
+        // Handle up/down pairs
+        for (const auto &pair : updown_pairs)
+        {
+            if (!pair.first || !pair.second)
+                continue;
+
+            TVectorD v_up = EllipseToVector(pair.first);
+            TVectorD v_down = EllipseToVector(pair.second);
+
+            TVectorD v_max(5);
+            v_max[0] = nominal[0];                   // center x
+            v_max[1] = nominal[1];                   // center y
+            v_max[2] = std::max(v_up[2], v_down[2]); // max major
+            v_max[3] = std::max(v_up[3], v_down[3]); // max minor
+            v_max[4] = nominal[4];                   // angle from up (or average if needed)
+
+            syst_vectors.push_back(v_max);
+        }
+
+        // Handle single-sided systematics
+        for (TEllipse *e : single_systs)
+        {
+            if (!e)
+                continue;
+            syst_vectors.push_back(EllipseToVector(e));
+        }
+
+        // Combine all systematics with the nominal
+        TVectorD combined = nominal;
+
+        for (const auto &v_syst : syst_vectors)
+        {
+            // cout << "BEfore : x is " << v_syst[0] << " y is " << v_syst[1] << " semimajor x is " << v_syst[2] << " semimajor y is " << v_syst[3] << " angle is " << v_syst[4] << endl;
+
+            TEllipse *combined_ellipse = CombineEllipsesFromVectors(combined, v_syst);
+
+            // cout << "after : x is " << combined_ellipse->GetX1() << " y is " << combined_ellipse->GetY1() << " semimajor x is " << combined_ellipse->GetR1() << " semimajor y is " << combined_ellipse->GetR2() << " angle is " << combined_ellipse->GetTheta() << endl;
+
+            // Update combined vector
+            TVectorD temp(5);
+            temp[0] = combined_ellipse->GetX1();
+            temp[1] = combined_ellipse->GetY1();
+            temp[2] = combined_ellipse->GetR1();
+            temp[3] = combined_ellipse->GetR2();
+            temp[4] = combined_ellipse->GetTheta();
+            combined = temp;
+            delete combined_ellipse;
+        }
+
+        // Final ellipse
+        TEllipse *result = new TEllipse(combined[0], combined[1], combined[2], combined[3], 0, 360, combined[4]);
+        result->SetLineColor(kMagenta + 2);
+        result->SetLineStyle(2);
+        result->SetLineWidth(3);
+        result->SetFillStyle(0);
+        return result;
+    };
+
+    auto CombiningSystematicOnly = [&](const std::vector<std::pair<TEllipse *, TEllipse *>> &pairs,
+                                       const std::vector<TEllipse *> &singles) -> TEllipse *
+    {
+        std::vector<TVectorD> selected_vectors;
+
+        // 1. From up/down pairs, take max axes
+        for (const auto &pair : pairs)
+        {
+            if (!pair.first || !pair.second)
+                continue;
+
+            TVectorD up = EllipseToVector(pair.first);
+            TVectorD down = EllipseToVector(pair.second);
+
+            TVectorD v_max(5);
+            v_max[0] = up[0];                    // x-center
+            v_max[1] = up[1];                    // y-center
+            v_max[2] = std::max(up[2], down[2]); // max semi-major
+            v_max[3] = std::max(up[3], down[3]); // max semi-minor
+            v_max[4] = up[4];                    // use up’s angle (you could average if desired)
+
+            selected_vectors.push_back(v_max);
+        }
+
+        // 2. From single systematics
+        for (TEllipse *e : singles)
+        {
+            if (!e)
+                continue;
+            selected_vectors.push_back(EllipseToVector(e));
+        }
+
+        // 3. Combine all selected systematics
+        if (selected_vectors.empty())
+            return nullptr;
+
+        TVectorD combined = selected_vectors[0];
+        for (size_t i = 1; i < selected_vectors.size(); ++i)
+        {
+            TEllipse *temp = CombineEllipsesFromVectors(combined, selected_vectors[i]);
+
+            // Convert combined TEllipse back to vector
+            TVectorD temp_v(5);
+            temp_v[0] = temp->GetX1();
+            temp_v[1] = temp->GetY1();
+            temp_v[2] = temp->GetR1();
+            temp_v[3] = temp->GetR2();
+            temp_v[4] = temp->GetTheta();
+
+            combined = temp_v;
+            delete temp;
+        }
+
+        // 4. Return final TEllipse
+        TEllipse *final = new TEllipse(combined[0], combined[1], combined[2], combined[3], 0, 360, combined[4]);
+        final->SetLineStyle(2);
+        final->SetLineColor(kRed + 1);
+        final->SetLineWidth(3);
+        final->SetFillStyle(0);
+
+        return final;
+    };
+
+    auto PrintXYErrorsFromEllipse = [](TEllipse *e, TString x)
+    {
+        if (!e)
+        {
+            std::cout << "Null ellipse pointer!" << std::endl;
+            return;
+        }
+
+        double xc = e->GetX1();
+        double yc = e->GetY1();
+        const double a = e->GetR1();
+        const double b = e->GetR2();
+        const double th = e->GetTheta() * TMath::DegToRad(); // radians
+
+        const double c = std::cos(th);
+        const double s = std::sin(th);
+
+        // Covariance matrix in (x,y) basis:
+        // Σ = R diag(a², b²) Rᵀ
+        const double a2 = a * a;
+        const double b2 = b * b;
+        const double sigxx = c * c * a2 + s * s * b2;
+        const double sigyy = s * s * a2 + c * c * b2;
+
+        double sig_x = std::sqrt(std::max(0.0, sigxx));
+        double sig_y = std::sqrt(std::max(0.0, sigyy));
+
+        cout << "This is " << x << endl;
+        std::cout << "Ellipse center (x,y) = (" << xc << ", " << yc << ")\n";
+        std::cout << "Uncertainty in x (sigx) = " << sig_x / 1.515 << "\n";
+        std::cout << "Uncertainty in y (sigy) = " << sig_y / 1.515 << "\n";
     };
 
     // Reuse the previous function
@@ -543,8 +801,8 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     double x_half = 0.5 * (x_max - x_min);
     double y_half = 0.5 * (y_max - y_min);
 
-    x_half *= 1.2;
-    y_half *= 1.2;
+    x_half *= 1.5;
+    y_half *= 1.5;
 
     // Use the larger half-range for both x and y
     double range_half = std::max(x_half, y_half);
@@ -555,7 +813,7 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     y_max = y_center + range_half;
 
     TCanvas *c1 = new TCanvas("c1", "Ellipse Comparison", 800, 800);
-    c1->DrawFrame(x_min, y_min, x_max, y_max, "Contours;Mass;Width");
+    c1->DrawFrame(x_min, y_min, x_max, y_max, "Contours;M(GeV);Width(GeV)");
 
     e1->Draw("same");
     e2->Draw("same");
@@ -590,31 +848,555 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     m3->SetMarkerSize(1.2);
     m3->Draw("same");
 
+    // PbPb systematic
+
+    // tnpU
+
+    TMarker *PbPb_1 = new TMarker(sys_1.X(), sys_1.Y(), 20);
+    PbPb_1->SetMarkerColor(kRed);
+    PbPb_1->SetMarkerSize(1.2);
+    PbPb_1->Draw("same");
+
+    TEllipse *PbPb_1_sys_contour = CreateScaledEllipseFromSystematic(sys_1, e1, type);
+    PbPb_1_sys_contour->SetLineColor(kRed);
+    PbPb_1_sys_contour->SetLineWidth(2);
+    PbPb_1_sys_contour->SetLineStyle(1);
+    PbPb_1_sys_contour->SetFillStyle(0);
+    PbPb_1_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_1_sys_contour, "PbPb TnP U");
+
+    // tnpD
+
+    TMarker *PbPb_2 = new TMarker(sys_2.X(), sys_2.Y(), 20);
+    PbPb_2->SetMarkerColor(kBlue);
+    PbPb_2->SetMarkerSize(1.2);
+    PbPb_2->Draw("same");
+
+    TEllipse *PbPb_2_sys_contour = CreateScaledEllipseFromSystematic(sys_2, e1, type);
+    PbPb_2_sys_contour->SetLineColor(kBlue);
+    PbPb_2_sys_contour->SetLineWidth(2);
+    PbPb_2_sys_contour->SetLineStyle(1);
+    PbPb_2_sys_contour->SetFillStyle(0);
+    PbPb_2_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_2_sys_contour, "PbPb TnP D");
+
+    // AcoUp
+
+    TMarker *PbPb_3 = new TMarker(sys_3.X(), sys_3.Y(), 20);
+    PbPb_3->SetMarkerColor(kGreen + 2);
+    PbPb_3->SetMarkerSize(1.2);
+    PbPb_3->Draw("same");
+
+    TEllipse *PbPb_3_sys_contour = CreateScaledEllipseFromSystematic(sys_3, e1, type);
+    PbPb_3_sys_contour->SetLineColor(kGreen + 2);
+    PbPb_3_sys_contour->SetLineWidth(2);
+    PbPb_3_sys_contour->SetLineStyle(1);
+    PbPb_3_sys_contour->SetFillStyle(0);
+    PbPb_3_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_3_sys_contour, "PbPb Aco Up");
+
+    // AcoDown
+
+    TMarker *PbPb_4 = new TMarker(sys_4.X(), sys_4.Y(), 20);
+    PbPb_4->SetMarkerColor(kMagenta);
+    PbPb_4->SetMarkerSize(1.2);
+    PbPb_4->Draw("same");
+
+    TEllipse *PbPb_4_sys_contour = CreateScaledEllipseFromSystematic(sys_4, e1, type);
+    PbPb_4_sys_contour->SetLineColor(kMagenta);
+    PbPb_4_sys_contour->SetLineWidth(2);
+    PbPb_4_sys_contour->SetLineStyle(1);
+    PbPb_4_sys_contour->SetFillStyle(0);
+    PbPb_4_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_4_sys_contour, "PbPb Aco Down");
+
+    // nobk
+
+    TMarker *PbPb_5 = new TMarker(sys_5.X(), sys_5.Y(), 20);
+    PbPb_5->SetMarkerColor(kGray + 2);
+    PbPb_5->SetMarkerSize(1.2);
+    PbPb_5->Draw("same");
+
+    TEllipse *PbPb_5_sys_contour = CreateScaledEllipseFromSystematic(sys_5, e1, type);
+    PbPb_5_sys_contour->SetLineColor(kGray + 2);
+    PbPb_5_sys_contour->SetLineWidth(2);
+    PbPb_5_sys_contour->SetLineStyle(1);
+    PbPb_5_sys_contour->SetFillStyle(0);
+    PbPb_5_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_5_sys_contour, "PbPb nobk");
+
+    // massrange
+
+    TMarker *PbPb_6 = new TMarker(sys_6.X(), sys_6.Y(), 20);
+    PbPb_6->SetMarkerColor(kOrange + 7);
+    PbPb_6->SetMarkerSize(1.2);
+    PbPb_6->Draw("same");
+
+    TEllipse *PbPb_6_sys_contour = CreateScaledEllipseFromSystematic(sys_6, e1, type);
+    PbPb_6_sys_contour->SetLineColor(kOrange + 7);
+    PbPb_6_sys_contour->SetLineWidth(2);
+    PbPb_6_sys_contour->SetLineStyle(1);
+    PbPb_6_sys_contour->SetFillStyle(0);
+    PbPb_6_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_6_sys_contour, "PbPb mass range");
+
+    // HFup
+
+    TMarker *PbPb_7 = new TMarker(sys_7.X(), sys_7.Y(), 20);
+    PbPb_7->SetMarkerColor(kCyan);
+    PbPb_7->SetMarkerSize(1.2);
+    PbPb_7->Draw("same");
+
+    TEllipse *PbPb_7_sys_contour = CreateScaledEllipseFromSystematic(sys_7, e1, type);
+    PbPb_7_sys_contour->SetLineColor(kCyan);
+    PbPb_7_sys_contour->SetLineWidth(2);
+    PbPb_7_sys_contour->SetLineStyle(1);
+    PbPb_7_sys_contour->SetFillStyle(0);
+    PbPb_7_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_7_sys_contour, "PbPb HF up");
+
+    // HFdown
+
+    TMarker *PbPb_8 = new TMarker(sys_8.X(), sys_8.Y(), 20);
+    PbPb_8->SetMarkerColor(kBlack);
+    PbPb_8->SetMarkerSize(1.2);
+    PbPb_8->Draw("same");
+
+    TEllipse *PbPb_8_sys_contour = CreateScaledEllipseFromSystematic(sys_8, e1, type);
+    PbPb_8_sys_contour->SetLineColor(kBlack);
+    PbPb_8_sys_contour->SetLineWidth(2);
+    PbPb_8_sys_contour->SetLineStyle(1);
+    PbPb_8_sys_contour->SetFillStyle(0);
+    PbPb_8_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_8_sys_contour, "PbPb HF down");
+
+    // TnpU
+
+    TMarker *pp_1 = new TMarker(pp_sys_1.X(), pp_sys_1.Y(), 20);
+    pp_1->SetMarkerColor(kRed);
+    pp_1->SetMarkerSize(1.2);
+    pp_1->Draw("same");
+
+    TEllipse *pp_1_sys_contour = CreateScaledEllipseFromSystematic(pp_sys_1, e2, type);
+    pp_1_sys_contour->SetLineColor(kRed);
+    pp_1_sys_contour->SetLineWidth(2);
+    pp_1_sys_contour->SetLineStyle(1);
+    pp_1_sys_contour->SetFillStyle(0);
+    pp_1_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(pp_1_sys_contour, "pp TnP U");
+
+    // TnpD
+
+    TMarker *pp_2 = new TMarker(pp_sys_2.X(), pp_sys_2.Y(), 20);
+    pp_2->SetMarkerColor(kBlue);
+    pp_2->SetMarkerSize(1.2);
+    pp_2->Draw("same");
+
+    TEllipse *pp_2_sys_contour = CreateScaledEllipseFromSystematic(pp_sys_2, e2, type);
+    pp_2_sys_contour->SetLineColor(kBlue);
+    pp_2_sys_contour->SetLineWidth(2);
+    pp_2_sys_contour->SetLineStyle(1);
+    pp_2_sys_contour->SetFillStyle(0);
+    pp_2_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(pp_2_sys_contour, "pp TnP D");
+
+    // AcoUp
+
+    TMarker *pp_3 = new TMarker(pp_sys_3.X(), pp_sys_3.Y(), 20);
+    pp_3->SetMarkerColor(kGreen + 2);
+    pp_3->SetMarkerSize(1.2);
+    pp_3->Draw("same");
+
+    TEllipse *pp_3_sys_contour = CreateScaledEllipseFromSystematic(pp_sys_3, e2, type);
+    pp_3_sys_contour->SetLineColor(kGreen + 2);
+    pp_3_sys_contour->SetLineWidth(2);
+    pp_3_sys_contour->SetLineStyle(1);
+    pp_3_sys_contour->SetFillStyle(0);
+    pp_3_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(pp_3_sys_contour, "pp Aco Up");
+
+    // AcoDown
+
+    TMarker *pp_4 = new TMarker(pp_sys_4.X(), pp_sys_4.Y(), 20);
+    pp_4->SetMarkerColor(kMagenta);
+    pp_4->SetMarkerSize(1.2);
+    pp_4->Draw("same");
+
+    TEllipse *pp_4_sys_contour = CreateScaledEllipseFromSystematic(pp_sys_4, e2, type);
+    pp_4_sys_contour->SetLineColor(kMagenta);
+    pp_4_sys_contour->SetLineWidth(2);
+    pp_4_sys_contour->SetLineStyle(1);
+    pp_4_sys_contour->SetFillStyle(0);
+    pp_4_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(pp_4_sys_contour, "pp Aco Down");
+
+    // nobk
+
+    TMarker *pp_5 = new TMarker(pp_sys_5.X(), pp_sys_5.Y(), 20);
+    pp_5->SetMarkerColor(kGray + 2);
+    pp_5->SetMarkerSize(1.2);
+    pp_5->Draw("same");
+
+    TEllipse *pp_5_sys_contour = CreateScaledEllipseFromSystematic(pp_sys_5, e2, type);
+    pp_5_sys_contour->SetLineColor(kGray + 2);
+    pp_5_sys_contour->SetLineWidth(2);
+    pp_5_sys_contour->SetLineStyle(1);
+    pp_5_sys_contour->SetFillStyle(0);
+    pp_5_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(pp_5_sys_contour, "pp nobk");
+
+    // massrange
+
+    TMarker *pp_6 = new TMarker(pp_sys_6.X(), pp_sys_6.Y(), 20);
+    pp_6->SetMarkerColor(kOrange + 7);
+    pp_6->SetMarkerSize(1.2);
+    pp_6->Draw("same");
+
+    TEllipse *pp_6_sys_contour = CreateScaledEllipseFromSystematic(pp_sys_6, e2, type);
+    pp_6_sys_contour->SetLineColor(kOrange + 7);
+    pp_6_sys_contour->SetLineWidth(2);
+    pp_6_sys_contour->SetLineStyle(1);
+    pp_6_sys_contour->SetFillStyle(0);
+    pp_6_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(pp_6_sys_contour, "pp mass range");
+
+    // Create legend in upper-left (adjust coordinates if needed)
+    TLegend *leg1 = new TLegend(0.2, 0.65, 0.45, 0.9); // x1,y1,x2,y2 in NDC
+    leg1->SetFillStyle(0);                             // Transparent background
+    leg1->SetBorderSize(0);                            // No border
+    leg1->SetTextFont(42);                             // CMS-like font
+    leg1->SetTextSize(0.035);                          // Adjust for readability
+
+    // Add your systematic contour entry
+    leg1->AddEntry(PbPb_1_sys_contour, "TnP Up", "l");
+    leg1->AddEntry(PbPb_2_sys_contour, "TnP Down", "l");
+    leg1->AddEntry(PbPb_3_sys_contour, "Aco Up", "l");
+    leg1->AddEntry(PbPb_4_sys_contour, "Aco Down", "l");
+    leg1->AddEntry(PbPb_5_sys_contour, "Bk removed", "l");
+    leg1->AddEntry(PbPb_6_sys_contour, "Mass range", "l");
+    leg1->AddEntry(PbPb_7_sys_contour, "HF Up", "l");
+    leg1->AddEntry(PbPb_8_sys_contour, "HF Down", "l");
+
+    // Draw legend
+    leg1->Draw();
+
+    // Draw systematics
+
+    std::vector<std::pair<TEllipse *, TEllipse *>> pbpb_pairs = {
+        {PbPb_1_sys_contour, PbPb_2_sys_contour}, // TnP
+        {PbPb_3_sys_contour, PbPb_4_sys_contour}  // Aco
+    };
+
+    std::vector<TEllipse *> pbpb_singles = {
+        PbPb_5_sys_contour, // nobk
+        PbPb_6_sys_contour, // massrange
+        PbPb_7_sys_contour, // HFup
+        PbPb_8_sys_contour  // HFdown
+    };
+
+    std::vector<std::pair<TEllipse *, TEllipse *>> pp_pairs = {
+        {pp_1_sys_contour, pp_2_sys_contour}, // TnP
+        {pp_3_sys_contour, pp_4_sys_contour}  // Aco
+    };
+
+    std::vector<TEllipse *> pp_singles = {
+        pp_5_sys_contour, // nobk
+        pp_6_sys_contour  // massrange
+    };
+
+    TFile *saveTEllipse;
+    if (type == "normal")
+    {
+        saveTEllipse = new TFile("./contourtest/contour.root", "UPDATE");
+    }
+    else
+    {
+        saveTEllipse = new TFile("./contourtest/degen/contour.root", "UPDATE");
+    }
+
+    saveTEllipse->cd();
+
+    TEllipse *pbpb_envelope = CreateCombinedEnvelope(v1, pbpb_pairs, pbpb_singles);
+    pbpb_envelope->SetLineColor(kBlack);
+    pbpb_envelope->SetLineStyle(2);
+    pbpb_envelope->SetLineWidth(1);
+    pbpb_envelope->Draw("SAME");
+
+    pbpb_envelope->Write(name + "_total_PbPb", 2);
+    e1->Write(name + "_stat_PbPb", 2);
+
+    TEllipse *pp_envelope = CreateCombinedEnvelope(v2, pp_pairs, pp_singles);
+    pp_envelope->SetLineColor(kBlue);
+    pp_envelope->SetLineStyle(2);
+    pp_envelope->SetLineWidth(1);
+    pp_envelope->Draw("SAME");
+
+    pp_envelope->Write(name + "_total_pp", 2);
+    e2->Write(name + "_stat_pp", 2);
+
+    TEllipse *pbpb_syst_only = CombiningSystematicOnly(pbpb_pairs, pbpb_singles);
+    pbpb_syst_only->SetLineColor(kBlack);
+    pbpb_syst_only->SetLineStyle(2);
+    pbpb_syst_only->SetLineWidth(1);
+    pbpb_syst_only->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(pbpb_syst_only, "PbPb total syst");
+
+    pbpb_syst_only->Write(name + "_syst_PbPb", 2);
+    e3->Write(name + "_stat_PbPb_sub_pp");
+
+    TEllipse *pp_syst_only = CombiningSystematicOnly(pp_pairs, pp_singles);
+    pp_syst_only->SetLineColor(kBlue);
+    pp_syst_only->SetLineStyle(2);
+    pp_syst_only->SetLineWidth(1);
+    pp_syst_only->Draw("SAME");
+
+    pp_syst_only->Write(name + "_syst_pp", 2);
+
+    PrintXYErrorsFromEllipse(pp_syst_only, "pp total syst");
+
+    // Here's doing combined version
+
+    TVector2 PbPb_sub_pp_sys_1 = sys_1 - pp_sys_1;
+    TVector2 PbPb_sub_pp_sys_2 = sys_2 - pp_sys_2;
+    TVector2 PbPb_sub_pp_sys_3 = sys_3 - pp_sys_3;
+    TVector2 PbPb_sub_pp_sys_4 = sys_4 - pp_sys_4;
+    TVector2 PbPb_sub_pp_sys_5 = sys_5 - pp_sys_5;
+    TVector2 PbPb_sub_pp_sys_6 = sys_6 - pp_sys_6;
+    TVector2 v2_xy(v2[0], v2[1]);
+    TVector2 PbPb_sub_pp_sys_7 = sys_7 - v2_xy;
+    TVector2 PbPb_sub_pp_sys_8 = sys_8 - v2_xy;
+
+    // Combined Systematic
+
+    // tnpU
+
+    TMarker *PbPb_sub_pp_1 = new TMarker(PbPb_sub_pp_sys_1.X(), PbPb_sub_pp_sys_1.Y(), 20);
+    PbPb_sub_pp_1->SetMarkerColor(kRed);
+    PbPb_sub_pp_1->SetMarkerSize(1.2);
+    PbPb_sub_pp_1->Draw("same");
+
+    TEllipse *PbPb_sub_pp_1_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_1, e3, type);
+    PbPb_sub_pp_1_sys_contour->SetLineColor(kRed);
+    PbPb_sub_pp_1_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_1_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_1_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_1_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_1_sys_contour, "PbPb - pp TnP U");
+
+    // tnpD
+
+    TMarker *PbPb_sub_pp_2 = new TMarker(PbPb_sub_pp_sys_2.X(), PbPb_sub_pp_sys_2.Y(), 20);
+    PbPb_sub_pp_2->SetMarkerColor(kBlue);
+    PbPb_sub_pp_2->SetMarkerSize(1.2);
+    PbPb_sub_pp_2->Draw("same");
+
+    TEllipse *PbPb_sub_pp_2_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_2, e3, type);
+    PbPb_sub_pp_2_sys_contour->SetLineColor(kBlue);
+    PbPb_sub_pp_2_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_2_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_2_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_2_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_2_sys_contour, "PbPb - pp TnP D");
+
+    // AcoUp
+
+    TMarker *PbPb_sub_pp_3 = new TMarker(PbPb_sub_pp_sys_3.X(), PbPb_sub_pp_sys_3.Y(), 20);
+    PbPb_sub_pp_3->SetMarkerColor(kGreen + 2);
+    PbPb_sub_pp_3->SetMarkerSize(1.2);
+    PbPb_sub_pp_3->Draw("same");
+
+    TEllipse *PbPb_sub_pp_3_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_3, e3, type);
+    PbPb_sub_pp_3_sys_contour->SetLineColor(kGreen + 2);
+    PbPb_sub_pp_3_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_3_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_3_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_3_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_3_sys_contour, "PbPb - pp Aco Up");
+
+    // AcoDown
+
+    TMarker *PbPb_sub_pp_4 = new TMarker(PbPb_sub_pp_sys_4.X(), PbPb_sub_pp_sys_4.Y(), 20);
+    PbPb_sub_pp_4->SetMarkerColor(kMagenta);
+    PbPb_sub_pp_4->SetMarkerSize(1.2);
+    PbPb_sub_pp_4->Draw("same");
+
+    TEllipse *PbPb_sub_pp_4_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_4, e3, type);
+    PbPb_sub_pp_4_sys_contour->SetLineColor(kMagenta);
+    PbPb_sub_pp_4_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_4_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_4_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_4_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_4_sys_contour, "PbPb - pp Aco Down");
+
+    // nobk
+
+    TMarker *PbPb_sub_pp_5 = new TMarker(PbPb_sub_pp_sys_5.X(), PbPb_sub_pp_sys_5.Y(), 20);
+    PbPb_sub_pp_5->SetMarkerColor(kGray + 2);
+    PbPb_sub_pp_5->SetMarkerSize(1.2);
+    PbPb_sub_pp_5->Draw("same");
+
+    TEllipse *PbPb_sub_pp_5_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_5, e3, type);
+    PbPb_sub_pp_5_sys_contour->SetLineColor(kGray + 2);
+    PbPb_sub_pp_5_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_5_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_5_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_5_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_5_sys_contour, "PbPb - pp no bk");
+
+    // massrange
+
+    TMarker *PbPb_sub_pp_6 = new TMarker(PbPb_sub_pp_sys_6.X(), PbPb_sub_pp_sys_6.Y(), 20);
+    PbPb_sub_pp_6->SetMarkerColor(kOrange + 7);
+    PbPb_sub_pp_6->SetMarkerSize(1.2);
+    PbPb_sub_pp_6->Draw("same");
+
+    TEllipse *PbPb_sub_pp_6_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_6, e3, type);
+    PbPb_sub_pp_6_sys_contour->SetLineColor(kOrange + 7);
+    PbPb_sub_pp_6_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_6_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_6_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_6_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_6_sys_contour, "PbPb - pp mass range");
+
+    // HFup
+
+    TMarker *PbPb_sub_pp_7 = new TMarker(PbPb_sub_pp_sys_7.X(), PbPb_sub_pp_sys_7.Y(), 20);
+    PbPb_sub_pp_7->SetMarkerColor(kCyan);
+    PbPb_sub_pp_7->SetMarkerSize(1.2);
+    PbPb_sub_pp_7->Draw("same");
+
+    TEllipse *PbPb_sub_pp_7_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_7, e3, type);
+    PbPb_sub_pp_7_sys_contour->SetLineColor(kCyan);
+    PbPb_sub_pp_7_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_7_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_7_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_7_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_7_sys_contour, "PbPb - pp HFup");
+
+    // HFdown
+
+    TMarker *PbPb_sub_pp_8 = new TMarker(PbPb_sub_pp_sys_8.X(), PbPb_sub_pp_sys_8.Y(), 20);
+    PbPb_sub_pp_8->SetMarkerColor(kBlack);
+    PbPb_sub_pp_8->SetMarkerSize(1.2);
+    PbPb_sub_pp_8->Draw("same");
+
+    TEllipse *PbPb_sub_pp_8_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_8, e3, type);
+    PbPb_sub_pp_8_sys_contour->SetLineColor(kBlack);
+    PbPb_sub_pp_8_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_8_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_8_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_8_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_8_sys_contour, "PbPb - pp HFdown");
+
+    std::vector<std::pair<TEllipse *, TEllipse *>> PbPb_sub_pp_pairs = {
+        {PbPb_sub_pp_1_sys_contour, PbPb_sub_pp_2_sys_contour}, // TnP
+        {PbPb_sub_pp_3_sys_contour, PbPb_sub_pp_4_sys_contour}  // Aco
+    };
+
+    std::vector<TEllipse *> PbPb_sub_pp_singles = {
+        PbPb_sub_pp_5_sys_contour, // nobk
+        PbPb_sub_pp_6_sys_contour, // massrange
+        PbPb_sub_pp_7_sys_contour, // HFup
+        PbPb_sub_pp_8_sys_contour  // HFdown
+    };
+
+    TEllipse *PbPb_sub_pp_envelope = CreateCombinedEnvelope(EllipseToVector(e3), PbPb_sub_pp_pairs, PbPb_sub_pp_singles);
+    PbPb_sub_pp_envelope->SetLineColor(kRed);
+    PbPb_sub_pp_envelope->SetLineStyle(2);
+    PbPb_sub_pp_envelope->SetLineWidth(2);
+    PbPb_sub_pp_envelope->Draw("SAME");
+
+    PbPb_sub_pp_envelope->Write(name + "_total_PbPb_sub_pp", 2);
+
+    TEllipse *PbPb_sub_pp_syst_only = CombiningSystematicOnly(PbPb_sub_pp_pairs, PbPb_sub_pp_singles);
+    PbPb_sub_pp_syst_only->SetLineColor(kRed);
+    PbPb_sub_pp_syst_only->SetLineStyle(2);
+    PbPb_sub_pp_syst_only->SetLineWidth(2);
+    PbPb_sub_pp_syst_only->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_syst_only, "PbPb - pp total syst");
+
+    PbPb_sub_pp_syst_only->Write(name + "_syst_PbPb_sub_pp", 2);
+
+    /*TVectorD pbpb_total = EllipseToVector(pbpb_envelope);
+    TVectorD pp_total = EllipseToVector(pp_envelope);
+
+    TEllipse *total_contour_subtracted = CombineEllipsesFromVectors(pbpb_total, pp_total);
+    total_contour_subtracted->SetLineColor(kRed);
+    total_contour_subtracted->SetLineWidth(2);
+    total_contour_subtracted->SetLineStyle(2);
+    total_contour_subtracted->SetFillStyle(0);
+    total_contour_subtracted->Draw("SAME");*/
+
     TLegend *leg = new TLegend(0.7, 0.75, 0.9, 0.9);
+    leg->SetFillStyle(0);  // Transparent fill
+    leg->SetBorderSize(0); // No border box
+    leg->SetLineColor(0);  // No outline line
+    leg->SetTextFont(42);  // CMS-style font
     leg->AddEntry(e1, "PbPb", "l");
     leg->AddEntry(e2, "pp", "l");
     leg->AddEntry(e3, "PbPb - pp", "l");
     leg->Draw();
 
     TLatex latex;
-    latex.SetTextSize(0.025);
+    latex.SetTextSize(0.02);
     latex.SetTextAlign(13); // left align, top align
 
-    double ystart = 0.9;
-    double dy = 0.06;
+    double ystart = 0.3;
+    double dy = 0.035;
 
-    latex.DrawLatexNDC(0.15, ystart, Form("Ellipse 1: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", v1[0], v1[1], v1[2], v1[3], v1[4]));
-    latex.DrawLatexNDC(0.15, ystart - dy, Form("Ellipse 2: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", v2[0], v2[1], v2[2], v2[3], v2[4]));
-    latex.DrawLatexNDC(0.15, ystart - 2 * dy, Form("Combined: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", e3->GetX1(), e3->GetY1(), e3->GetR1(), e3->GetR2(), e3->GetTheta()));
+    latex.DrawLatexNDC(0.2, ystart, Form("Ellipse 1: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", v1[0], v1[1], v1[2], v1[3], v1[4]));
+    latex.DrawLatexNDC(0.2, ystart - dy, Form("Ellipse 2: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", v2[0], v2[1], v2[2], v2[3], v2[4]));
+    latex.DrawLatexNDC(0.2, ystart - 2 * dy, Form("Combined: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", e3->GetX1(), e3->GetY1(), e3->GetR1(), e3->GetR2(), e3->GetTheta()));
 
     c1->Update();
     c1->SaveAs(Savename);
+
+    saveTEllipse->Close();
+
+    // Save all result
 }
 
-void get_combined_contour()
+void get_combined_contour(TString type = "degen")
 {
     TFile *f1 = new TFile("./contourrootfile/everything.root", "READ");
     TFile *f2 = new TFile("./bestfittemplaterootfile/template.root", "READ");
+
+    TString savepath = "";
+
+    if (type == "normal")
+    {
+        savepath = "./contourtest/";
+    }
+    else
+    {
+        savepath = "./contourtest/degen/";
+    }
+
+    // Place to read Noimnal
 
     TVector2 *PbPb_0 = (TVector2 *)f2->Get("PbPb_local_min_cent_0");
     TVector2 *PbPb_1 = (TVector2 *)f2->Get("PbPb_local_min_cent_1");
@@ -623,6 +1405,62 @@ void get_combined_contour()
     TVector2 *PbPb_4 = (TVector2 *)f2->Get("PbPb_local_min_cent_10");
 
     TVector2 *pp_0 = (TVector2 *)f2->Get("pp_local_min_period_22");
+
+    // Place to read systematic points
+    TVector2 *pp_0_tnpU = (TVector2 *)f2->Get("pp_local_min_tnpU_period_22");
+    TVector2 *pp_0_tnpD = (TVector2 *)f2->Get("pp_local_min_tnpD_period_22");
+    TVector2 *pp_0_AcoUp = (TVector2 *)f2->Get("pp_local_min_AcoUp_period_22");
+    TVector2 *pp_0_AcoDown = (TVector2 *)f2->Get("pp_local_min_AcoDown_period_22");
+    TVector2 *pp_0_nobk = (TVector2 *)f2->Get("pp_local_min_no_bk_period_22");
+    TVector2 *pp_0_massrange = (TVector2 *)f2->Get("pp_local_min_massrange_period_22");
+
+    TVector2 *PbPb_0_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_0");
+    TVector2 *PbPb_1_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_1");
+    TVector2 *PbPb_2_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_2");
+    TVector2 *PbPb_3_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_3");
+    TVector2 *PbPb_4_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_10");
+
+    TVector2 *PbPb_0_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_0");
+    TVector2 *PbPb_1_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_1");
+    TVector2 *PbPb_2_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_2");
+    TVector2 *PbPb_3_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_3");
+    TVector2 *PbPb_4_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_10");
+
+    TVector2 *PbPb_0_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_0");
+    TVector2 *PbPb_1_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_1");
+    TVector2 *PbPb_2_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_2");
+    TVector2 *PbPb_3_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_3");
+    TVector2 *PbPb_4_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_10");
+
+    TVector2 *PbPb_0_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_0");
+    TVector2 *PbPb_1_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_1");
+    TVector2 *PbPb_2_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_2");
+    TVector2 *PbPb_3_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_3");
+    TVector2 *PbPb_4_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_10");
+
+    TVector2 *PbPb_0_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_0");
+    TVector2 *PbPb_1_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_1");
+    TVector2 *PbPb_2_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_2");
+    TVector2 *PbPb_3_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_3");
+    TVector2 *PbPb_4_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_10");
+
+    TVector2 *PbPb_0_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_0");
+    TVector2 *PbPb_1_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_1");
+    TVector2 *PbPb_2_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_2");
+    TVector2 *PbPb_3_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_3");
+    TVector2 *PbPb_4_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_10");
+
+    TVector2 *PbPb_0_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_0");
+    TVector2 *PbPb_1_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_1");
+    TVector2 *PbPb_2_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_2");
+    TVector2 *PbPb_3_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_3");
+    TVector2 *PbPb_4_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_10");
+
+    TVector2 *PbPb_0_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_0");
+    TVector2 *PbPb_1_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_1");
+    TVector2 *PbPb_2_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_2");
+    TVector2 *PbPb_3_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_3");
+    TVector2 *PbPb_4_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_10");
 
     TVectorD pp_sig1 = doeverything("pp, |#eta| < 2.4, Nominal, Period: (22)", "./contourtest/pp.png", f1, pp_0, 1);
     TVectorD pp_sig2 = doeverything("pp, |#eta| < 2.4, Nominal, Period: (22)", "./contourtest/pp.png", f1, pp_0, 2);
@@ -642,65 +1480,20 @@ void get_combined_contour()
     TVectorD PbPb_sig_1_4 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0-100)", "./contourtest/PbPb_5.png", f1, PbPb_4, 1);
     TVectorD PbPb_sig_2_4 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0-100)", "./contourtest/PbPb_5.png", f1, PbPb_4, 2);
 
-    DrawEllipsesComparison(PbPb_sig_1_0, pp_sig1, "./contourtest/PbPb_0_sig_1.png");
-    DrawEllipsesComparison(PbPb_sig_2_0, pp_sig2, "./contourtest/PbPb_0_sig_2.png");
+    setTDRStyle();
 
-    DrawEllipsesComparison(PbPb_sig_1_1, pp_sig1, "./contourtest/PbPb_1_sig_1.png");
-    DrawEllipsesComparison(PbPb_sig_2_1, pp_sig2, "./contourtest/PbPb_1_sig_2.png");
+    DrawEllipsesComparison(PbPb_sig_1_0, pp_sig1, savepath + "PbPb_0_sig_1.png", *PbPb_0_tnpU, *PbPb_0_tnpD, *PbPb_0_AcoUp, *PbPb_0_AcoDown, *PbPb_0_nobk, *PbPb_0_massrange, *PbPb_0_HFup, *PbPb_0_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_0_10");
+    DrawEllipsesComparison(PbPb_sig_2_0, pp_sig2, savepath + "PbPb_0_sig_2.png", *PbPb_0_tnpU, *PbPb_0_tnpD, *PbPb_0_AcoUp, *PbPb_0_AcoDown, *PbPb_0_nobk, *PbPb_0_massrange, *PbPb_0_HFup, *PbPb_0_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_0_10");
 
-    DrawEllipsesComparison(PbPb_sig_1_2, pp_sig1, "./contourtest/PbPb_2_sig_1.png");
-    DrawEllipsesComparison(PbPb_sig_2_2, pp_sig2, "./contourtest/PbPb_2_sig_2.png");
+    DrawEllipsesComparison(PbPb_sig_1_1, pp_sig1, savepath + "PbPb_1_sig_1.png", *PbPb_1_tnpU, *PbPb_1_tnpD, *PbPb_1_AcoUp, *PbPb_1_AcoDown, *PbPb_1_nobk, *PbPb_1_massrange, *PbPb_1_HFup, *PbPb_1_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_10_20");
+    DrawEllipsesComparison(PbPb_sig_2_1, pp_sig2, savepath + "PbPb_1_sig_2.png", *PbPb_1_tnpU, *PbPb_1_tnpD, *PbPb_1_AcoUp, *PbPb_1_AcoDown, *PbPb_1_nobk, *PbPb_1_massrange, *PbPb_1_HFup, *PbPb_1_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_10_20");
 
-    DrawEllipsesComparison(PbPb_sig_1_3, pp_sig1, "./contourtest/PbPb_3_sig_1.png");
-    DrawEllipsesComparison(PbPb_sig_2_3, pp_sig2, "./contourtest/PbPb_3_sig_2.png");
+    DrawEllipsesComparison(PbPb_sig_1_2, pp_sig1, savepath + "PbPb_2_sig_1.png", *PbPb_2_tnpU, *PbPb_2_tnpD, *PbPb_2_AcoUp, *PbPb_2_AcoDown, *PbPb_2_nobk, *PbPb_2_massrange, *PbPb_2_HFup, *PbPb_2_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_20_30");
+    DrawEllipsesComparison(PbPb_sig_2_2, pp_sig2, savepath + "PbPb_2_sig_2.png", *PbPb_2_tnpU, *PbPb_2_tnpD, *PbPb_2_AcoUp, *PbPb_2_AcoDown, *PbPb_2_nobk, *PbPb_2_massrange, *PbPb_2_HFup, *PbPb_2_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_20_30");
 
-    DrawEllipsesComparison(PbPb_sig_1_4, pp_sig1, "./contourtest/PbPb_4_sig_1.png");
-    DrawEllipsesComparison(PbPb_sig_2_4, pp_sig2, "./contourtest/PbPb_4_sig_2.png");
-
-    // Testing area
-    // First I am going to test PbPb - pp case
-    TVectorD *test_ellipse = new TVectorD(5);
-    (*test_ellipse)[0] = 0.0;
-    (*test_ellipse)[1] = 0.0;
-    (*test_ellipse)[2] = 10.0;
-    (*test_ellipse)[3] = 5.0;
-    (*test_ellipse)[4] = 0.0;
-    TVectorD *test_circle = new TVectorD(5);
-    (*test_circle)[0] = 0.0;
-    (*test_circle)[1] = 0.0;
-    (*test_circle)[2] = 5.0;
-    (*test_circle)[3] = 5.0;
-    (*test_circle)[4] = 0.0;
-
-    DrawEllipsesComparison(*test_ellipse, *test_circle, "./contourtest/ellipse_circle_test.png");
-
-    TVectorD *test_ellipse_45deg = new TVectorD(5);
-    (*test_ellipse_45deg)[0] = 0.0;
-    (*test_ellipse_45deg)[1] = 0.0;
-    (*test_ellipse_45deg)[2] = 10.0;
-    (*test_ellipse_45deg)[3] = 5.0;
-    (*test_ellipse_45deg)[4] = 45.0;
-    TVectorD *test_ellipse_135deg = new TVectorD(5);
-    (*test_ellipse_135deg)[0] = 0.0;
-    (*test_ellipse_135deg)[1] = 0.0;
-    (*test_ellipse_135deg)[2] = 10.0;
-    (*test_ellipse_135deg)[3] = 5.0;
-    (*test_ellipse_135deg)[4] = 135.0;
-
-    DrawEllipsesComparison(*test_ellipse_45deg, *test_ellipse_135deg, "./contourtest/ellipse45_ellipse135_test.png");
-
-    TVectorD *test_circle_1 = new TVectorD(5);
-    (*test_circle_1)[0] = 0.0;
-    (*test_circle_1)[1] = 0.0;
-    (*test_circle_1)[2] = 5.0;
-    (*test_circle_1)[3] = 5.0;
-    (*test_circle_1)[4] = 0.0;
-    TVectorD *test_circle_2 = new TVectorD(5);
-    (*test_circle_2)[0] = 0.0;
-    (*test_circle_2)[1] = 0.0;
-    (*test_circle_2)[2] = 7.0;
-    (*test_circle_2)[3] = 7.0;
-    (*test_circle_2)[4] = 0.0;
-
-    DrawEllipsesComparison(*test_circle_1, *test_circle_2, "./contourtest/circle1_circle_2_test.png");
+    DrawEllipsesComparison(PbPb_sig_1_3, pp_sig1, savepath + "PbPb_3_sig_1.png", *PbPb_3_tnpU, *PbPb_3_tnpD, *PbPb_3_AcoUp, *PbPb_3_AcoDown, *PbPb_3_nobk, *PbPb_3_massrange, *PbPb_3_HFup, *PbPb_3_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_30_100");
+    DrawEllipsesComparison(PbPb_sig_2_3, pp_sig2, savepath + "PbPb_3_sig_2.png", *PbPb_3_tnpU, *PbPb_3_tnpD, *PbPb_3_AcoUp, *PbPb_3_AcoDown, *PbPb_3_nobk, *PbPb_3_massrange, *PbPb_3_HFup, *PbPb_3_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_30_100");
+    cout << "Below is 0 - 100 %" << endl;
+    DrawEllipsesComparison(PbPb_sig_1_4, pp_sig1, savepath + "PbPb_4_sig_1.png", *PbPb_4_tnpU, *PbPb_4_tnpD, *PbPb_4_AcoUp, *PbPb_4_AcoDown, *PbPb_4_nobk, *PbPb_4_massrange, *PbPb_4_HFup, *PbPb_4_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_0_100");
+    DrawEllipsesComparison(PbPb_sig_2_4, pp_sig2, savepath + "PbPb_4_sig_2.png", *PbPb_4_tnpU, *PbPb_4_tnpD, *PbPb_4_AcoUp, *PbPb_4_AcoDown, *PbPb_4_nobk, *PbPb_4_massrange, *PbPb_4_HFup, *PbPb_4_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_0_100");
 }
