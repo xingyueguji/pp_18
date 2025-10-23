@@ -11,6 +11,32 @@ double getWeightFromHist(TF1 *weightfucntion, double pt)
    return ratio;
 }
 
+Int_t GetPhiBin(double phi, const int numberofphibins)
+{
+   // wrap phi into [-pi, pi]
+   while (phi <= -TMath::Pi())
+      phi += 2 * TMath::Pi();
+   while (phi > TMath::Pi())
+      phi -= 2 * TMath::Pi();
+
+   double xmin = -TMath::Pi();
+   double xmax = TMath::Pi();
+   double width = (xmax - xmin) / numberofphibins;
+
+   int bin = static_cast<int>((phi - xmin) / width);
+
+   // safety clamp
+   if (bin < 0)
+      bin = 0;
+   if (bin >= numberofphibins)
+   {
+      bin = numberofphibins - 1;
+      cout << "Max range exceeded? you should not able to see this" << endl;
+   }
+
+   return bin;
+}
+
 void SkimNew::Loop()
 {
    //   In a ROOT session, you can do:
@@ -41,6 +67,8 @@ void SkimNew::Loop()
    Long64_t nentries = fChain->GetEntriesFast();
    Long64_t nbytes = 0, nb = 0;
 
+   const int numberofphibins = 8;
+
    Double_t runupperlimit[22] = {320916, 321012, 321140, 321232, 321393, 321436, 321735, 321820, 321909, 322014, 322118, 322319, 322381, 322617, 323525, 323778, 324021, 324245, 324772, 324897, 325001, 325175};
    Double_t runlowerlimit[22] = {320500, 320917, 321051, 321149, 321233, 321396, 321457, 321755, 321831, 321917, 322022, 322179, 322322, 322407, 322625, 323526, 323790, 324022, 324293, 324785, 324970, 325022};
 
@@ -51,6 +79,7 @@ void SkimNew::Loop()
    TH1D *FA_tnpD[22];
    TH1D *FA_mass_range[22];
    TH1D *FA_nominal_inclusive = new TH1D("FA_nominal_inclusive", "", 120, 60, 120);
+   TH1D *FA_nominal_inclusive_no_pT = new TH1D("FA_nominal_inclusive_no_pT", "", 120, 60, 120);
    TH1D *FA_AcoUp_inclusive = new TH1D("FA_AcoUp_inclusive", "", 120, 60, 120);
    TH1D *FA_AcoDown_inclusive = new TH1D("FA_AcoDown_inclusive", "", 120, 60, 120);
    TH1D *FA_tnpU_inclusive = new TH1D("FA_tnpU_inclusive", "", 120, 60, 120);
@@ -60,6 +89,9 @@ void SkimNew::Loop()
    TH1D *pT_spec_pp_FA = new TH1D("pT_spec_pp_FA", "", 200, 0, 200);
    TH1D *pT_spec_pp_Eta = new TH1D("pT_spec_pp_Eta", "", 200, 0, 200);
 
+   TH1D *FA_nominal_phi_plus[numberofphibins];
+   TH1D *FA_nominal_phi_plus_without_pT_reweight[numberofphibins];
+
    for (int i = 0; i < 22; i++)
    {
       FA_nominal[i] = new TH1D(Form("FA_nominal_%i", i), "", 120, 60, 120);
@@ -68,6 +100,12 @@ void SkimNew::Loop()
       FA_tnpU[i] = new TH1D(Form("FA_tnpU_%i", i), "", 120, 60, 120);
       FA_tnpD[i] = new TH1D(Form("FA_tnpD_%i", i), "", 120, 60, 120);
       FA_mass_range[i] = new TH1D(Form("FA_mass_range_%i", i), "", 80, 70, 110);
+   }
+
+   for (int i = 0; i < numberofphibins; i++)
+   {
+      FA_nominal_phi_plus[i] = new TH1D(Form("pp_FA_nominal_phi_plus_%i", i), "", 120, 60, 120);
+      FA_nominal_phi_plus_without_pT_reweight[i] = new TH1D(Form("pp_FA_nominal_phi_plus_without_pT_reweight_%i", i), "", 120, 60, 120);
    }
 
    TEfficiency *e;
@@ -199,14 +237,18 @@ void SkimNew::Loop()
          double Eta_pTweight = getWeightFromHist(pTweight_Eta, Z_momentum->Pt());
 
          // Here for inclusive
-         pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0 / efficiency);
-
          if (passesAco[0])
          {
+            Int_t phibin = GetPhiBin(muonplus_momentum->Phi(), numberofphibins);
+
+            pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0 / efficiency);
             FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
             FA_tnpU_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_U);
             FA_tnpD_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_D);
             FA_mass_range_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
+            FA_nominal_phi_plus[phibin]->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
+            FA_nominal_phi_plus_without_pT_reweight[phibin]->Fill(ZMass, 1.0 / efficiency);
+            FA_nominal_inclusive_no_pT->Fill(ZMass, 1.0 / efficiency);
          }
          if (passesAco[1])
          {
@@ -252,6 +294,13 @@ void SkimNew::Loop()
    FA_tnpU_inclusive->Write("", 2);
    FA_tnpD_inclusive->Write("", 2);
    FA_mass_range_inclusive->Write("", 2);
+   FA_nominal_inclusive_no_pT->Write("",2);
+
+   for (int Z = 0; Z < numberofphibins; Z++)
+   {
+      FA_nominal_phi_plus[Z]->Write("",2);
+      FA_nominal_phi_plus_without_pT_reweight[Z]->Write("",2);
+   }
 
    for (int j = 0; j < 22; j++)
    {

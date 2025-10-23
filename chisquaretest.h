@@ -257,7 +257,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 
 		c_2d_chisquare_ndf[cent] = new TCanvas(Form("c_2d_chisquare_ndf_%i", cent), "", 3200, 2400);
 		c_2d_chisquare_ndf_zoomin[cent] = new TCanvas(Form("c_2d_chisquare_ndf_zoomin_%i", cent), "", 3200, 2400);
-		c_data_mc_raw[cent] = new TCanvas(Form("c_data_mc_raw_%i", cent), "", 800, 800);
+		c_data_mc_raw[cent] = new TCanvas(Form("c_data_mc_raw_%i", cent), "", 1000, 1000);
 		c_data_data_bk[cent] = new TCanvas(Form("c_data_data_bk_%i", cent), "", 800, 600);
 		c_contour_HI[cent] = new TCanvas(Form("c_contour_HI_%i", cent), "", 800, 600);
 
@@ -1322,6 +1322,8 @@ void chisquaretest::plottingandformatting(int type, int version)
 			pad1->SetBottomMargin(0.02); // override bottom only
 			pad1->SetLeftMargin(lmargin);
 			pad1->SetRightMargin(rmargin);
+			pad1->SetFrameLineWidth(3);
+			pad1->SetTicks(1, 1);
 			pad1->SetLogy();
 			pad1->Draw();
 			pad1->cd(); // Go to top pad
@@ -1395,7 +1397,7 @@ void chisquaretest::plottingandformatting(int type, int version)
 			pt->AddText(Form("Region 2 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 2), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 2)));
 			pt->AddText(Form("Region 3 is %.3f, %.3f", this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], vaccum_plot, 3), this->myownfunctionchi2partial(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent], 3)));
 			pt->AddText(Form("Total is %.3f, %.3f", this->myownfunctionchi2(h_data_bksub_not_rebinned[cent], vaccum_plot), this->myownfunctionchi2(h_data_bksub_not_rebinned[cent], h_mc_signal_not_rebinned[minBinX - 1][minBinY - 1][cent])));
-			pt->Draw();
+			// pt->Draw();
 
 			TLegend *leg = new TLegend(0.6, 0.7, 0.9, 0.85); // Upper-right position
 			leg->SetBorderSize(0);							 // Remove border
@@ -1424,6 +1426,7 @@ void chisquaretest::plottingandformatting(int type, int version)
 			pad2->SetBottomMargin(0.35); // room for axis title
 			pad2->SetLeftMargin(lmargin);
 			pad2->SetRightMargin(rmargin);
+			pad2->SetFrameLineWidth(3);
 			pad2->Draw();
 			pad2->cd();
 
@@ -3012,8 +3015,11 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	onesig_left->GetYaxis()->SetLabelSize(0.03);
 	TCanvas *temp_c1 = new TCanvas("temp_c1", "", 1000, 1000);
 	temp_c1->cd();
+	temp_c1->SetTitle("");
+	temp_c1->SetTopMargin(0.06);
 	temp_c1->SetRightMargin(0.05);
 	temp_c1->SetLeftMargin(0.14);
+	temp_c1->SetFrameLineWidth(5);
 	temp_c1->SetTickx(1);
 	temp_c1->SetTicky(1);
 
@@ -3053,10 +3059,11 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 
 	TH1 *frame = onesig_left->GetHistogram(); // Get the underlying histogram for customization
 
-	onesig_left->SetTitle(contourtitle);
+	//onesig_left->SetTitle(contourtitle);
 
-	onesig_left->GetXaxis()->SetTitle("Shifted Amount (GeV)");
-	onesig_left->GetYaxis()->SetTitle("Smeared Amount (GeV)");
+	onesig_left->GetXaxis()->SetTitle("#Deltam_{TFM} (GeV)");
+	onesig_left->GetYaxis()->SetTitle("#Delta#Gamma_{TFM} (GeV)");
+	onesig_left->SetTitle("");
 
 	onesig_left->SetMarkerSize(2);
 	onesig_left->SetMarkerColor(kBlue - 3);
@@ -3114,6 +3121,7 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 
 	// Draw the legend
 	legend->Draw();
+	CMS_lumi(temp_c1, 13, 10);
 	temp_c1->SaveAs(contoursaving);
 	if (f1 != nullptr)
 	{

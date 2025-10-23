@@ -95,7 +95,13 @@
         "Add_theory_prediction.C": "cpp",
         "ppmc.C": "cpp",
         "skimmc.C": "cpp",
-        "get_scan_on_PbPb_and_pp_mc.C": "cpp"
+        "get_scan_on_PbPb_and_pp_mc.C": "cpp",
+        "pTreweight_mc.C": "cpp",
+        "get_scan_on_PbPb_and_pp_mc copy.C": "cpp",
+        "get_scan_on_PbPb_and_pp_data.C": "cpp",
+        "get_scan_on_PbPb_and_pp_data copy.C": "cpp",
+        "get_scan_on_PbPb_and_pp_mc_phi.C": "cpp",
+        "get_scan_on_PbPb_and_pp_data_old.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

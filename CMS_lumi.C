@@ -153,6 +153,7 @@ void CMS_lumi(TPad *pad, int iPeriod, int iPosX)
             if (writeExtraText)
             {
                 latex.SetTextFont(extraTextFont);
+                latex.SetTextColor(extraTextColor);
                 latex.SetTextAlign(align_);
                 latex.SetTextSize(extraTextSize * t);
                 latex.DrawLatex(posX_, posY_ - relExtraDY * cmsTextSize * t, extraText);
@@ -167,6 +168,7 @@ void CMS_lumi(TPad *pad, int iPeriod, int iPosX)
             posY_ = 1 - t + lumiTextOffset * t;
         }
         latex.SetTextFont(extraTextFont);
+        latex.SetTextColor(extraTextColor);
         latex.SetTextSize(extraTextSize * t);
         latex.SetTextAlign(align_);
         latex.DrawLatex(posX_, posY_, extraText);

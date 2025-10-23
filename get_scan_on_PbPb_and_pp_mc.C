@@ -107,7 +107,7 @@ void get_scan_on_PbPb_and_pp_mc()
     gStyle->SetOptStat(0);
     TFile *PbPb_mc = new TFile("../ZBoson_18/rootfile/mc_signal.root", "READ");
     TFile *pp_mc = new TFile("./new_pp_data_file_stability_readonly.root", "READ");
-    TFile *PbPb_mc_template = new TFile("../ZBoson_18/rootfile/version_2/template_PbPb_pp_mc_special_zoomin.root", "READ");
+    TFile *PbPb_mc_template = new TFile("../ZBoson_18/rootfile/version_2/template_PbPb_pp_mc_special.root", "READ");
 
     TH1D *PbPb_mc_nominal_inclusive = (TH1D *)PbPb_mc->Get("FA_nominal_10");
     TH1D *pp_mc_nominal_inclusive = (TH1D *)pp_mc->Get("pp_mc_inclusive_test_with_pt_reweight");

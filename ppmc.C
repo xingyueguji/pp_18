@@ -11,6 +11,32 @@ double getWeightFromHist(TF1 *weightfucntion, double pt)
    return ratio;
 }
 
+Int_t GetPhiBin(double phi, const int numberofphibin)
+{
+   // wrap phi into [-pi, pi]
+   while (phi <= -TMath::Pi())
+      phi += 2 * TMath::Pi();
+   while (phi > TMath::Pi())
+      phi -= 2 * TMath::Pi();
+
+   double xmin = -TMath::Pi();
+   double xmax = TMath::Pi();
+   double width = (xmax - xmin) / numberofphibin;
+
+   int bin = static_cast<int>((phi - xmin) / width);
+
+   // safety clamp
+   if (bin < 0)
+      bin = 0;
+   if (bin >= numberofphibin)
+   {
+      bin = numberofphibin - 1;
+      cout << "Max range exceeded? you should not able to see this" << endl;
+   }
+
+   return bin;
+}
+
 void ppmc::Loop()
 {
    //   In a ROOT session, you can do:
@@ -39,15 +65,31 @@ void ppmc::Loop()
    if (fChain == 0)
       return;
 
+   const int numberofphibin = 16;
+
    Long64_t nentries = fChain->GetEntriesFast();
 
    Long64_t nbytes = 0, nb = 0;
 
    TH1D *FA_nominal_inclusive = new TH1D("FA_nominal_inclusive", "", 120, 60, 120);
 
-   TFile *pT_PbPb_weight = new TFile("../ZBoson_18/rootfile/pT_file.root", "READ");
+   TFile *pT_PbPb_mc_weight = new TFile("../ZBoson_18/rootfile/mc_pTratio.root", "READ");
 
-   TF1 *pTweight_FA = (TF1 *)pT_PbPb_weight->Get("FA_ratio_fit");
+   TF1 *pTweight_FA = (TF1 *)pT_PbPb_mc_weight->Get("FA_ratio_fit");
+
+   TH1D *pT_spec_pp_FA = new TH1D("pT_spec_pp_FA", "", 200, 0, 200);
+
+   TH1D *FA_nominal_phi_plus[numberofphibin];
+   TH1D *FA_nominal_phi_plus_without_pT_reweight[numberofphibin];
+
+   TH1D *FA_nominal_phi_plus_inclusive = new TH1D("pp_mc_FA_nominal_phi_plus_inclusive", "", 120, 60, 120);
+   TH1D *FA_noimnal_phi_plus_inclusive_without_pT_reweight = new TH1D("pp_mc_FA_nominal_phi_plus_inclusive_without_pT_reweight", "", 120, 60, 120);
+
+   for (int i = 0; i < numberofphibin; i++)
+   {
+      FA_nominal_phi_plus[i] = new TH1D(Form("pp_mc_FA_nominal_phi_plus_%i", i), "", 120, 60, 120);
+      FA_nominal_phi_plus_without_pT_reweight[i] = new TH1D(Form("pp_mc_FA_nominal_phi_plus_without_pT_reweight_%i", i), "", 120, 60, 120);
+   }
 
    for (Long64_t jentry = 0; jentry < nentries; jentry++)
    {
@@ -150,7 +192,15 @@ void ppmc::Loop()
 
          if (passesAco[0])
          {
+            FA_nominal_phi_plus_inclusive->Fill(ZMass, 1.0 * FA_pTweight);
+            FA_noimnal_phi_plus_inclusive_without_pT_reweight->Fill(ZMass, 1.0);
+
+            Int_t phibin = GetPhiBin(muonplus_momentum->Phi(), numberofphibin);
+
+            pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0);
             FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight);
+            FA_nominal_phi_plus[phibin]->Fill(ZMass, 1.0 * FA_pTweight);
+            FA_nominal_phi_plus_without_pT_reweight[phibin]->Fill(ZMass, 1.0);
          }
       }
    }
@@ -158,5 +208,27 @@ void ppmc::Loop()
    TFile *writeout = new TFile("./new_pp_data_file_stability_readonly.root", "UPDATE");
    writeout->cd();
    FA_nominal_inclusive->Write("pp_mc_inclusive_test_with_pt_reweight", 2);
+   for (int Z = 0; Z < numberofphibin; Z++)
+   {
+      FA_nominal_phi_plus[Z]->Write("", 2);
+      FA_nominal_phi_plus_without_pT_reweight[Z]->Write("", 2);
+   }
+
+   FA_nominal_phi_plus_inclusive->Write("", 2);
+   FA_noimnal_phi_plus_inclusive_without_pT_reweight->Write("", 2);
    writeout->Close();
+
+   TCanvas *c1 = new TCanvas("", "", 800, 800);
+   c1->cd();
+   FA_nominal_inclusive->Draw("");
+   c1->SaveAs("./PbPb_pp_mc_compare/pp_mc_weighted.png");
+
+   std::cout << "Histogram: " << FA_nominal_inclusive->GetName() << std::endl;
+   std::cout << "Entries   = " << FA_nominal_inclusive->GetEntries() << std::endl;
+   std::cout << "Integral  = " << FA_nominal_inclusive->Integral() << std::endl;
+
+   TFile *pT_File = new TFile("../ZBoson_18/rootfile/mc_pTratio.root", "UPDATE");
+   pT_File->cd();
+   pT_spec_pp_FA->Write("mc_pp_pT", 2);
+   pT_File->Close();
 }
