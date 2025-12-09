@@ -8,91 +8,143 @@ void areanormalize(TH1D *h_1)
     h_1->Scale(1 / normalization_factor);
 }
 
-void FitAndAnnotateThreeGraphs(TCanvas *c)
+void FitAndAnnotateThreeGraphs(TCanvas *c, TString opt = "")
 {
-    if (!c) return;
+    if (!c)
+        return;
     c->cd();
 
-    // Collect graphs from canvas
+    TFile *f1 = new TFile("./cos_fit_save/data.root", "UPDATE");
+
+    // === Collect TGraphErrors from the canvas ===
     TList *primitives = c->GetListOfPrimitives();
-    std::vector<TGraphErrors*> graphs;
+    std::vector<TGraphErrors *> graphs;
     TIter next(primitives);
     TObject *obj;
-    while ((obj = next())) {
+    while ((obj = next()))
+    {
         if (obj->InheritsFrom(TGraphErrors::Class()))
-            graphs.push_back((TGraphErrors*)obj);
+            graphs.push_back((TGraphErrors *)obj);
     }
 
-    if (graphs.size() < 3) {
-        std::cerr << "Expected 3 TGraphErrors, found " << graphs.size() << std::endl;
+    if (graphs.size() < 1)
+    {
+        std::cerr << "ERROR: No TGraphErrors found." << std::endl;
         return;
     }
 
-    // Get colors dynamically from graphs
+    size_t nGraphs = graphs.size(); // 2 in your new case
+
+    // === Extract graph colors dynamically ===
     std::vector<Color_t> fitColors;
-    for (auto *g : graphs) {
+    for (auto *g : graphs)
+    {
         Color_t cLine = g->GetLineColor();
-        if (cLine <= 0) cLine = g->GetMarkerColor();
+        if (cLine <= 0)
+            cLine = g->GetMarkerColor();
         fitColors.push_back(cLine > 0 ? cLine : kBlack);
     }
 
-    // Prepare constant fit
+    // === Define fitting functions ===
     TF1 *fConst = new TF1("fConst", "[0]", -TMath::Pi(), TMath::Pi());
+    TF1 *fCos = new TF1("fCos", "[0] + [1]*cos(x - [2])", -TMath::Pi(), TMath::Pi());
+    fConst->SetLineStyle(2);
     fConst->SetLineWidth(2);
-    fConst->SetLineStyle(1); // dotted
+    fCos->SetLineWidth(2);
+    fCos->SetLineStyle(1);
 
-    double lastY[3] = {0}, fitVal[3] = {0};
-    double fitErr[3] = {0};
+    // Storage for fit results
+    double lastY[3] = {0};
+    double fitConstVal[3] = {0}, fitConstErr[3] = {0};
+    double fitA[3] = {0}, fitB[3] = {0}, fitPhi0[3] = {0};
+    double errA[3] = {0}, errB[3] = {0}, errPhi0[3] = {0};
 
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < nGraphs; ++i)
     {
         TGraphErrors *g = graphs[i];
         int n = g->GetN();
-        if (n < 2) continue;
+        if (n < 2)
+            continue;
 
-        // Exclude last point from fit
+        // Exclude last point
         int nFit = n - 1;
         std::vector<double> xfit(nFit), yfit(nFit);
-        for (int j = 0; j < nFit; ++j) {
+        for (int j = 0; j < nFit; ++j)
+        {
             xfit[j] = g->GetX()[j];
             yfit[j] = g->GetY()[j];
         }
-
         TGraph *gFit = new TGraph(nFit, xfit.data(), yfit.data());
-        TF1 *f = (TF1*)fConst->Clone(Form("fConst_%zu", i));
-        f->SetLineColor(fitColors[i]);
-        f->SetLineWidth(2);
-        f->SetLineStyle(2);
-        gFit->Fit(f, "Q"); // Quiet
 
-        f->Draw("SAME");
+        // ---- Constant fit ----
+        TF1 *fC = (TF1 *)fConst->Clone(Form("fConst_%zu", i));
+        fC->SetLineColor(fitColors[i]);
+        gFit->Fit(fC, "Q");
+        fC->Draw("SAME");
 
-        fitVal[i] = f->GetParameter(0);
-        fitErr[i] = f->GetParError(0);
+        fitConstVal[i] = fC->GetParameter(0);
+        fitConstErr[i] = fC->GetParError(0);
 
-        // Last point value
+        // ---- Cosine fit ----
+        TF1 *fCosFit = (TF1 *)fCos->Clone(Form("fCos_%zu", i));
+        fCosFit->SetLineColor(fitColors[i]);
+        fCosFit->SetLineStyle(1);
+        fCosFit->SetParameters(fitConstVal[i], 0.05, 0.0);
+        gFit->Fit(fCosFit, "Q+");
+        fCosFit->Draw("SAME");
+
+        f1->cd();
+        if (opt == "")
+        {
+            if (i == 0)
+                fCosFit->Write("PbPb_PbPb_mc", 2);
+            if (i == 1)
+                fCosFit->Write("pp_PbPb_mc", 2);
+            if (i == 2)
+                fCosFit->Write("pp_PbPb_no_pT_mc", 2);
+        }
+
+        fitA[i] = fCosFit->GetParameter(0);
+        fitB[i] = fCosFit->GetParameter(1);
+        fitPhi0[i] = fCosFit->GetParameter(2);
+        errA[i] = fCosFit->GetParError(0);
+        errB[i] = fCosFit->GetParError(1);
+        errPhi0[i] = fCosFit->GetParError(2);
+
         lastY[i] = g->GetY()[n - 1];
     }
 
-    // Add text box (upper right)
+    // === Annotate results ===
     TLatex latex;
     latex.SetNDC(true);
     latex.SetTextFont(42);
-    latex.SetTextSize(0.025);
+    latex.SetTextSize(0.017);
 
-    double x0 = 0.53; // position (fraction of pad)
-    double y0 = 0.83;
+    double x0 = 0.5;
+    double y0 = 0.87;
 
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < nGraphs; ++i)
     {
         latex.SetTextColor(fitColors[i]);
-        latex.DrawLatex(x0, y0 - i * 0.05,
-                        Form("Fit: %.3f #pm %.3f   Last: %.3f",
-                             fitVal[i], fitErr[i], lastY[i]));
+
+        // Constant fit line
+        latex.DrawLatex(x0, y0 - i * 0.08,
+                        Form("Const: %.3f #pm %.3f   Last: %.3f",
+                             fitConstVal[i], fitConstErr[i], lastY[i]));
+
+        // Cosine fit equation
+        latex.DrawLatex(
+            x0, y0 - i * 0.08 - 0.03,
+            Form("#font[42]{f(#phi)} = %.3f #pm %.3f + (%.3f #pm %.3f)"
+                 " cos(#phi - (%.3f #pm %.3f))",
+                 fitA[i], errA[i],
+                 fitB[i], errB[i],
+                 fitPhi0[i], errPhi0[i]));
     }
 
     c->Modified();
     c->Update();
+    f1->Close();
 }
 
 Double_t myownfunctionchi2(TH1D *h1, TH1D *h2)
@@ -697,6 +749,115 @@ void get_scan_on_PbPb_and_pp_mc_phi()
     latexW.SetTextFont(62);
     latexW.SetTextSize(0.045);
     // latexW.DrawLatex(0.16, 0.93, "#bf{CMS}  #it{Preliminary}");
-    FitAndAnnotateThreeGraphs(cWidth);
+    FitAndAnnotateThreeGraphs(cWidth, "width");
     cWidth->SaveAs("./ScaninPhi/mc/widthShift_vs_phi_CMS.png");
+
+    // === Build DIFF graphs: PbPb - pp and PbPb - pp_no_pT ===
+    auto gMass_diff_pp = new TGraphErrors();
+    auto gMass_diff_ppNoPT = new TGraphErrors();
+    auto gWidth_diff_pp = new TGraphErrors();
+    auto gWidth_diff_ppNoPT = new TGraphErrors();
+
+    int nPts = gMass_PbPbPbPb->GetN();
+    gMass_diff_pp->Set(nPts);
+    gMass_diff_ppNoPT->Set(nPts);
+    gWidth_diff_pp->Set(nPts);
+    gWidth_diff_ppNoPT->Set(nPts);
+
+    for (int i = 0; i < nPts; ++i)
+    {
+        double x = gMass_PbPbPbPb->GetX()[i];
+        double ex = gMass_PbPbPbPb->GetEX()[i];
+
+        double yPbPb = gMass_PbPbPbPb->GetY()[i];
+        double yPP = gMass_ppPbPb->GetY()[i];
+        double yPPnoPT = gMass_pp_no_pT->GetY()[i];
+
+        double ePbPb = gMass_PbPbPbPb->GetEY()[i];
+        double ePP = gMass_ppPbPb->GetEY()[i];
+        double ePPnoPT = gMass_pp_no_pT->GetEY()[i];
+
+        // === MASS DIFF ===
+        gMass_diff_pp->SetPoint(i, x, yPbPb - yPP);
+        gMass_diff_pp->SetPointError(i, ex, std::hypot(ePbPb, ePP));
+
+        gMass_diff_ppNoPT->SetPoint(i, x, yPbPb - yPPnoPT);
+        gMass_diff_ppNoPT->SetPointError(i, ex, std::hypot(ePbPb, ePPnoPT));
+
+        // === WIDTH DIFF ===
+        double wPbPb = gWidth_PbPbPbPb->GetY()[i];
+        double wPP = gWidth_ppPbPb->GetY()[i];
+        double wPPnoPT = gWidth_pp_no_pT->GetY()[i];
+
+        double ewPbPb = gWidth_PbPbPbPb->GetEY()[i];
+        double ewPP = gWidth_ppPbPb->GetEY()[i];
+        double ewPPnoPT = gWidth_pp_no_pT->GetEY()[i];
+
+        gWidth_diff_pp->SetPoint(i, x, wPbPb - wPP);
+        gWidth_diff_pp->SetPointError(i, ex, std::hypot(ewPbPb, ewPP));
+
+        gWidth_diff_ppNoPT->SetPoint(i, x, wPbPb - wPPnoPT);
+        gWidth_diff_ppNoPT->SetPointError(i, ex, std::hypot(ewPbPb, ewPPnoPT));
+    }
+
+    // style
+    gMass_diff_pp->SetMarkerStyle(20);
+    gMass_diff_pp->SetMarkerColor(kRed + 1);
+    gMass_diff_pp->SetLineColor(kRed + 1);
+    gMass_diff_pp->SetLineWidth(2);
+
+    gMass_diff_ppNoPT->SetMarkerStyle(21);
+    gMass_diff_ppNoPT->SetMarkerColor(kBlue + 1);
+    gMass_diff_ppNoPT->SetLineColor(kBlue + 1);
+    gMass_diff_ppNoPT->SetLineWidth(2);
+
+    gWidth_diff_pp->SetMarkerStyle(20);
+    gWidth_diff_pp->SetMarkerColor(kRed + 1);
+    gWidth_diff_pp->SetLineColor(kRed + 1);
+    gWidth_diff_pp->SetLineWidth(2);
+
+    gWidth_diff_ppNoPT->SetMarkerStyle(21);
+    gWidth_diff_ppNoPT->SetMarkerColor(kBlue + 1);
+    gWidth_diff_ppNoPT->SetLineColor(kBlue + 1);
+    gWidth_diff_ppNoPT->SetLineWidth(2);
+
+    TCanvas *cMassDiff = new TCanvas("cMassDiff", "Mass difference vs phi", 800, 800);
+    gMass_diff_pp->SetTitle(";#phi (rad); #Delta Mass (PbPb - pp) (GeV)");
+    gMass_diff_pp->GetYaxis()->SetRangeUser(-0.5, 0.4);
+    gMass_diff_pp->Draw("AP");
+    gMass_diff_ppNoPT->Draw("Psame");
+
+    auto legMD = new TLegend(0.2, 0.75, 0.45, 0.9);
+    legMD->AddEntry(gMass_diff_pp, "PbPb - pp", "lp");
+    legMD->AddEntry(gMass_diff_ppNoPT, "PbPb - pp (no p_{T})", "lp");
+    legMD->SetBorderSize(0);
+    legMD->SetTextFont(42);
+    legMD->Draw();
+
+    FitAndAnnotateThreeGraphs(cMassDiff, "I dont want to save");
+    cMassDiff->SaveAs(Form("./ScaninPhi/mc/massDiff_vs_phi_CMS.png"));
+
+    TCanvas *cWidthDiff = new TCanvas("cWidthDiff", "Width difference vs phi", 800, 800);
+    gWidth_diff_pp->SetTitle(";#phi (rad); #Delta Width (PbPb - pp) (GeV)");
+    gWidth_diff_pp->GetYaxis()->SetRangeUser(-0.5, 0.8);
+    gWidth_diff_pp->Draw("AP");
+    gWidth_diff_ppNoPT->Draw("Psame");
+
+    auto legWD = new TLegend(0.2, 0.75, 0.45, 0.9);
+    legWD->AddEntry(gWidth_diff_pp, "PbPb - pp", "lp");
+    legWD->AddEntry(gWidth_diff_ppNoPT, "PbPb - pp (no p_{T})", "lp");
+    legWD->SetBorderSize(0);
+    legWD->SetTextFont(42);
+    legWD->Draw();
+
+    FitAndAnnotateThreeGraphs(cWidthDiff, "I dont want to save");
+    cWidthDiff->SaveAs(Form("./ScaninPhi/mc/widthDiff_vs_phi_CMS.png"));
+
+    TFile *send_to_frank = new TFile("./cos_fit_save/send_to_frank.root", "UPDATE");
+    send_to_frank->cd();
+
+    cMassDiff->Write(Form("MC_Mass_Diff"), 2);
+    cWidthDiff->Write(Form("MC_Width_Diff"), 2);
+    cWidth->Write(Form("MC_Width"), 2);
+    cMass->Write(Form("MC_Mass"), 2);
 }

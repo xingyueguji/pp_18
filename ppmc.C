@@ -76,14 +76,32 @@ void ppmc::Loop()
    TFile *pT_PbPb_mc_weight = new TFile("../ZBoson_18/rootfile/mc_pTratio.root", "READ");
 
    TF1 *pTweight_FA = (TF1 *)pT_PbPb_mc_weight->Get("FA_ratio_fit");
+   TH2D *pT_y_weight_FA = (TH2D *)pT_PbPb_mc_weight->Get("FA_2D_ratio_mc");
 
    TH1D *pT_spec_pp_FA = new TH1D("pT_spec_pp_FA", "", 200, 0, 200);
+   double x_edges[] = {-2.4, -2.1, -1.8, -1.5, -1.2, -0.9, -0.6, -0.3,
+                       0.0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4};
+
+   double y_edges[] = {0.0, 1.0, 3.0, 5.0, 10.0, 20.0, 40.0, 70.0, 200.0};
+
+   // n_bins = (#edges - 1)
+   int nx = sizeof(x_edges) / sizeof(double) - 1;
+   int ny = sizeof(y_edges) / sizeof(double) - 1;
+
+   TH2D *pT_y_spec_pp_FA = new TH2D("pT_y_spec_pp_FA",
+                                    "pT vs y (variable bins)",
+                                    nx, x_edges,
+                                    ny, y_edges);
 
    TH1D *FA_nominal_phi_plus[numberofphibin];
    TH1D *FA_nominal_phi_plus_without_pT_reweight[numberofphibin];
 
    TH1D *FA_nominal_phi_plus_inclusive = new TH1D("pp_mc_FA_nominal_phi_plus_inclusive", "", 120, 60, 120);
    TH1D *FA_noimnal_phi_plus_inclusive_without_pT_reweight = new TH1D("pp_mc_FA_nominal_phi_plus_inclusive_without_pT_reweight", "", 120, 60, 120);
+
+   TH1D *FA_cent_no_reweight[5];
+   TH1D *FA_cent_1D_reweight[5];
+   TH1D *FA_cent_2D_reweight[5];
 
    for (int i = 0; i < numberofphibin; i++)
    {
@@ -180,6 +198,7 @@ void ppmc::Loop()
 
          Double_t ZMass = Z_momentum->M();
          double FA_pTweight = getWeightFromHist(pTweight_FA, Z_momentum->Pt());
+         double FA_pTweight_2D = pT_y_weight_FA->GetBinContent(pT_y_weight_FA->FindBin(Z_momentum->Rapidity(), Z_momentum->Pt()));
 
          float acoplanarity = 1 - TMath::Abs(TMath::ACos(TMath::Cos(muonplus_momentum->Phi() - muonminus_momentum->Phi()))) / TMath::Pi();
          bool passesAco[3] = {1, 1, 1};
@@ -192,14 +211,16 @@ void ppmc::Loop()
 
          if (passesAco[0])
          {
-            FA_nominal_phi_plus_inclusive->Fill(ZMass, 1.0 * FA_pTweight);
+            FA_nominal_phi_plus_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D);
             FA_noimnal_phi_plus_inclusive_without_pT_reweight->Fill(ZMass, 1.0);
 
             Int_t phibin = GetPhiBin(muonplus_momentum->Phi(), numberofphibin);
 
             pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0);
-            FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight);
-            FA_nominal_phi_plus[phibin]->Fill(ZMass, 1.0 * FA_pTweight);
+            pT_y_spec_pp_FA->Fill(Z_momentum->Rapidity(), Z_momentum->Pt(), 1.0);
+
+            FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D);
+            FA_nominal_phi_plus[phibin]->Fill(ZMass, 1.0 * FA_pTweight_2D);
             FA_nominal_phi_plus_without_pT_reweight[phibin]->Fill(ZMass, 1.0);
          }
       }
@@ -208,6 +229,7 @@ void ppmc::Loop()
    TFile *writeout = new TFile("./new_pp_data_file_stability_readonly.root", "UPDATE");
    writeout->cd();
    FA_nominal_inclusive->Write("pp_mc_inclusive_test_with_pt_reweight", 2);
+
    for (int Z = 0; Z < numberofphibin; Z++)
    {
       FA_nominal_phi_plus[Z]->Write("", 2);
@@ -230,5 +252,6 @@ void ppmc::Loop()
    TFile *pT_File = new TFile("../ZBoson_18/rootfile/mc_pTratio.root", "UPDATE");
    pT_File->cd();
    pT_spec_pp_FA->Write("mc_pp_pT", 2);
+   pT_y_spec_pp_FA->Write("mc_pp_pT_y", 2);
    pT_File->Close();
 }

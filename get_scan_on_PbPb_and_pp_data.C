@@ -8,117 +8,167 @@ void areanormalize(TH1D *h_1)
     h_1->Scale(1 / normalization_factor);
 }
 
-void FitAndAnnotateThreeGraphs(TCanvas *c)
+void LabelLastPoint(TGraphErrors *g, Color_t color = kBlack)
 {
-    if (!c) return;
+    if (!g)
+        return;
+
+    int N = g->GetN();
+    if (N < 1)
+        return;
+
+    double x, y;
+    g->GetPoint(N - 1, x, y);
+    double ey = g->GetErrorY(N - 1);
+
+    TLatex latex;
+    latex.SetNDC(false); // coordinates are in data space
+    latex.SetTextColor(color);
+    latex.SetTextFont(42);
+    latex.SetTextSize(0.035);
+
+    // label slightly above the point
+    latex.DrawLatex(x + 0.03, y + ey + 0.002,
+                    Form("%.4f", y));
+}
+
+void FitAndAnnotateThreeGraphs(TCanvas *c, bool isflattened, TString isMass = "")
+{
+    if (!c)
+        return;
     c->cd();
 
-    // === Collect all TGraphErrors from canvas ===
+    TFile *f1 = new TFile("./cos_fit_save/data.root", "UPDATE");
+
+    // === Collect TGraphErrors from the canvas ===
     TList *primitives = c->GetListOfPrimitives();
-    std::vector<TGraphErrors*> graphs;
+    std::vector<TGraphErrors *> graphs;
     TIter next(primitives);
     TObject *obj;
-    while ((obj = next())) {
+    while ((obj = next()))
+    {
         if (obj->InheritsFrom(TGraphErrors::Class()))
-            graphs.push_back((TGraphErrors*)obj);
+            graphs.push_back((TGraphErrors *)obj);
     }
 
-    if (graphs.size() < 3) {
-        std::cerr << "Expected 3 TGraphErrors, found " << graphs.size() << std::endl;
+    if (graphs.size() < 1)
+    {
+        std::cerr << "ERROR: No TGraphErrors found." << std::endl;
         return;
     }
 
-    // === Extract colors dynamically from graphs ===
+    size_t nGraphs = graphs.size(); // 2 in your new case
+
+    // === Extract graph colors dynamically ===
     std::vector<Color_t> fitColors;
-    for (auto *g : graphs) {
+    for (auto *g : graphs)
+    {
         Color_t cLine = g->GetLineColor();
-        if (cLine <= 0) cLine = g->GetMarkerColor();
+        if (cLine <= 0)
+            cLine = g->GetMarkerColor();
         fitColors.push_back(cLine > 0 ? cLine : kBlack);
     }
 
-    // === Define fit functions ===
+    // === Define fitting functions ===
     TF1 *fConst = new TF1("fConst", "[0]", -TMath::Pi(), TMath::Pi());
-    TF1 *fCos   = new TF1("fCos",   "[0] + [1]*cos(x - [2])", -TMath::Pi(), TMath::Pi());
+    TF1 *fCos = new TF1("fCos", "[0] + [1]*cos(x - [2])", -TMath::Pi(), TMath::Pi());
     fConst->SetLineStyle(2);
     fConst->SetLineWidth(2);
     fCos->SetLineWidth(2);
     fCos->SetLineStyle(1);
 
-    // Storage for results
+    // Storage for fit results
     double lastY[3] = {0};
     double fitConstVal[3] = {0}, fitConstErr[3] = {0};
     double fitA[3] = {0}, fitB[3] = {0}, fitPhi0[3] = {0};
     double errA[3] = {0}, errB[3] = {0}, errPhi0[3] = {0};
 
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < nGraphs; ++i)
     {
         TGraphErrors *g = graphs[i];
         int n = g->GetN();
-        if (n < 2) continue;
+        if (n < 2)
+            continue;
 
-        // === Exclude last point from fits ===
+        // Exclude last point
         int nFit = n - 1;
         std::vector<double> xfit(nFit), yfit(nFit);
-        for (int j = 0; j < nFit; ++j) {
+        for (int j = 0; j < nFit; ++j)
+        {
             xfit[j] = g->GetX()[j];
             yfit[j] = g->GetY()[j];
         }
-
         TGraph *gFit = new TGraph(nFit, xfit.data(), yfit.data());
 
-        // ---------- Constant fit ----------
-        TF1 *fC = (TF1*)fConst->Clone(Form("fConst_%zu", i));
+        // ---- Constant fit ----
+        TF1 *fC = (TF1 *)fConst->Clone(Form("fConst_%zu", i));
         fC->SetLineColor(fitColors[i]);
         gFit->Fit(fC, "Q");
         fC->Draw("SAME");
+
         fitConstVal[i] = fC->GetParameter(0);
         fitConstErr[i] = fC->GetParError(0);
 
-        // ---------- Cosine fit ----------
-        TF1 *fCosFit = (TF1*)fCos->Clone(Form("fCos_%zu", i));
+        // ---- Cosine fit ----
+        TF1 *fCosFit = (TF1 *)fCos->Clone(Form("fCos_%zu", i));
         fCosFit->SetLineColor(fitColors[i]);
         fCosFit->SetLineStyle(1);
-        fCosFit->SetParameters(fitConstVal[i], 0.05, 0.0); // reasonable starting values
-        gFit->Fit(fCosFit, "Q+"); // quiet, additive to keep both fits
+        fCosFit->SetParameters(fitConstVal[i], 0.05, 0.0);
+        gFit->Fit(fCosFit, "Q+");
         fCosFit->Draw("SAME");
 
-        fitA[i]     = fCosFit->GetParameter(0);
-        fitB[i]     = fCosFit->GetParameter(1);
-        fitPhi0[i]  = fCosFit->GetParameter(2);
-        errA[i]     = fCosFit->GetParError(0);
-        errB[i]     = fCosFit->GetParError(1);
-        errPhi0[i]  = fCosFit->GetParError(2);
+        f1->cd();
+        if (!isflattened && isMass == "")
+        {
+            if (i == 0)
+                fCosFit->Write("PbPb_PbPb_data", 2);
+            if (i == 1)
+                fCosFit->Write("pp_PbPb_data", 2);
+            if (i == 2)
+                fCosFit->Write("pp_PbPb_no_pT_data", 2);
+        }
 
-        // ---------- Store last point ----------
+        fitA[i] = fCosFit->GetParameter(0);
+        fitB[i] = fCosFit->GetParameter(1);
+        fitPhi0[i] = fCosFit->GetParameter(2);
+        errA[i] = fCosFit->GetParError(0);
+        errB[i] = fCosFit->GetParError(1);
+        errPhi0[i] = fCosFit->GetParError(2);
+
         lastY[i] = g->GetY()[n - 1];
     }
 
-    // === Annotate results in upper-right corner ===
+    // === Annotate results ===
     TLatex latex;
     latex.SetNDC(true);
     latex.SetTextFont(42);
-    latex.SetTextSize(0.025);
+    latex.SetTextSize(0.017);
 
-    double x0 = 0.53;
-    double y0 = 0.83;
+    double x0 = 0.5;
+    double y0 = 0.87;
 
     for (size_t i = 0; i < 3; ++i)
     {
         latex.SetTextColor(fitColors[i]);
+
+        // Constant fit line
+        latex.DrawLatex(x0, y0 - i * 0.08,
+                        Form("Const: %.3f #pm %.3f   Last: %.3f",
+                             fitConstVal[i], fitConstErr[i], lastY[i]));
+
+        // Cosine fit equation
         latex.DrawLatex(
-            x0, y0 - i * 0.11,
-            Form("Const: %.3f #pm %.3f   Last: %.3f",
-                 fitConstVal[i], fitConstErr[i], lastY[i])
-        );
-        latex.DrawLatex(
-            x0, y0 - i * 0.11 - 0.03,
-            Form("Cos: a=%.3f#pm%.3f  b=%.3f#pm%.3f  #phi_{0}=%.3f#pm%.3f",
-                 fitA[i], errA[i], fitB[i], errB[i], fitPhi0[i], errPhi0[i])
-        );
+            x0, y0 - i * 0.08 - 0.03,
+            Form("#font[42]{f(#phi)} = %.3f #pm %.3f + (%.3f #pm %.3f)"
+                 " cos(#phi - (%.3f #pm %.3f))",
+                 fitA[i], errA[i],
+                 fitB[i], errB[i],
+                 fitPhi0[i], errPhi0[i]));
     }
 
     c->Modified();
     c->Update();
+    f1->Close();
 }
 
 Double_t myownfunctionchi2(TH1D *h1, TH1D *h2)
@@ -417,7 +467,7 @@ BuildMassAndWidthShiftGraphs(std::vector<TH2D *> &h_chi2_maps)
     return {gMass, gWidth};
 }
 
-void get_scan_on_PbPb_and_pp_data()
+void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
 {
     gStyle->SetOptStat(0);
     gStyle->SetEndErrorSize(0);
@@ -467,9 +517,12 @@ void get_scan_on_PbPb_and_pp_data()
 
     for (int i = 0; i < number_phi_bins; i++)
     {
-        PbPb_data_in_Phi[i] = (TH1D *)PbPb_data->Get(Form("FA_nominal_phi_plus_%i", i));
-        pp_data_in_Phi[i] = (TH1D *)pp_data->Get(Form("pp_FA_nominal_phi_plus_%i", i));
-        pp_data_in_Phi_without_pT_reweight[i] = (TH1D *)pp_data->Get(Form("pp_FA_nominal_phi_plus_without_pT_reweight_%i", i));
+        PbPb_data_in_Phi[i] = (TH1D *)PbPb_data->Get(
+            Form("FA_nominal_phi_plus%s_%i", isflattened ? "_flattened" : "", i));
+        pp_data_in_Phi[i] = (TH1D *)pp_data->Get(
+            Form("pp_FA_nominal_phi_plus%s_%i", isflattened ? "_flattened" : "", i));
+        pp_data_in_Phi_without_pT_reweight[i] = (TH1D *)pp_data->Get(
+            Form("pp_FA_nominal_phi_plus_without_pT_reweight%s_%i", isflattened ? "_flattened" : "", i));
         h_chisquare_pp_PbPb[i] = new TH2D(Form("h_chisquare_pp_PbPb_%i", i), "", 42, h_low_mass_shift_pp, h_high_mass_shift_pp, 42, h_low_smear_pp, h_high_smear_pp);
         h_chisquare_PbPb_PbPb[i] = new TH2D(Form("h_chisquare_PbPb_PbPb_%i", i), "", 42, h_low_mass_shift, h_high_mass_shift, 42, h_low_smear, h_high_smear);
         h_chisquare_pp_PbPb_no_pT[i] = new TH2D(Form("h_chisquare_pp_PbPb_no_pT_%i", i), "", 42, h_low_mass_shift_pp, h_high_mass_shift_pp, 42, h_low_smear_pp, h_high_smear_pp);
@@ -497,9 +550,18 @@ void get_scan_on_PbPb_and_pp_data()
         }
     }
 
-    PbPb_data_inclusive = (TH1D *)PbPb_data->Get("FA_nominal_10");
-    pp_data_inclusive = (TH1D *)pp_data->Get("FA_nominal_inclusive");
-    pp_data_inclusive_without_pT = (TH1D *)pp_data->Get("FA_nominal_inclusive_no_pT");
+    if (!isflattened)
+    {
+        PbPb_data_inclusive = (TH1D *)PbPb_data->Get("FA_nominal_10");
+        pp_data_inclusive = (TH1D *)pp_data->Get("FA_nominal_inclusive");
+        pp_data_inclusive_without_pT = (TH1D *)pp_data->Get("FA_nominal_inclusive_no_pT");
+    }
+    else
+    {
+        PbPb_data_inclusive = (TH1D *)PbPb_data->Get("FA_inclusive_flattened");
+        pp_data_inclusive = (TH1D *)pp_data->Get("FA_nominal_inclusive_flattened");
+        pp_data_inclusive_without_pT = (TH1D *)pp_data->Get("FA_nominal_inclusive_no_pT_flattened");
+    }
 
     PbPb_data_inclusive->Rebin(4);
     pp_data_inclusive->Rebin(4);
@@ -674,7 +736,9 @@ void get_scan_on_PbPb_and_pp_data()
     gMass_PbPbPbPb->GetYaxis()->SetRangeUser(-0.5, 0.4);
     gMass_PbPbPbPb->SetTitle(";#phi (rad);dMass (GeV)");
     gMass_PbPbPbPb->Draw("AP");
+    LabelLastPoint(gMass_PbPbPbPb, gMass_PbPbPbPb->GetMarkerColor());
     gMass_ppPbPb->Draw("Psame");
+    LabelLastPoint(gMass_ppPbPb, gMass_ppPbPb->GetMarkerColor());
     gMass_pp_no_pT->Draw("Psame");
     auto legM = new TLegend(0.2, 0.75, 0.45, 0.9);
     legM->AddEntry(gMass_ppPbPb, "pp#rightarrowPbPb", "lp");
@@ -687,9 +751,9 @@ void get_scan_on_PbPb_and_pp_data()
     latexM.SetNDC();
     latexM.SetTextFont(62);
     latexM.SetTextSize(0.045);
-    FitAndAnnotateThreeGraphs(cMass);
+    FitAndAnnotateThreeGraphs(cMass, isflattened);
     // latexM.DrawLatex(0.16, 0.93, "#bf{CMS}  #it{Preliminary}");
-    cMass->SaveAs("./ScaninPhi/data/massShift_vs_phi_CMS.png");
+    cMass->SaveAs(Form("./ScaninPhi/data/massShift_vs_phi_CMS%s.png", isflattened ? "_flatten" : ""));
 
     // --- Separate canvas: Width smear ---
     TCanvas *cWidth = new TCanvas("cWidth", "Width smear vs phi", 800, 800);
@@ -702,7 +766,9 @@ void get_scan_on_PbPb_and_pp_data()
     gWidth_PbPbPbPb->GetYaxis()->SetRangeUser(-0.5, 0.8);
     gWidth_PbPbPbPb->SetTitle(";#phi (rad); dWidth (GeV)");
     gWidth_PbPbPbPb->Draw("AP");
+    LabelLastPoint(gWidth_PbPbPbPb, gWidth_PbPbPbPb->GetMarkerColor());
     gWidth_ppPbPb->Draw("Psame");
+    LabelLastPoint(gWidth_ppPbPb, gWidth_ppPbPb->GetMarkerColor());
     gWidth_pp_no_pT->Draw("Psame");
     auto legW = new TLegend(0.2, 0.75, 0.45, 0.9);
     legW->AddEntry(gWidth_ppPbPb, "pp#rightarrowPbPb", "lp");
@@ -716,6 +782,119 @@ void get_scan_on_PbPb_and_pp_data()
     latexW.SetTextFont(62);
     latexW.SetTextSize(0.045);
     // latexW.DrawLatex(0.16, 0.93, "#bf{CMS}  #it{Preliminary}");
-    FitAndAnnotateThreeGraphs(cWidth);
-    cWidth->SaveAs("./ScaninPhi/data/widthShift_vs_phi_CMS.png");
+    FitAndAnnotateThreeGraphs(cWidth, isflattened, "width");
+    cWidth->SaveAs(Form("./ScaninPhi/data/widthShift_vs_phi_CMS%s.png", isflattened ? "_flatten" : ""));
+
+    // === Build DIFF graphs: PbPb - pp and PbPb - pp_no_pT ===
+    auto gMass_diff_pp = new TGraphErrors();
+    auto gMass_diff_ppNoPT = new TGraphErrors();
+    auto gWidth_diff_pp = new TGraphErrors();
+    auto gWidth_diff_ppNoPT = new TGraphErrors();
+
+    int nPts = gMass_PbPbPbPb->GetN();
+    gMass_diff_pp->Set(nPts);
+    gMass_diff_ppNoPT->Set(nPts);
+    gWidth_diff_pp->Set(nPts);
+    gWidth_diff_ppNoPT->Set(nPts);
+
+    for (int i = 0; i < nPts; ++i)
+    {
+        double x = gMass_PbPbPbPb->GetX()[i];
+        double ex = gMass_PbPbPbPb->GetEX()[i];
+
+        double yPbPb = gMass_PbPbPbPb->GetY()[i];
+        double yPP = gMass_ppPbPb->GetY()[i];
+        double yPPnoPT = gMass_pp_no_pT->GetY()[i];
+
+        double ePbPb = gMass_PbPbPbPb->GetEY()[i];
+        double ePP = gMass_ppPbPb->GetEY()[i];
+        double ePPnoPT = gMass_pp_no_pT->GetEY()[i];
+
+        // === MASS DIFF ===
+        gMass_diff_pp->SetPoint(i, x, yPbPb - yPP);
+        gMass_diff_pp->SetPointError(i, ex, std::hypot(ePbPb, ePP));
+
+        gMass_diff_ppNoPT->SetPoint(i, x, yPbPb - yPPnoPT);
+        gMass_diff_ppNoPT->SetPointError(i, ex, std::hypot(ePbPb, ePPnoPT));
+
+        // === WIDTH DIFF ===
+        double wPbPb = gWidth_PbPbPbPb->GetY()[i];
+        double wPP = gWidth_ppPbPb->GetY()[i];
+        double wPPnoPT = gWidth_pp_no_pT->GetY()[i];
+
+        double ewPbPb = gWidth_PbPbPbPb->GetEY()[i];
+        double ewPP = gWidth_ppPbPb->GetEY()[i];
+        double ewPPnoPT = gWidth_pp_no_pT->GetEY()[i];
+
+        gWidth_diff_pp->SetPoint(i, x, wPbPb - wPP);
+        gWidth_diff_pp->SetPointError(i, ex, std::hypot(ewPbPb, ewPP));
+
+        gWidth_diff_ppNoPT->SetPoint(i, x, wPbPb - wPPnoPT);
+        gWidth_diff_ppNoPT->SetPointError(i, ex, std::hypot(ewPbPb, ewPPnoPT));
+    }
+
+    // style
+    gMass_diff_pp->SetMarkerStyle(20);
+    gMass_diff_pp->SetMarkerColor(kRed + 1);
+    gMass_diff_pp->SetLineColor(kRed + 1);
+    gMass_diff_pp->SetLineWidth(2);
+
+    gMass_diff_ppNoPT->SetMarkerStyle(21);
+    gMass_diff_ppNoPT->SetMarkerColor(kBlue + 1);
+    gMass_diff_ppNoPT->SetLineColor(kBlue + 1);
+    gMass_diff_ppNoPT->SetLineWidth(2);
+
+    gWidth_diff_pp->SetMarkerStyle(20);
+    gWidth_diff_pp->SetMarkerColor(kRed + 1);
+    gWidth_diff_pp->SetLineColor(kRed + 1);
+    gWidth_diff_pp->SetLineWidth(2);
+
+    gWidth_diff_ppNoPT->SetMarkerStyle(21);
+    gWidth_diff_ppNoPT->SetMarkerColor(kBlue + 1);
+    gWidth_diff_ppNoPT->SetLineColor(kBlue + 1);
+    gWidth_diff_ppNoPT->SetLineWidth(2);
+
+    TCanvas *cMassDiff = new TCanvas("cMassDiff", "Mass difference vs phi", 800, 800);
+    gMass_diff_pp->SetTitle(";#phi (rad); #Delta Mass (PbPb - pp) (GeV)");
+    gMass_diff_pp->GetYaxis()->SetRangeUser(-0.5, 0.4);
+    gMass_diff_pp->Draw("AP");
+    LabelLastPoint(gMass_diff_pp, gMass_diff_pp->GetMarkerColor());
+    gMass_diff_ppNoPT->Draw("Psame");
+
+    auto legMD = new TLegend(0.2, 0.75, 0.45, 0.9);
+    legMD->AddEntry(gMass_diff_pp, "PbPb - pp", "lp");
+    legMD->AddEntry(gMass_diff_ppNoPT, "PbPb - pp (no p_{T})", "lp");
+    legMD->SetBorderSize(0);
+    legMD->SetTextFont(42);
+    legMD->Draw();
+
+    FitAndAnnotateThreeGraphs(cMassDiff, isflattened, "I dont want to save");
+    cMassDiff->SaveAs(Form("./ScaninPhi/data/massDiff_vs_phi_CMS%s.png",
+                           isflattened ? "_flatten" : ""));
+
+    TCanvas *cWidthDiff = new TCanvas("cWidthDiff", "Width difference vs phi", 800, 800);
+    gWidth_diff_pp->SetTitle(";#phi (rad); #Delta Width (PbPb - pp) (GeV)");
+    gWidth_diff_pp->GetYaxis()->SetRangeUser(-0.5, 0.8);
+    gWidth_diff_pp->Draw("AP");
+    LabelLastPoint(gWidth_diff_pp, gWidth_diff_pp->GetMarkerColor());
+    gWidth_diff_ppNoPT->Draw("Psame");
+
+    auto legWD = new TLegend(0.2, 0.75, 0.45, 0.9);
+    legWD->AddEntry(gWidth_diff_pp, "PbPb - pp", "lp");
+    legWD->AddEntry(gWidth_diff_ppNoPT, "PbPb - pp (no p_{T})", "lp");
+    legWD->SetBorderSize(0);
+    legWD->SetTextFont(42);
+    legWD->Draw();
+
+    FitAndAnnotateThreeGraphs(cWidthDiff, isflattened, "I dont want to save");
+    cWidthDiff->SaveAs(Form("./ScaninPhi/data/widthDiff_vs_phi_CMS%s.png",
+                            isflattened ? "_flatten" : ""));
+
+    TFile *send_to_frank = new TFile("./cos_fit_save/send_to_frank.root", "UPDATE");
+    send_to_frank->cd();
+
+    cMassDiff->Write(Form("Data_Mass_Diff%s", isflattened ? "_flatten" : ""), 2);
+    cWidthDiff->Write(Form("Data_Width_Diff%s", isflattened ? "_flatten" : ""), 2);
+    cWidth->Write(Form("Data_Width%s", isflattened ? "_flatten" : ""), 2);
+    cMass->Write(Form("Data_Mass%s", isflattened ? "_flatten" : ""), 2);
 }

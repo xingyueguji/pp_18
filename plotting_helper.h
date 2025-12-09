@@ -4,7 +4,7 @@ class plotting_helper
 {
 public:
   plotting_helper();
-  void areanormalize(TH1D *h_1);
+  void areanormalize(TH1 *h_1);
   void areanormalize_TH1(TH1 *h_1);
   void luminormalize(TH1D *h_1, int opt, double weight);
   void compositeplot(TH1D *h_1, TH1D *h_2, TH1D *h_3, TH1D *h_4, TH1D *h_5, TH1D *h_6, int x, int opt);
@@ -31,7 +31,7 @@ plotting_helper::plotting_helper()
 {
 }
 
-void plotting_helper::areanormalize(TH1D *h_1)
+void plotting_helper::areanormalize(TH1 *h_1)
 {
   if (h_1 == nullptr)
   {

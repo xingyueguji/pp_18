@@ -87,10 +87,30 @@ void SkimNew::Loop()
    TH1D *FA_mass_range_inclusive = new TH1D("FA_mass_range_inclusive", "", 80, 70, 110);
 
    TH1D *pT_spec_pp_FA = new TH1D("pT_spec_pp_FA", "", 200, 0, 200);
-   TH1D *pT_spec_pp_Eta = new TH1D("pT_spec_pp_Eta", "", 200, 0, 200);
+   double x_edges[] = {-2.4, -2.1, -1.8, -1.5, -1.2, -0.9, -0.6, -0.3,
+                       0.0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4};
+
+   double y_edges[] = {0.0, 1.0, 3.0, 5.0, 10.0, 20.0, 40.0, 70.0, 200.0};
+
+   // n_bins = (#edges - 1)
+   int nx = sizeof(x_edges) / sizeof(double) - 1;
+   int ny = sizeof(y_edges) / sizeof(double) - 1;
+
+   TH2D *pT_y_spec_pp_FA = new TH2D("pT_y_spec_pp_FA",
+                                    "pT vs y (variable bins)",
+                                    nx, x_edges,
+                                    ny, y_edges);
 
    TH1D *FA_nominal_phi_plus[numberofphibins];
    TH1D *FA_nominal_phi_plus_without_pT_reweight[numberofphibins];
+   TH1D *FA_nominal_phi_plus_flattened[numberofphibins];
+   TH1D *FA_nominal_phi_plus_without_pT_reweight_flattened[numberofphibins];
+   TH1D *FA_nominal_inclusive_flattened = new TH1D("FA_nominal_inclusive_flattened", "", 120, 60, 120);
+   TH1D *FA_nominal_inclusive_no_pT_flattened = new TH1D("FA_nominal_inclusive_no_pT_flattened", "", 120, 60, 120);
+
+   TFile *f_fit_function = new TFile("../pp_18/cos_fit_save/data.root", "READ");
+   TF1 *t_pp_PbPb_data = (TF1 *)f_fit_function->Get("pp_PbPb_data");
+   TF1 *t_pp_PbPb_no_pT_data = (TF1 *)f_fit_function->Get("pp_PbPb_no_pT_data");
 
    for (int i = 0; i < 22; i++)
    {
@@ -106,6 +126,8 @@ void SkimNew::Loop()
    {
       FA_nominal_phi_plus[i] = new TH1D(Form("pp_FA_nominal_phi_plus_%i", i), "", 120, 60, 120);
       FA_nominal_phi_plus_without_pT_reweight[i] = new TH1D(Form("pp_FA_nominal_phi_plus_without_pT_reweight_%i", i), "", 120, 60, 120);
+      FA_nominal_phi_plus_flattened[i] = new TH1D(Form("pp_FA_nominal_phi_plus_flattened_%i", i), "", 120, 60, 120);
+      FA_nominal_phi_plus_without_pT_reweight_flattened[i] = new TH1D(Form("pp_FA_nominal_phi_plus_without_pT_reweight_flattened_%i", i), "", 120, 60, 120);
    }
 
    TEfficiency *e;
@@ -126,6 +148,8 @@ void SkimNew::Loop()
 
    TF1 *pTweight_FA = (TF1 *)pT_PbPb_weight->Get("FA_ratio_fit");
    TF1 *pTweight_Eta = (TF1 *)pT_PbPb_weight->Get("Eta_ratio_fit");
+
+   TH2D *pT_y_weight_FA = (TH2D*)pT_PbPb_weight->Get("FA_2D_ratio_data");
 
    for (Long64_t jentry = 0; jentry < nentries; jentry++)
    {
@@ -233,8 +257,10 @@ void SkimNew::Loop()
          if (Z_momentum->Pt() < 1.25 && acoplanarity < 0.0005)
             passesAco[2] = false;
 
-         double FA_pTweight = getWeightFromHist(pTweight_FA, Z_momentum->Pt());
-         double Eta_pTweight = getWeightFromHist(pTweight_Eta, Z_momentum->Pt());
+         double FA_pTweight_1D = getWeightFromHist(pTweight_FA, Z_momentum->Pt());
+         double Eta_pTweight_1D = getWeightFromHist(pTweight_Eta, Z_momentum->Pt());
+
+         double FA_pTweight_2D = pT_y_weight_FA->GetBinContent(pT_y_weight_FA->FindBin(Z_momentum->Rapidity(), Z_momentum->Pt()));
 
          // Here for inclusive
          if (passesAco[0])
@@ -242,21 +268,48 @@ void SkimNew::Loop()
             Int_t phibin = GetPhiBin(muonplus_momentum->Phi(), numberofphibins);
 
             pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0 / efficiency);
-            FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
-            FA_tnpU_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_U);
-            FA_tnpD_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_D);
-            FA_mass_range_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
-            FA_nominal_phi_plus[phibin]->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
-            FA_nominal_phi_plus_without_pT_reweight[phibin]->Fill(ZMass, 1.0 / efficiency);
+            pT_y_spec_pp_FA->Fill(Z_momentum->Rapidity(), Z_momentum->Pt(), 1.0 / efficiency);
+            FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
+            FA_tnpU_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_U);
+            FA_tnpD_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_D);
+            FA_mass_range_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
             FA_nominal_inclusive_no_pT->Fill(ZMass, 1.0 / efficiency);
+
+            FA_nominal_phi_plus[phibin]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
+            FA_nominal_phi_plus_without_pT_reweight[phibin]->Fill(ZMass, 1.0 / efficiency);
+
+            double phi = TVector2::Phi_mpi_pi(muonplus_momentum->Phi());
+
+            // read parameters explicitly
+            double a = t_pp_PbPb_data->GetParameter(0);
+            double b = t_pp_PbPb_data->GetParameter(1);
+            double phi0 = t_pp_PbPb_data->GetParameter(2);
+
+            // evaluate the fitted modulation
+            double fphi = a + b * cos(phi - phi0);
+
+            // subtract only the oscillatory component (keep the mean)
+            double mass_corr = ZMass - (fphi - a);
+
+            FA_nominal_phi_plus_flattened[phibin]->Fill(mass_corr, FA_pTweight_2D / efficiency);
+            FA_nominal_inclusive_flattened->Fill(mass_corr, FA_pTweight_2D / efficiency);
+
+            double a_no = t_pp_PbPb_no_pT_data->GetParameter(0);
+            double b_no = t_pp_PbPb_no_pT_data->GetParameter(1);
+            double phi0_no = t_pp_PbPb_no_pT_data->GetParameter(2);
+
+            double fphi_no = a_no + b_no * cos(phi - phi0_no);
+            double mass_corr_no_pT = ZMass - (fphi_no - a_no);
+            FA_nominal_phi_plus_without_pT_reweight_flattened[phibin]->Fill(mass_corr_no_pT, 1.0 / efficiency);
+            FA_nominal_inclusive_no_pT_flattened->Fill(mass_corr_no_pT, 1.0 / efficiency);
          }
          if (passesAco[1])
          {
-            FA_AcoUp_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_acoup);
+            FA_AcoUp_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_acoup);
          }
          if (passesAco[2])
          {
-            FA_AcoDown_inclusive->Fill(ZMass, 1.0 * FA_pTweight / efficiency_acodown);
+            FA_AcoDown_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_acodown);
          }
 
          // Fill the run number based then
@@ -267,18 +320,18 @@ void SkimNew::Loop()
             {
                if (passesAco[0])
                {
-                  FA_nominal[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
-                  FA_tnpU[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency_U);
-                  FA_tnpD[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency_D);
-                  FA_mass_range[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency);
+                  FA_nominal[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
+                  FA_tnpU[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_U);
+                  FA_tnpD[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_D);
+                  FA_mass_range[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
                }
                if (passesAco[1])
                {
-                  FA_AcoUp[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency_acoup);
+                  FA_AcoUp[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_acoup);
                }
                if (passesAco[2])
                {
-                  FA_AcoDown[runindex]->Fill(ZMass, 1.0 * FA_pTweight / efficiency_acodown);
+                  FA_AcoDown[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_acodown);
                }
             }
          }
@@ -294,13 +347,18 @@ void SkimNew::Loop()
    FA_tnpU_inclusive->Write("", 2);
    FA_tnpD_inclusive->Write("", 2);
    FA_mass_range_inclusive->Write("", 2);
-   FA_nominal_inclusive_no_pT->Write("",2);
+   FA_nominal_inclusive_no_pT->Write("", 2);
 
    for (int Z = 0; Z < numberofphibins; Z++)
    {
-      FA_nominal_phi_plus[Z]->Write("",2);
-      FA_nominal_phi_plus_without_pT_reweight[Z]->Write("",2);
+      FA_nominal_phi_plus[Z]->Write("", 2);
+      FA_nominal_phi_plus_without_pT_reweight[Z]->Write("", 2);
+      FA_nominal_phi_plus_flattened[Z]->Write("", 2);
+      FA_nominal_phi_plus_without_pT_reweight_flattened[Z]->Write("", 2);
    }
+
+   FA_nominal_inclusive_flattened->Write("", 2);
+   FA_nominal_inclusive_no_pT_flattened->Write("", 2);
 
    for (int j = 0; j < 22; j++)
    {
@@ -318,6 +376,7 @@ void SkimNew::Loop()
    pt_File->cd();
 
    pT_spec_pp_FA->Write("", 2);
+   pT_y_spec_pp_FA->Write("", 2);
 
    pt_File->Close();
 }
