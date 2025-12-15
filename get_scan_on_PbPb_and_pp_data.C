@@ -8,7 +8,7 @@ void areanormalize(TH1D *h_1)
     h_1->Scale(1 / normalization_factor);
 }
 
-void LabelLastPoint(TGraphErrors *g, Color_t color = kBlack)
+void LabelLastPoint(TGraphErrors *g, Color_t color = kOrange)
 {
     if (!g)
         return;
@@ -25,7 +25,7 @@ void LabelLastPoint(TGraphErrors *g, Color_t color = kBlack)
     latex.SetNDC(false); // coordinates are in data space
     latex.SetTextColor(color);
     latex.SetTextFont(42);
-    latex.SetTextSize(0.035);
+    latex.SetTextSize(0.025);
 
     // label slightly above the point
     latex.DrawLatex(x + 0.03, y + ey + 0.002,
@@ -49,6 +49,10 @@ void FitAndAnnotateThreeGraphs(TCanvas *c, bool isflattened, TString isMass = ""
     {
         if (obj->InheritsFrom(TGraphErrors::Class()))
             graphs.push_back((TGraphErrors *)obj);
+        std::cout << "Found TGraphErrors: "
+                  << obj->GetName()
+                  << "   (title = \"" << obj->GetTitle() << "\")"
+                  << std::endl;
     }
 
     if (graphs.size() < 1)
@@ -78,10 +82,10 @@ void FitAndAnnotateThreeGraphs(TCanvas *c, bool isflattened, TString isMass = ""
     fCos->SetLineStyle(1);
 
     // Storage for fit results
-    double lastY[3] = {0};
-    double fitConstVal[3] = {0}, fitConstErr[3] = {0};
-    double fitA[3] = {0}, fitB[3] = {0}, fitPhi0[3] = {0};
-    double errA[3] = {0}, errB[3] = {0}, errPhi0[3] = {0};
+    double lastY[4] = {0};
+    double fitConstVal[4] = {0}, fitConstErr[4] = {0};
+    double fitA[4] = {0}, fitB[4] = {0}, fitPhi0[4] = {0};
+    double errA[4] = {0}, errB[4] = {0}, errPhi0[4] = {0};
 
     for (size_t i = 0; i < nGraphs; ++i)
     {
@@ -126,6 +130,8 @@ void FitAndAnnotateThreeGraphs(TCanvas *c, bool isflattened, TString isMass = ""
                 fCosFit->Write("pp_PbPb_data", 2);
             if (i == 2)
                 fCosFit->Write("pp_PbPb_no_pT_data", 2);
+            if (i == 3)
+                fCosFit->Write("pp_PbPb_1D_pT_data", 2);
         }
 
         fitA[i] = fCosFit->GetParameter(0);
@@ -147,11 +153,11 @@ void FitAndAnnotateThreeGraphs(TCanvas *c, bool isflattened, TString isMass = ""
     double x0 = 0.5;
     double y0 = 0.87;
 
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < nGraphs; ++i)
     {
         latex.SetTextColor(fitColors[i]);
 
-        // Constant fit line
+        /*// Constant fit line
         latex.DrawLatex(x0, y0 - i * 0.08,
                         Form("Const: %.3f #pm %.3f   Last: %.3f",
                              fitConstVal[i], fitConstErr[i], lastY[i]));
@@ -163,7 +169,13 @@ void FitAndAnnotateThreeGraphs(TCanvas *c, bool isflattened, TString isMass = ""
                  " cos(#phi - (%.3f #pm %.3f))",
                  fitA[i], errA[i],
                  fitB[i], errB[i],
-                 fitPhi0[i], errPhi0[i]));
+                 fitPhi0[i], errPhi0[i]));*/
+
+        latex.DrawLatex(
+            x0, y0 - i * 0.04,
+            Form("Amplitude: %.3f #pm %.3f,   Offset: %.3f #pm %.3f",
+                 fitB[i], errB[i],
+                 fitA[i], errA[i]));
     }
 
     c->Modified();
@@ -467,7 +479,7 @@ BuildMassAndWidthShiftGraphs(std::vector<TH2D *> &h_chi2_maps)
     return {gMass, gWidth};
 }
 
-void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
+void get_scan_on_PbPb_and_pp_data(bool isflattened = 0)
 {
     gStyle->SetOptStat(0);
     gStyle->SetEndErrorSize(0);
@@ -481,16 +493,19 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
 
     TH1D *PbPb_data_in_Phi[number_phi_bins];
     TH1D *pp_data_in_Phi[number_phi_bins];
+    TH1D *pp_data_in_Phi_1D_pT[number_phi_bins];
     TH1D *pp_data_in_Phi_without_pT_reweight[number_phi_bins];
     TH1D *PbPb_mc_nominal_template_PbPb[42][42];
     TH1D *PbPb_mc_nominal_template_pp[42][42];
 
     TH1D *PbPb_data_inclusive;
     TH1D *pp_data_inclusive;
+    TH1D *pp_data_inclusive_1D_pT;
     TH1D *pp_data_inclusive_without_pT;
 
     TH2D *h_chisquare_pp_PbPb[number_phi_bins_plot];
     TH2D *h_chisquare_PbPb_PbPb[number_phi_bins_plot];
+    TH2D *h_chisquare_pp_PbPb_1D_pT[number_phi_bins_plot];
     TH2D *h_chisquare_pp_PbPb_no_pT[number_phi_bins_plot];
 
     double highbin_mass_shift = 0.0;
@@ -521,18 +536,23 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
             Form("FA_nominal_phi_plus%s_%i", isflattened ? "_flattened" : "", i));
         pp_data_in_Phi[i] = (TH1D *)pp_data->Get(
             Form("pp_FA_nominal_phi_plus%s_%i", isflattened ? "_flattened" : "", i));
+        pp_data_in_Phi_1D_pT[i] = (TH1D *)pp_data->Get(
+            Form("pp_FA_nominal_phi_plus_1D_pT%s_%i", isflattened ? "_flattened" : "", i));
         pp_data_in_Phi_without_pT_reweight[i] = (TH1D *)pp_data->Get(
             Form("pp_FA_nominal_phi_plus_without_pT_reweight%s_%i", isflattened ? "_flattened" : "", i));
         h_chisquare_pp_PbPb[i] = new TH2D(Form("h_chisquare_pp_PbPb_%i", i), "", 42, h_low_mass_shift_pp, h_high_mass_shift_pp, 42, h_low_smear_pp, h_high_smear_pp);
         h_chisquare_PbPb_PbPb[i] = new TH2D(Form("h_chisquare_PbPb_PbPb_%i", i), "", 42, h_low_mass_shift, h_high_mass_shift, 42, h_low_smear, h_high_smear);
+        h_chisquare_pp_PbPb_1D_pT[i] = new TH2D(Form("h_chisquare_pp_PbPb_1D_pT_%i", i), "", 42, h_low_mass_shift_pp, h_high_mass_shift_pp, 42, h_low_smear_pp, h_high_smear_pp);
         h_chisquare_pp_PbPb_no_pT[i] = new TH2D(Form("h_chisquare_pp_PbPb_no_pT_%i", i), "", 42, h_low_mass_shift_pp, h_high_mass_shift_pp, 42, h_low_smear_pp, h_high_smear_pp);
 
         PbPb_data_in_Phi[i]->Rebin(4);
         pp_data_in_Phi[i]->Rebin(4);
+        pp_data_in_Phi_1D_pT[i]->Rebin(4);
         pp_data_in_Phi_without_pT_reweight[i]->Rebin(4);
 
         areanormalize(PbPb_data_in_Phi[i]);
         areanormalize(pp_data_in_Phi[i]);
+        areanormalize(pp_data_in_Phi_1D_pT[i]);
         areanormalize(pp_data_in_Phi_without_pT_reweight[i]);
     }
 
@@ -554,26 +574,33 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
     {
         PbPb_data_inclusive = (TH1D *)PbPb_data->Get("FA_nominal_10");
         pp_data_inclusive = (TH1D *)pp_data->Get("FA_nominal_inclusive");
+        pp_data_inclusive_1D_pT = (TH1D *)pp_data->Get("FA_nominal_inclusive_1D_pT");
         pp_data_inclusive_without_pT = (TH1D *)pp_data->Get("FA_nominal_inclusive_no_pT");
     }
     else
     {
         PbPb_data_inclusive = (TH1D *)PbPb_data->Get("FA_inclusive_flattened");
         pp_data_inclusive = (TH1D *)pp_data->Get("FA_nominal_inclusive_flattened");
+        pp_data_inclusive_1D_pT = (TH1D *)pp_data->Get("FA_nominal_inclusive_1D_pT_flattened");
         pp_data_inclusive_without_pT = (TH1D *)pp_data->Get("FA_nominal_inclusive_no_pT_flattened");
     }
 
     PbPb_data_inclusive->Rebin(4);
     pp_data_inclusive->Rebin(4);
+    pp_data_inclusive_1D_pT->Rebin(4);
     pp_data_inclusive_without_pT->Rebin(4);
 
     areanormalize(PbPb_data_inclusive);
     areanormalize(pp_data_inclusive);
+    areanormalize(pp_data_inclusive_1D_pT);
     areanormalize(pp_data_inclusive_without_pT);
+
+    // Do not delete please
 
     h_chisquare_pp_PbPb[number_phi_bins] = new TH2D("h_chisquare_pp_PbPb_inclusive", "", 42, h_low_mass_shift_pp, h_high_mass_shift_pp, 42, h_low_smear_pp, h_high_smear_pp);
     h_chisquare_PbPb_PbPb[number_phi_bins] = new TH2D("h_chisquare_PbPb_PbPb_inclusive", "", 42, h_low_mass_shift, h_high_mass_shift, 42, h_low_smear, h_high_smear);
     h_chisquare_pp_PbPb_no_pT[number_phi_bins] = new TH2D("h_chisquare_pp_PbPb_no_pT_inclusive", "", 42, h_low_mass_shift_pp, h_high_mass_shift_pp, 42, h_low_smear_pp, h_high_smear_pp);
+    h_chisquare_pp_PbPb_1D_pT[number_phi_bins] = new TH2D("h_chisquare_pp_PbPb_1D_pT_inclusive", "", 42, h_low_mass_shift_pp, h_high_mass_shift_pp, 42, h_low_smear_pp, h_high_smear_pp);
 
     for (int phi = 0; phi < number_phi_bins; phi++)
     {
@@ -583,10 +610,12 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
             {
                 double chisquarevalue_PbPb_PbPb = 0;
                 double chisquarevalue_PbPb_pp = 0;
+                double chisquarevalue_PbPb_pp_1D_pT = 0;
                 double chisquarevalue_PbPb_pp_without_pT_reweight = 0;
 
                 chisquarevalue_PbPb_PbPb = myownfunctionchi2(PbPb_data_in_Phi[phi], PbPb_mc_nominal_template_PbPb[i][j]);
                 chisquarevalue_PbPb_pp = myownfunctionchi2(pp_data_in_Phi[phi], PbPb_mc_nominal_template_pp[i][j]);
+                chisquarevalue_PbPb_pp_1D_pT = myownfunctionchi2(pp_data_in_Phi_1D_pT[phi], PbPb_mc_nominal_template_pp[i][j]);
                 chisquarevalue_PbPb_pp_without_pT_reweight = myownfunctionchi2(pp_data_in_Phi_without_pT_reweight[phi], PbPb_mc_nominal_template_pp[i][j]);
 
                 std::ostringstream stream;
@@ -597,12 +626,17 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
                 stream_1 << std::fixed << std::setprecision(4) << chisquarevalue_PbPb_pp;
                 double formatted_PbPb_pp = std::stod(stream_1.str());
 
+                std::ostringstream stream_3;
+                stream_3 << std::fixed << std::setprecision(4) << chisquarevalue_PbPb_pp_1D_pT;
+                double formatted_PbPb_pp_1D_pT = std::stod(stream_3.str());
+
                 std::ostringstream stream_2;
                 stream_2 << std::fixed << std::setprecision(4) << chisquarevalue_PbPb_pp_without_pT_reweight;
                 double formatted_PbPb_pp_wihout_pT_reweight = std::stod(stream_2.str());
 
                 h_chisquare_pp_PbPb[phi]->SetBinContent(i + 1, j + 1, formatted_PbPb_pp);
                 h_chisquare_PbPb_PbPb[phi]->SetBinContent(i + 1, j + 1, formatted_PbPb_PbPb);
+                h_chisquare_pp_PbPb_1D_pT[phi]->SetBinContent(i + 1, j + 1, formatted_PbPb_pp_1D_pT);
                 h_chisquare_pp_PbPb_no_pT[phi]->SetBinContent(i + 1, j + 1, formatted_PbPb_pp_wihout_pT_reweight);
             }
         }
@@ -618,10 +652,11 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
             double chi_inc_PbPb_PbPb = myownfunctionchi2(PbPb_data_inclusive, PbPb_mc_nominal_template_PbPb[i][j]);
             double chi_inc_PbPb_pp = myownfunctionchi2(pp_data_inclusive, PbPb_mc_nominal_template_pp[i][j]);
             double chi_inc_PbPb_pp_no = myownfunctionchi2(pp_data_inclusive_without_pT, PbPb_mc_nominal_template_pp[i][j]);
-
+            double chi_inc_PbPb_pp_1D = myownfunctionchi2(pp_data_inclusive_1D_pT, PbPb_mc_nominal_template_pp[i][j]);
             h_chisquare_PbPb_PbPb[phi_inclusive]->SetBinContent(i + 1, j + 1, chi_inc_PbPb_PbPb);
             h_chisquare_pp_PbPb[phi_inclusive]->SetBinContent(i + 1, j + 1, chi_inc_PbPb_pp);
             h_chisquare_pp_PbPb_no_pT[phi_inclusive]->SetBinContent(i + 1, j + 1, chi_inc_PbPb_pp_no);
+            h_chisquare_pp_PbPb_1D_pT[phi_inclusive]->SetBinContent(i + 1, j + 1, chi_inc_PbPb_pp_1D);
         }
     }
 
@@ -630,6 +665,7 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
         TCanvas *c_PbPb_PbPb = new TCanvas("c_PbPb_PbPb", "", 3200, 2400);
         TCanvas *c_PbPb_pp = new TCanvas("c_PbPb_pp", "", 3200, 2400);
         TCanvas *c_PbPb_pp_no_pT = new TCanvas("c_PbPb_pp_no_pT", "", 3200, 2400);
+        TCanvas *c_PbPb_pp_1D_pT = new TCanvas("c_PbPb_pp_1D_pT", "", 3200, 2400);
 
         c_PbPb_PbPb->SetLeftMargin(0.10);   // smaller left margin
         c_PbPb_PbPb->SetRightMargin(0.12);  // smaller right margin
@@ -645,6 +681,11 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
         c_PbPb_pp_no_pT->SetRightMargin(0.12);  // smaller right margin
         c_PbPb_pp_no_pT->SetTopMargin(0.08);    // smaller top margin
         c_PbPb_pp_no_pT->SetBottomMargin(0.10); // smaller bottom margin
+
+        c_PbPb_pp_1D_pT->SetLeftMargin(0.10);   // smaller left margin
+        c_PbPb_pp_1D_pT->SetRightMargin(0.12);  // smaller right margin
+        c_PbPb_pp_1D_pT->SetTopMargin(0.08);    // smaller top margin
+        c_PbPb_pp_1D_pT->SetBottomMargin(0.10); // smaller bottom margin
 
         c_PbPb_pp->cd();
         h_chisquare_pp_PbPb[i]->Draw("COLZ");
@@ -664,23 +705,32 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
         c_PbPb_pp_no_pT->Update();
         c_PbPb_pp_no_pT->SaveAs(Form("./ScaninPhi/data/pp_no_pT_%i.png", i));
 
+        c_PbPb_pp_1D_pT->cd();
+        h_chisquare_pp_PbPb_1D_pT[i]->Draw("COLZ");
+        cosmetic(h_chisquare_pp_PbPb_1D_pT[i]);
+        c_PbPb_pp_1D_pT->Update();
+        c_PbPb_pp_1D_pT->SaveAs(Form("./ScaninPhi/data/pp_1D_pT_%i.png", i));
+
         delete c_PbPb_PbPb;
         delete c_PbPb_pp;
         delete c_PbPb_pp_no_pT;
+        delete c_PbPb_pp_1D_pT;
     }
     // === Build TGraphErrors for pp_PbPb, PbPb_PbPb, and pp_PbPb_no_pT ===
-    std::vector<TH2D *> vec_pp_PbPb, vec_PbPb_PbPb, vec_pp_no_pT;
+    std::vector<TH2D *> vec_pp_PbPb, vec_PbPb_PbPb, vec_pp_no_pT, vec_pp_1D_pT;
     for (int i = 0; i < number_phi_bins_plot; ++i)
     {
         vec_pp_PbPb.push_back(h_chisquare_pp_PbPb[i]);
         vec_PbPb_PbPb.push_back(h_chisquare_PbPb_PbPb[i]);
         vec_pp_no_pT.push_back(h_chisquare_pp_PbPb_no_pT[i]);
+        vec_pp_1D_pT.push_back(h_chisquare_pp_PbPb_1D_pT[i]);
     }
 
     // Build mass- and width-shift graphs for each case
     auto [gMass_ppPbPb, gWidth_ppPbPb] = BuildMassAndWidthShiftGraphs(vec_pp_PbPb);
     auto [gMass_PbPbPbPb, gWidth_PbPbPbPb] = BuildMassAndWidthShiftGraphs(vec_PbPb_PbPb);
     auto [gMass_pp_no_pT, gWidth_pp_no_pT] = BuildMassAndWidthShiftGraphs(vec_pp_no_pT);
+    auto [gMass_pp_1D_pT, gWidth_pp_1D_pT] = BuildMassAndWidthShiftGraphs(vec_pp_1D_pT);
 
     //---------------------------------------------------------------
     // --- Compute Y-axis ranges from PbPb→PbPb (blue) ---
@@ -727,23 +777,31 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
     gStyle->SetPadRightMargin(0.04);
 
     TCanvas *cMass = new TCanvas("cMass", "Mass shift vs phi", 800, 800);
+    gMass_PbPbPbPb->SetTitle("");
+    gMass_ppPbPb->SetTitle("");
+    gMass_pp_1D_pT->SetTitle("");
+    gMass_pp_no_pT->SetTitle("");
+
     gMass_ppPbPb->SetLineColor(kRed + 1);
     gMass_PbPbPbPb->SetLineColor(kBlue + 1);
     gMass_pp_no_pT->SetLineColor(kGreen + 2);
+    gMass_pp_1D_pT->SetLineColor(kOrange);
     gMass_ppPbPb->SetMarkerColor(kRed + 1);
     gMass_PbPbPbPb->SetMarkerColor(kBlue + 1);
     gMass_pp_no_pT->SetMarkerColor(kGreen + 2);
+    gMass_pp_1D_pT->SetMarkerColor(kOrange);
     gMass_PbPbPbPb->GetYaxis()->SetRangeUser(-0.5, 0.4);
-    gMass_PbPbPbPb->SetTitle(";#phi (rad);dMass (GeV)");
     gMass_PbPbPbPb->Draw("AP");
     LabelLastPoint(gMass_PbPbPbPb, gMass_PbPbPbPb->GetMarkerColor());
     gMass_ppPbPb->Draw("Psame");
     LabelLastPoint(gMass_ppPbPb, gMass_ppPbPb->GetMarkerColor());
     gMass_pp_no_pT->Draw("Psame");
+    gMass_pp_1D_pT->Draw("Psame");
     auto legM = new TLegend(0.2, 0.75, 0.45, 0.9);
-    legM->AddEntry(gMass_ppPbPb, "pp#rightarrowPbPb", "lp");
-    legM->AddEntry(gMass_PbPbPbPb, "PbPb#rightarrowPbPb", "lp");
-    legM->AddEntry(gMass_pp_no_pT, "pp no p_{T} reweight", "lp");
+    legM->AddEntry(gMass_ppPbPb, "pp nominal", "lp");
+    legM->AddEntry(gMass_PbPbPbPb, "PbPb nominal", "lp");
+    legM->AddEntry(gMass_pp_no_pT, "pp no reweight", "lp");
+    legM->AddEntry(gMass_pp_1D_pT, "pp 1D reweight", "lp");
     legM->SetBorderSize(0);
     legM->SetTextFont(42);
     legM->Draw();
@@ -760,9 +818,11 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
     gWidth_ppPbPb->SetLineColor(kRed + 1);
     gWidth_PbPbPbPb->SetLineColor(kBlue + 1);
     gWidth_pp_no_pT->SetLineColor(kGreen + 2);
+    gWidth_pp_1D_pT->SetLineColor(kOrange);
     gWidth_ppPbPb->SetMarkerColor(kRed + 1);
     gWidth_PbPbPbPb->SetMarkerColor(kBlue + 1);
     gWidth_pp_no_pT->SetMarkerColor(kGreen + 2);
+    gWidth_pp_1D_pT->SetMarkerColor(kOrange);
     gWidth_PbPbPbPb->GetYaxis()->SetRangeUser(-0.5, 0.8);
     gWidth_PbPbPbPb->SetTitle(";#phi (rad); dWidth (GeV)");
     gWidth_PbPbPbPb->Draw("AP");
@@ -770,10 +830,12 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
     gWidth_ppPbPb->Draw("Psame");
     LabelLastPoint(gWidth_ppPbPb, gWidth_ppPbPb->GetMarkerColor());
     gWidth_pp_no_pT->Draw("Psame");
+    gWidth_pp_1D_pT->Draw("Psame");
     auto legW = new TLegend(0.2, 0.75, 0.45, 0.9);
-    legW->AddEntry(gWidth_ppPbPb, "pp#rightarrowPbPb", "lp");
-    legW->AddEntry(gWidth_PbPbPbPb, "PbPb#rightarrowPbPb", "lp");
-    legW->AddEntry(gWidth_pp_no_pT, "pp no p_{T} reweight", "lp");
+    legW->AddEntry(gWidth_ppPbPb, "pp nominal", "lp");
+    legW->AddEntry(gWidth_PbPbPbPb, "PbPb nominal", "lp");
+    legW->AddEntry(gWidth_pp_no_pT, "pp no reweight", "lp");
+    legW->AddEntry(gWidth_pp_1D_pT, "pp 1D reweight", "lp");
     legW->SetBorderSize(0);
     legW->SetTextFont(42);
     legW->Draw();
@@ -788,14 +850,18 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
     // === Build DIFF graphs: PbPb - pp and PbPb - pp_no_pT ===
     auto gMass_diff_pp = new TGraphErrors();
     auto gMass_diff_ppNoPT = new TGraphErrors();
+    auto gMass_diff_pp1DPT = new TGraphErrors();
     auto gWidth_diff_pp = new TGraphErrors();
     auto gWidth_diff_ppNoPT = new TGraphErrors();
+    auto gWidth_diff_pp1DPT = new TGraphErrors();
 
     int nPts = gMass_PbPbPbPb->GetN();
     gMass_diff_pp->Set(nPts);
     gMass_diff_ppNoPT->Set(nPts);
+    gMass_diff_pp1DPT->Set(nPts);
     gWidth_diff_pp->Set(nPts);
     gWidth_diff_ppNoPT->Set(nPts);
+    gWidth_diff_pp1DPT->Set(nPts);
 
     for (int i = 0; i < nPts; ++i)
     {
@@ -805,10 +871,12 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
         double yPbPb = gMass_PbPbPbPb->GetY()[i];
         double yPP = gMass_ppPbPb->GetY()[i];
         double yPPnoPT = gMass_pp_no_pT->GetY()[i];
+        double yPP1DPT = gMass_pp_1D_pT->GetY()[i];
 
         double ePbPb = gMass_PbPbPbPb->GetEY()[i];
         double ePP = gMass_ppPbPb->GetEY()[i];
         double ePPnoPT = gMass_pp_no_pT->GetEY()[i];
+        double ePP1DPT = gMass_pp_1D_pT->GetEY()[i];
 
         // === MASS DIFF ===
         gMass_diff_pp->SetPoint(i, x, yPbPb - yPP);
@@ -817,20 +885,28 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
         gMass_diff_ppNoPT->SetPoint(i, x, yPbPb - yPPnoPT);
         gMass_diff_ppNoPT->SetPointError(i, ex, std::hypot(ePbPb, ePPnoPT));
 
+        gMass_diff_pp1DPT->SetPoint(i, x, yPbPb - yPP1DPT);
+        gMass_diff_pp1DPT->SetPointError(i, ex, std::hypot(ePbPb, ePP1DPT));
+
         // === WIDTH DIFF ===
         double wPbPb = gWidth_PbPbPbPb->GetY()[i];
         double wPP = gWidth_ppPbPb->GetY()[i];
         double wPPnoPT = gWidth_pp_no_pT->GetY()[i];
+        double wPP1DPT = gWidth_pp_1D_pT->GetY()[i];
 
         double ewPbPb = gWidth_PbPbPbPb->GetEY()[i];
         double ewPP = gWidth_ppPbPb->GetEY()[i];
         double ewPPnoPT = gWidth_pp_no_pT->GetEY()[i];
+        double ewPP1DPT = gWidth_pp_1D_pT->GetEY()[i];
 
         gWidth_diff_pp->SetPoint(i, x, wPbPb - wPP);
         gWidth_diff_pp->SetPointError(i, ex, std::hypot(ewPbPb, ewPP));
 
         gWidth_diff_ppNoPT->SetPoint(i, x, wPbPb - wPPnoPT);
         gWidth_diff_ppNoPT->SetPointError(i, ex, std::hypot(ewPbPb, ewPPnoPT));
+
+        gWidth_diff_pp1DPT->SetPoint(i, x, wPbPb - wPP1DPT);
+        gWidth_diff_pp1DPT->SetPointError(i, ex, std::hypot(ewPbPb, ewPP1DPT));
     }
 
     // style
@@ -844,6 +920,11 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
     gMass_diff_ppNoPT->SetLineColor(kBlue + 1);
     gMass_diff_ppNoPT->SetLineWidth(2);
 
+    gMass_diff_pp1DPT->SetMarkerStyle(21);
+    gMass_diff_pp1DPT->SetMarkerColor(kOrange);
+    gMass_diff_pp1DPT->SetLineColor(kOrange);
+    gMass_diff_pp1DPT->SetLineWidth(2);
+
     gWidth_diff_pp->SetMarkerStyle(20);
     gWidth_diff_pp->SetMarkerColor(kRed + 1);
     gWidth_diff_pp->SetLineColor(kRed + 1);
@@ -854,16 +935,23 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
     gWidth_diff_ppNoPT->SetLineColor(kBlue + 1);
     gWidth_diff_ppNoPT->SetLineWidth(2);
 
+    gWidth_diff_pp1DPT->SetMarkerStyle(21);
+    gWidth_diff_pp1DPT->SetMarkerColor(kOrange);
+    gWidth_diff_pp1DPT->SetLineColor(kOrange);
+    gWidth_diff_pp1DPT->SetLineWidth(2);
+
     TCanvas *cMassDiff = new TCanvas("cMassDiff", "Mass difference vs phi", 800, 800);
     gMass_diff_pp->SetTitle(";#phi (rad); #Delta Mass (PbPb - pp) (GeV)");
     gMass_diff_pp->GetYaxis()->SetRangeUser(-0.5, 0.4);
     gMass_diff_pp->Draw("AP");
     LabelLastPoint(gMass_diff_pp, gMass_diff_pp->GetMarkerColor());
     gMass_diff_ppNoPT->Draw("Psame");
+    gMass_diff_pp1DPT->Draw("Psame");
 
     auto legMD = new TLegend(0.2, 0.75, 0.45, 0.9);
     legMD->AddEntry(gMass_diff_pp, "PbPb - pp", "lp");
     legMD->AddEntry(gMass_diff_ppNoPT, "PbPb - pp (no p_{T})", "lp");
+    legMD->AddEntry(gMass_diff_pp1DPT, "PbPb - pp (1D p_{T})", "lp");
     legMD->SetBorderSize(0);
     legMD->SetTextFont(42);
     legMD->Draw();
@@ -878,10 +966,12 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
     gWidth_diff_pp->Draw("AP");
     LabelLastPoint(gWidth_diff_pp, gWidth_diff_pp->GetMarkerColor());
     gWidth_diff_ppNoPT->Draw("Psame");
+    gWidth_diff_pp1DPT->Draw("Psame");
 
     auto legWD = new TLegend(0.2, 0.75, 0.45, 0.9);
     legWD->AddEntry(gWidth_diff_pp, "PbPb - pp", "lp");
     legWD->AddEntry(gWidth_diff_ppNoPT, "PbPb - pp (no p_{T})", "lp");
+    legWD->AddEntry(gWidth_diff_pp1DPT, "PbPb - pp (1D p_{T})", "lp");
     legWD->SetBorderSize(0);
     legWD->SetTextFont(42);
     legWD->Draw();

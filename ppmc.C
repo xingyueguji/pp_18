@@ -71,7 +71,9 @@ void ppmc::Loop()
 
    Long64_t nbytes = 0, nb = 0;
 
-   TH1D *FA_nominal_inclusive = new TH1D("FA_nominal_inclusive", "", 120, 60, 120);
+   TH1D *FA_nominal_inclusive = new TH1D("pp_mc_FA_nominal_inclusive", "", 120, 60, 120);
+   TH1D *FA_nominal_inclusive_1D_pT = new TH1D("pp_mc_FA_nominal_inclusive_1D_pT", "", 120, 60, 120);
+   TH1D *FA_nominal_inclusive_no_pT = new TH1D("pp_mc_FA_nominal_inclusive_no_pT", "", 120, 60, 120);
 
    TFile *pT_PbPb_mc_weight = new TFile("../ZBoson_18/rootfile/mc_pTratio.root", "READ");
 
@@ -94,18 +96,17 @@ void ppmc::Loop()
                                     ny, y_edges);
 
    TH1D *FA_nominal_phi_plus[numberofphibin];
+   TH1D *FA_nominal_phi_plus_1D_pT[numberofphibin];
    TH1D *FA_nominal_phi_plus_without_pT_reweight[numberofphibin];
 
    TH1D *FA_nominal_phi_plus_inclusive = new TH1D("pp_mc_FA_nominal_phi_plus_inclusive", "", 120, 60, 120);
+   TH1D *FA_nominal_phi_plus_inclusive_1D_pT = new TH1D("pp_mc_FA_nominal_phi_plus_inclusive_1D_pT", "", 120, 60, 120);
    TH1D *FA_noimnal_phi_plus_inclusive_without_pT_reweight = new TH1D("pp_mc_FA_nominal_phi_plus_inclusive_without_pT_reweight", "", 120, 60, 120);
-
-   TH1D *FA_cent_no_reweight[5];
-   TH1D *FA_cent_1D_reweight[5];
-   TH1D *FA_cent_2D_reweight[5];
 
    for (int i = 0; i < numberofphibin; i++)
    {
       FA_nominal_phi_plus[i] = new TH1D(Form("pp_mc_FA_nominal_phi_plus_%i", i), "", 120, 60, 120);
+      FA_nominal_phi_plus_1D_pT[i] = new TH1D(Form("pp_mc_FA_nominal_phi_plus_1D_pT_%i", i), "", 120, 60, 120);
       FA_nominal_phi_plus_without_pT_reweight[i] = new TH1D(Form("pp_mc_FA_nominal_phi_plus_without_pT_reweight_%i", i), "", 120, 60, 120);
    }
 
@@ -197,7 +198,7 @@ void ppmc::Loop()
          // Get Mass for easier fill
 
          Double_t ZMass = Z_momentum->M();
-         double FA_pTweight = getWeightFromHist(pTweight_FA, Z_momentum->Pt());
+         double FA_pTweight_1D = getWeightFromHist(pTweight_FA, Z_momentum->Pt());
          double FA_pTweight_2D = pT_y_weight_FA->GetBinContent(pT_y_weight_FA->FindBin(Z_momentum->Rapidity(), Z_momentum->Pt()));
 
          float acoplanarity = 1 - TMath::Abs(TMath::ACos(TMath::Cos(muonplus_momentum->Phi() - muonminus_momentum->Phi()))) / TMath::Pi();
@@ -212,6 +213,7 @@ void ppmc::Loop()
          if (passesAco[0])
          {
             FA_nominal_phi_plus_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D);
+            FA_nominal_phi_plus_inclusive_1D_pT->Fill(ZMass, 1.0 * FA_pTweight_1D);
             FA_noimnal_phi_plus_inclusive_without_pT_reweight->Fill(ZMass, 1.0);
 
             Int_t phibin = GetPhiBin(muonplus_momentum->Phi(), numberofphibin);
@@ -220,7 +222,11 @@ void ppmc::Loop()
             pT_y_spec_pp_FA->Fill(Z_momentum->Rapidity(), Z_momentum->Pt(), 1.0);
 
             FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D);
+            FA_nominal_inclusive_1D_pT->Fill(ZMass, 1.0 * FA_pTweight_1D);
+            FA_nominal_inclusive_no_pT->Fill(ZMass, 1.0);
+
             FA_nominal_phi_plus[phibin]->Fill(ZMass, 1.0 * FA_pTweight_2D);
+            FA_nominal_phi_plus_1D_pT[phibin]->Fill(ZMass, 1.0 * FA_pTweight_1D);
             FA_nominal_phi_plus_without_pT_reweight[phibin]->Fill(ZMass, 1.0);
          }
       }
@@ -228,15 +234,19 @@ void ppmc::Loop()
 
    TFile *writeout = new TFile("./new_pp_data_file_stability_readonly.root", "UPDATE");
    writeout->cd();
-   FA_nominal_inclusive->Write("pp_mc_inclusive_test_with_pt_reweight", 2);
+   FA_nominal_inclusive->Write("pp_mc_inclusive_test_with_2D_reweight", 2);
+   FA_nominal_inclusive_1D_pT->Write("pp_mc_inclusive_test_with_1D_reweight", 2);
+   FA_nominal_inclusive_no_pT->Write("pp_mc_inclusive_test_with_no_reweight", 2);
 
    for (int Z = 0; Z < numberofphibin; Z++)
    {
       FA_nominal_phi_plus[Z]->Write("", 2);
+      FA_nominal_phi_plus_1D_pT[Z]->Write("", 2);
       FA_nominal_phi_plus_without_pT_reweight[Z]->Write("", 2);
    }
 
    FA_nominal_phi_plus_inclusive->Write("", 2);
+   FA_nominal_phi_plus_inclusive_1D_pT->Write("", 2);
    FA_noimnal_phi_plus_inclusive_without_pT_reweight->Write("", 2);
    writeout->Close();
 
