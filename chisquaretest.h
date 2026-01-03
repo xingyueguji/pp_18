@@ -7,8 +7,8 @@ class chisquaretest : public plotting_helper
 {
 public:
 	chisquaretest();
-	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version, int useless);
-	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version);
+	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version, int useless, bool firsttime = 0);
+	chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version, bool firsttime = 0);
 	~chisquaretest();
 	Double_t myownfunctionchi2(TH1D *h1, TH1D *h2);
 	Double_t myownfunctionchi2partial(TH1D *h1, TH1D *h2, int position);
@@ -24,12 +24,6 @@ public:
 	Double_t getuncertainty(TH2D *h_1, int type, Int_t minBinX, Int_t minBinY);
 	void getcontour(TH2D *h1, int type, Int_t minBinX, Int_t minBinY, Double_t minBinContent, Double_t *arrayleft, Double_t *arrayright);
 	void drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0, TFile *f1 = nullptr);
-	std::vector<double> createCustomBinning(
-		TH1D *hist,
-		double range1_min, double range1_max, int rebin1,
-		double range2_min, double range2_max, int rebin2,
-		double range3_min, double range3_max, int rebin3,
-		double range4_min = -1, double range4_max = -1, int rebin4 = 1);
 	void saveChi2Region(TH2D *hist, int binX_min, int binY_min, int my_case, int iteration, int region_size = 3, bool ispp = true, int version = 2);
 	void readlimit(int type, int cent, int version);
 	void readlimitpp(int type, int version);
@@ -155,10 +149,10 @@ public:
 	TFile *bkfile;
 	TFile *mcfile_zoomin;
 
-	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.34, -0.25, 0, 0, 0, 0, 0, 0, -0.22};
-	double raw_mass_shift_array_high[nbins_cent] = {-0.02, -0.06, -0.04, 0.02, 0, 0, 0, 0, 0, 0, -0.08};
-	double raw_mass_smear_array_low[nbins_cent] = {-0.1, 0.055, -0.2, 0.1, 0, 0, 0, 0, 0, 0, 0.06};
-	double raw_mass_smear_array_high[nbins_cent] = {0.3, 0.5, 0.3, 0.65, 0, 0, 0, 0, 0, 0, 0.36};
+	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.34, -0.25, -0.22, -0.24, -0.32, -0.34, -0.25, -1, -1};
+	double raw_mass_shift_array_high[nbins_cent] = {-0.02, -0.06, -0.04, 0.02, -0.08, -0.02, -0.06, -0.04, 0.02, 1, 1};
+	double raw_mass_smear_array_low[nbins_cent] = {-0.1, 0.055, -0.2, 0.1, 0.06, -0.1, 0.055, -0.2, 0.1, -1, -1};
+	double raw_mass_smear_array_high[nbins_cent] = {0.3, 0.5, 0.3, 0.65, 0.36, 0.3, 0.5, 0.3, 0.65, 1, 1};
 
 	double placeholder_mass_shift_array_low_zoomin = 0;
 	double placeholder_mass_shift_array_high_zoomin = 0;
@@ -195,7 +189,7 @@ chisquaretest::chisquaretest()
 {
 }
 
-chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version, int useless)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version, int useless, bool firsttime)
 {
 
 	// type 1 = nominal
@@ -226,8 +220,6 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 
 	for (int cent = 0; cent < nbins_cent; cent++)
 	{
-		if (!((cent < 4) || (cent == 10)))
-			continue;
 
 		this->lowbin_mass_shift = raw_mass_shift_array_low[cent];
 		this->highbin_mass_shift = raw_mass_shift_array_high[cent];
@@ -242,7 +234,10 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 
 		// Here's for zoomin
 
-		readlimit(type, cent, version);
+		if (!firsttime)
+		{
+			readlimit(type, cent, version);
+		}
 
 		double h_low_mass_shift_zoomin = placeholder_mass_shift_array_low_zoomin - ((placeholder_mass_shift_array_high_zoomin - placeholder_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
 		double h_high_mass_shift_zoomin = placeholder_mass_shift_array_high_zoomin + ((placeholder_mass_shift_array_high_zoomin - placeholder_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
@@ -305,7 +300,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 		}
 
 		h_mc_bk[cent] = (TH1D *)bkfile->Get(Form("Normalized_mc_bk_%i", cent));
-		h_chisquare[cent] = new TH2D(Form("h_chisquare_%i", cent), Form("Cent_%i_%i", this->cenlowlimit[cent], this->cenhighlimit[cent]), nbins_mass_shift, h_low_mass_shift, h_high_mass_shift, nbins_smear, h_low_smear, h_high_smear); // Equation here: half bin to the left and half bin to the right, bin width = range / (21-1)
+		h_chisquare[cent] = new TH2D(Form("h_chisquare_%i", cent), Form("Cent_%.1f_%.1f", this->cenlowlimit[cent], this->cenhighlimit[cent]), nbins_mass_shift, h_low_mass_shift, h_high_mass_shift, nbins_smear, h_low_smear, h_high_smear); // Equation here: half bin to the left and half bin to the right, bin width = range / (21-1)
 		h_chisquare_zoomin[cent] = new TH2D(Form("h_chisquare_%i_zoomin", cent), "", nbins_mass_shift, h_low_mass_shift_zoomin, h_high_mass_shift_zoomin, nbins_smear, h_low_smear_zoomin, h_high_smear_zoomin);
 
 		this->areanormalize(h_data[cent]);
@@ -356,7 +351,7 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	}
 }
 
-chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version)
+chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TString s4, int version, bool firsttime)
 {
 
 	// type 1 = nominal
@@ -404,7 +399,10 @@ chisquaretest::chisquaretest(TString s1, TString s2, TString s3, int type, TStri
 	this->h_low_smear = lowbin_smear - ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 	this->h_high_smear = highbin_smear + ((highbin_smear - lowbin_smear) / (nbins_smear - 1)) / 2;
 
-	readlimitpp(type, version);
+	if (!firsttime)
+	{
+		readlimitpp(type, version);
+	}
 
 	double h_low_mass_shift_zoomin = placeholder_pp_mass_shift_array_low_zoomin - ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
 	double h_high_mass_shift_zoomin = placeholder_pp_mass_shift_array_high_zoomin + ((placeholder_pp_mass_shift_array_high_zoomin - placeholder_pp_mass_shift_array_low_zoomin) / (nbins_mass_shift - 1)) / 2;
@@ -554,8 +552,6 @@ void chisquaretest::calculatechisq(bool isbk, bool iszoomin = 0)
 
 	for (int cent = 0; cent < nbins_cent; cent++)
 	{
-		if (!((cent < 4) || (cent == 10)))
-			continue;
 
 		for (int i = 1; i <= h_data[cent]->GetNbinsX(); i++)
 		{
@@ -680,130 +676,128 @@ void chisquaretest::plottingandformatting(int type, int version)
 
 	if (type == 1)
 	{
-		chi2_title = "PbPb, |#eta| < 2.4, Nominal, centrality: (%i-%i)";
-		data_mc_title = "WholeAcceptance, Nominal, Cent:(%i-%i)";
-		data_data_title = "Raw_Nominal_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Nominal, centrality: (%.1f-%.1f)";
+		data_mc_title = "WholeAcceptance, Nominal, Cent:(%.1f-%.1f)";
+		data_data_title = "Raw_Nominal_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/Nominal/Raw_Nominal_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal/Raw_Nominal_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Nominal/Raw_Nominal_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_Nominal_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_Nominal_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal/Raw_Nominal_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal/Raw_Nominal_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal/Raw_Nominal_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Nominal_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Nominal_%.1f_%.1f.png";
 	}
 	if (type == 2)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, tnpU, centrality: (%i-%i)";
-		data_mc_title = "WholeAcceptance, tnpU, Cent:(%i-%i)";
-		data_data_title = "Raw_tnpU_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, tnpU, centrality: (%.1f-%.1f)";
+		data_mc_title = "WholeAcceptance, tnpU, Cent:(%.1f-%.1f)";
+		data_data_title = "Raw_tnpU_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/tnpU/Raw_tnpU_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/tnpU/Raw_tnpU_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/tnpU/Raw_tnpU_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpU_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_tnpU_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/tnpU/Raw_tnpU_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/tnpU/Raw_tnpU_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/tnpU/Raw_tnpU_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpU_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/raw_tnpU_%.1f_%.1f.png";
 	}
 	if (type == 3)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, tnpD, centrality: (%i-%i)";
-		data_mc_title = "WholeAcceptance, tnpD, Cent:(%i-%i)";
-		data_data_title = "Raw_tnpD_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, tnpD, centrality: (%.1f-%.1f)";
+		data_mc_title = "WholeAcceptance, tnpD, Cent:(%.1f-%.1f)";
+		data_data_title = "Raw_tnpD_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/tnpD/Raw_tnpD_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/tnpD/Raw_tnpD_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/tnpD/Raw_tnpD_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpD_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_tnpD_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/tnpD/Raw_tnpD_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/tnpD/Raw_tnpD_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/tnpD/Raw_tnpD_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_tnpD_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/raw_tnpD_%.1f_%.1f.png";
 	}
 	if (type == 4)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, AcoUp, centrality: (%i-%i)";
-		data_mc_title = "WholeAcceptance, AcoUp, Cent:(%i-%i)";
-		data_data_title = "Raw_Acoup_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, AcoUp, centrality: (%.1f-%.1f)";
+		data_mc_title = "WholeAcceptance, AcoUp, Cent:(%.1f-%.1f)";
+		data_data_title = "Raw_Acoup_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/Acoup/Raw_Acoup_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acoup/Raw_Acoup_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Acoup/Raw_Acoup_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_Acoup_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_Acoup_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/Acoup/Raw_Acoup_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acoup/Raw_Acoup_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Acoup/Raw_Acoup_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Acoup_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Acoup_%.1f_%.1f.png";
 	}
 
 	if (type == 5)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, Acodown, centrality: (%i-%i)";
-		data_mc_title = "WholeAcceptance, Acodown, Cent:(%i-%i)";
-		data_data_title = "Raw_Acodown_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Acodown, centrality: (%.1f-%.1f)";
+		data_mc_title = "WholeAcceptance, Acodown, Cent:(%.1f-%.1f)";
+		data_data_title = "Raw_Acodown_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/Acodown/Raw_Acodown_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acodown/Raw_Acodown_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Acodown/Raw_Acodown_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_Acodown_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_Acodown_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/Acodown/Raw_Acodown_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Acodown/Raw_Acodown_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Acodown/Raw_Acodown_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_Acodown_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/raw_Acodown_%.1f_%.1f.png";
 	}
 
 	if (type == 6)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, Nominal no bk, centrality: (%i-%i)";
-		data_mc_title = "|#eta| < 2.4, Nominal no bk, centrality: (%i-%i)";
-		data_data_title = "Raw_Nominal_no_bk_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Nominal no bk, centrality: (%.1f-%.1f)";
+		data_mc_title = "|#eta| < 2.4, Nominal no bk, centrality: (%.1f-%.1f)";
+		data_data_title = "Raw_Nominal_no_bk_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_no_bk_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_nominal_no_bk_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_no_bk/Raw_nominal_no_bk_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal_no_bk/Raw_nominal_no_bk_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_no_bk_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/raw_nominal_no_bk_%.1f_%.1f.png";
 	}
 
 	if (type == 7)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, Nominal mass range, centrality: (%i-%i)";
-		data_mc_title = "|#eta| < 2.4, Nominal mass range, centrality: (%i-%i)";
-		data_data_title = "Raw_Nominal_mass_range_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, Nominal mass range, centrality: (%.1f-%.1f)";
+		data_mc_title = "|#eta| < 2.4, Nominal mass range, centrality: (%.1f-%.1f)";
+		data_data_title = "Raw_Nominal_mass_range_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/Nominal_mass_range/Raw_nominal_mass_range_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_mass_range_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/raw_nominal_mass_range_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/Nominal_mass_range/Raw_nominal_mass_range_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/Nominal_mass_range/Raw_nominal_mass_range_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_nominal_mass_range_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/raw_nominal_mass_range_%.1f_%.1f.png";
 	}
 
 	if (type == 8)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, HF up, centrality: (%i-%i)";
-		data_mc_title = "|#eta| < 2.4, HF up, centrality: (%i-%i)";
-		data_data_title = "Raw_HF_up_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, HF up, centrality: (%.1f-%.1f)";
+		data_mc_title = "|#eta| < 2.4, HF up, centrality: (%.1f-%.1f)";
+		data_data_title = "Raw_HF_up_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/HFup/Raw_HF_up_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/HFup/Raw_HF_up_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/HFup/Raw_HF_up_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_HF_up_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/Raw_HF_up_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/HFup/Raw_HF_up_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/HFup/Raw_HF_up_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/HFup/Raw_HF_up_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_HF_up_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/Raw_HF_up_%.1f_%.1f.png";
 	}
 
 	if (type == 9)
 	{
 
-		chi2_title = "PbPb, |#eta| < 2.4, HF down, centrality: (%i-%i)";
-		data_mc_title = "|#eta| < 2.4, HF down, centrality: (%i-%i)";
-		data_data_title = "Raw_HF_down_%i_%i";
+		chi2_title = "PbPb, |#eta| < 2.4, HF down, centrality: (%.1f-%.1f)";
+		data_mc_title = "|#eta| < 2.4, HF down, centrality: (%.1f-%.1f)";
+		data_data_title = "Raw_HF_down_%.1f_%.1f";
 
-		chi2_saving_path = prefix + "/chi2plots/raw/HFdown/Raw_HF_down_%i_%i.png";
-		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/HFdown/Raw_HF_down_%i_%i_zoomin.png";
-		data_mc_saving_path = prefix + "/datamc/raw/HFdown/Raw_HF_down_%i_%i.png";
-		data_data_saving_path = prefix + "/datadata/raw/Raw_HF_down_%i_%i.png";
-		contour_saving_path = prefix + "/contour/raw/Raw_HF_down_%i_%i.png";
+		chi2_saving_path = prefix + "/chi2plots/raw/HFdown/Raw_HF_down_%.1f_%.1f.png";
+		chi2_saving_path_zoomin = prefix + "/chi2plots/raw/HFdown/Raw_HF_down_%.1f_%.1f_zoomin.png";
+		data_mc_saving_path = prefix + "/datamc/raw/HFdown/Raw_HF_down_%.1f_%.1f.png";
+		data_data_saving_path = prefix + "/datadata/raw/Raw_HF_down_%.1f_%.1f.png";
+		contour_saving_path = prefix + "/contour/raw/Raw_HF_down_%.1f_%.1f.png";
 	}
 
 	for (int cent = 0; cent < nbins_cent; cent++)
 	{
-		if (!((cent < 4) || (cent == 10)))
-			continue;
 
 		// Chi2/ndf plot
 		c_2d_chisquare_ndf[cent]->cd();
@@ -1163,7 +1157,7 @@ void chisquaretest::plottingandformatting(int type, int version)
 			y_cross = dWidth_Err_HI[cent + 1];
 		}
 
-		if (cent == 10)
+		if (cent == 4)
 		{
 			dMass_HI[0] = xCenter_zoomin;
 			dWidth_HI[0] = yCenter_zoomin;
@@ -1756,8 +1750,8 @@ void chisquaretest::plottingandformattingpp(int type, int version)
 		}
 
 		// This is to export minimum region
-		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, type, runperiod, 3, true, version);
 
+		this->saveChi2Region(h_chisquare_pp[runperiod], minBinX, minBinY, type, runperiod, 3, true, version);
 		this->getcontour(h_chisquare_pp[runperiod], 2, minBinX, minBinY, minContent, contour_x_left_onesig_HI, contour_x_right_onesig_HI);
 
 		g_HI_contour_1sig_left = new TGraph(nbins_smear, contour_x_left_weighted_onesig, contour_y_HI[10]);
@@ -2483,8 +2477,6 @@ void chisquaretest::RebinAll(int type)
 {
 	for (int cent = 0; cent < nbins_cent; cent++)
 	{
-		if (!((cent < 4) || (cent == 10)))
-			continue;
 
 		h_data[cent]->Rebin(4);
 		h_data_bksub[cent]->Rebin(4);
@@ -2928,78 +2920,6 @@ void chisquaretest::getcontour(TH2D *h1, int type, Int_t minBinX, Int_t minBinY,
 	}
 }
 
-std::vector<double> chisquaretest::createCustomBinning(
-	TH1D *hist,
-	double range1_min, double range1_max, int rebin1,
-	double range2_min, double range2_max, int rebin2,
-	double range3_min, double range3_max, int rebin3,
-	double range4_min = -1, double range4_max = -1, int rebin4 = 1) // Defaults for 3-region rebinning
-{
-	// Get the original histogram range and binning
-	double xMin = hist->GetXaxis()->GetXmin();
-	double xMax = hist->GetXaxis()->GetXmax();
-	int nBins = hist->GetNbinsX();
-	double binWidth = (xMax - xMin) / nBins; // Original bin width
-
-	std::vector<double> newBins;
-
-	// Function to check if the rebinning factor is proper
-	auto is_proper_rebin = [](double range_min, double range_max, double binWidth, int rebin) -> bool
-	{
-		if (range_min < 0 || range_max < 0)
-			return true; // Ignore invalid ranges
-		double nOriginalBins = (range_max - range_min) / binWidth;
-		return std::fmod(nOriginalBins, rebin) == 0; // Proper if nOriginalBins is divisible by rebin
-	};
-
-	// Check rebinning validity
-	if (!is_proper_rebin(range1_min, range1_max, binWidth, rebin1))
-		std::cerr << "Warning: Rebinning factor for range [" << range1_min << ", " << range1_max << "] is improper.\n";
-	if (!is_proper_rebin(range2_min, range2_max, binWidth, rebin2))
-		std::cerr << "Warning: Rebinning factor for range [" << range2_min << ", " << range2_max << "] is improper.\n";
-	if (!is_proper_rebin(range3_min, range3_max, binWidth, rebin3))
-		std::cerr << "Warning: Rebinning factor for range [" << range3_min << ", " << range3_max << "] is improper.\n";
-	if (!is_proper_rebin(range4_min, range4_max, binWidth, rebin4) && range4_min >= 0)
-		std::cerr << "Warning: Rebinning factor for range [" << range4_min << ", " << range4_max << "] is improper.\n";
-
-	// Step 1: Loop over the histogram bins and create bin edges
-	double currentEdge = xMin;
-
-	while (currentEdge < xMax)
-	{
-		// Apply rebinning only to valid ranges
-		if (currentEdge >= range1_min && currentEdge < range1_max)
-		{
-			newBins.push_back(currentEdge);
-			currentEdge += rebin1 * binWidth;
-		}
-		else if (currentEdge >= range2_min && currentEdge < range2_max)
-		{
-			newBins.push_back(currentEdge);
-			currentEdge += rebin2 * binWidth;
-		}
-		else if (currentEdge >= range3_min && currentEdge < range3_max)
-		{
-			newBins.push_back(currentEdge);
-			currentEdge += rebin3 * binWidth;
-		}
-		else if (range4_min >= 0 && currentEdge >= range4_min && currentEdge < range4_max)
-		{
-			newBins.push_back(currentEdge);
-			currentEdge += rebin4 * binWidth;
-		}
-		else
-		{
-			newBins.push_back(currentEdge);
-			currentEdge += binWidth; // Regular bin width for non-rebinning regions
-		}
-	}
-
-	newBins.push_back(xMax); // Ensure the last bin edge is included
-
-	return newBins;
-}
-
 void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGraph *twosig_left, TGraph *twosig_right, int iteration, bool ispp, TString contourtitle, TString contoursaving, int typeofpp = 0, TFile *f1 = nullptr)
 {
 
@@ -3059,7 +2979,7 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 
 	TH1 *frame = onesig_left->GetHistogram(); // Get the underlying histogram for customization
 
-	//onesig_left->SetTitle(contourtitle);
+	// onesig_left->SetTitle(contourtitle);
 
 	onesig_left->GetXaxis()->SetTitle("#Deltam_{TFM} (GeV)");
 	onesig_left->GetYaxis()->SetTitle("#Delta#Gamma_{TFM} (GeV)");
@@ -3279,16 +3199,7 @@ void chisquaretest::saveChi2Region(TH2D *hist, int binX_min, int binY_min, int m
 
 	if (!ispp)
 	{
-		if (iteration == 0)
-			cent = "_0-10";
-		if (iteration == 1)
-			cent = "_10-20";
-		if (iteration == 2)
-			cent = "_20-30";
-		if (iteration == 3)
-			cent = "_30-100";
-		if (iteration == 10)
-			cent = "_0-100";
+		cent = Form("_%.1f-%.1f", this->cenlowlimit[iteration], this->cenhighlimit[iteration]);
 	}
 	if (ispp)
 	{
@@ -3354,7 +3265,7 @@ void chisquaretest::readlimit(int type, int cent, int version)
 
 	type_str = "FA_";
 
-	filename = TString("./zoomin/") + version_prefix + TString("PbPb_") + type_str + variation[type - 1] + "_" + Form("%i-%i.txt", this->cenlowlimit[cent], this->cenhighlimit[cent]);
+	filename = TString("./zoomin/") + version_prefix + TString("PbPb_") + type_str + variation[type - 1] + "_" + Form("%.1f-%.1f.txt", this->cenlowlimit[cent], this->cenhighlimit[cent]);
 
 	std::ifstream file(filename);
 	if (!file)

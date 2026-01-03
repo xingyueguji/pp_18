@@ -1,5 +1,5 @@
 #include "chisquaretest.h"
-void newchisquaretestpp(int type = 1, int version = 2)
+void newchisquaretestpp(int type = 1, int version = 2, bool firsttime = 0)
 {
 
 	// type 1 = nominal
@@ -103,7 +103,7 @@ void newchisquaretestpp(int type = 1, int version = 2)
 		mcfile = prefix + "template_pp_nobk.root";
 	}
 
-	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, zoominfile, version);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, zoominfile, version, firsttime);
 
 	// ovo->bincontentcheck(isbk);
 	ovo->RebinAllpp(type);

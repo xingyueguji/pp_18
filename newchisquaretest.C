@@ -1,5 +1,5 @@
 #include "chisquaretest.h"
-void newchisquaretest(int type = 1, int version = 0)
+void newchisquaretest(int type = 1, int version = 0, bool firstime = 0)
 {
 	// version 0 = legacy, version 1 = direct fill, version 2 = modification
 	// type 1 = nominal
@@ -110,7 +110,7 @@ void newchisquaretest(int type = 1, int version = 0)
 	}
 
 	datafile = "../ZBoson_18/rootfile/data_file.root";
-	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, zoominfile, version, 1);
+	chisquaretest *ovo = new chisquaretest(mcfile, datafile, bkfile, type, zoominfile, version, 1, firstime);
 
 	// ovo->bincontentcheck(isbk);
 	ovo->RebinAll(type);

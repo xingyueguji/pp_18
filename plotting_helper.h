@@ -23,8 +23,8 @@ public:
   double Nmb = 11775759052;
 
   float crossSectionModifier = 0.92623216;
-  Int_t cenlowlimit[11] = {0, 10, 20, 30, 30, 0, 15, 50, 0, 14, 0};
-  Int_t cenhighlimit[11] = {10, 20, 30, 100, 50, 15, 100, 100, 14, 100, 100};
+	Double_t cenlowlimit[11] = {0, 10, 20, 30, 0, 0, 6.5, 14.5, 26.5, 0, 15};
+	Double_t cenhighlimit[11] = {10, 20, 30, 100, 100, 6.5, 14.5, 26.5, 100, 15, 100};
 };
 
 plotting_helper::plotting_helper()
@@ -100,7 +100,7 @@ void plotting_helper::compositeplot(TH1D *h_1, TH1D *h_2, TH1D *h_3, TH1D *h_4, 
   legend->SetTextSize(0.03);
   legend->SetTextFont(42);
   legend->SetFillColorAlpha(kWhite, 0);
-  legend->AddEntry(h_1, Form("Data-EM (%i-%i%)", cenlowlimit[x], cenhighlimit[x]), "p");
+  legend->AddEntry(h_1, Form("Data-EM (%.1f-%.1f%)", cenlowlimit[x], cenhighlimit[x]), "p");
   legend->AddEntry(h_2, "Z \\rightarrow \\mu^{+} \\mu^{-}", "f");
   legend->AddEntry(h_3, "Same_sign(QCD)", "f");
   legend->AddEntry(h_4, "Z \\rightarrow \\tau^{+} \\tau^{-}", "f");
