@@ -149,10 +149,10 @@ public:
 	TFile *bkfile;
 	TFile *mcfile_zoomin;
 
-	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.34, -0.25, -0.22, -0.24, -0.32, -0.34, -0.25, -1, -1};
-	double raw_mass_shift_array_high[nbins_cent] = {-0.02, -0.06, -0.04, 0.02, -0.08, -0.02, -0.06, -0.04, 0.02, 1, 1};
-	double raw_mass_smear_array_low[nbins_cent] = {-0.1, 0.055, -0.2, 0.1, 0.06, -0.1, 0.055, -0.2, 0.1, -1, -1};
-	double raw_mass_smear_array_high[nbins_cent] = {0.3, 0.5, 0.3, 0.65, 0.36, 0.3, 0.5, 0.3, 0.65, 1, 1};
+	double raw_mass_shift_array_low[nbins_cent] = {-0.24, -0.32, -0.34, -0.25, -0.22, -0.26, -0.28, -0.38, -0.25, -0.25, -0.28};
+	double raw_mass_shift_array_high[nbins_cent] = {-0.02, -0.06, -0.04, 0.02, -0.08, -0.02, 0.08, -0.08, 0.02, 0.0, -0.04};
+	double raw_mass_smear_array_low[nbins_cent] = {-0.1, 0.055, -0.2, 0.1, 0.06, -0.14, -0.1, -0.1, 0.05, -0.1, 0.05};
+	double raw_mass_smear_array_high[nbins_cent] = {0.3, 0.5, 0.3, 0.65, 0.36, 0.3, 0.4, 0.4, 0.5, 0.35, 0.4};
 
 	double placeholder_mass_shift_array_low_zoomin = 0;
 	double placeholder_mass_shift_array_high_zoomin = 0;
