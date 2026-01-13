@@ -41,7 +41,7 @@ void newchisquaretestpp(int type = 1, int version = 2, bool firsttime = 0)
 		prefix = "../ZBoson_18/rootfile/version_2/";
 	}
 
-	if (type == 1 || type == 6)
+	if (type == 1 || type == 6 || type == 8)
 	{
 		bkfile = "../ZBoson_18/rootfile/normalized/FA_nominal.root";
 	}
@@ -86,6 +86,11 @@ void newchisquaretestpp(int type = 1, int version = 2, bool firsttime = 0)
 	if (type == 6)
 	{
 		zoominfile = prefix + "template_pp_zoomin_nominal_no_bksub.root";
+	}
+
+	if (type == 8)
+	{
+		zoominfile = prefix + "template_pp_zoomin_nominal_1D_pT.root";
 	}
 
 	datafile = "./new_pp_data_file_stability_readonly.root";

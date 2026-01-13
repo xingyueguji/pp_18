@@ -2,21 +2,21 @@ void get_final_plots()
 {
     TFile *f1 = new TFile("./contourtest/degen/contour.root", "READ");
 
-    TEllipse *PbPb_stat[5];
-    TEllipse *pp_stat[5];
-    TEllipse *PbPb_sub_pp_stat[5];
+    TEllipse *PbPb_stat[11];
+    TEllipse *pp_stat[11];
+    TEllipse *PbPb_sub_pp_stat[11];
 
-    TEllipse *PbPb_syst[5];
-    TEllipse *pp_syst[5];
-    TEllipse *PbPb_sub_pp_syst[5];
+    TEllipse *PbPb_syst[11];
+    TEllipse *pp_syst[11];
+    TEllipse *PbPb_sub_pp_syst[11];
 
-    const int n_cent = 5;
+    const int n_cent = 11;
 
     TGraphErrors *g_PbPb;
     TGraphErrors *g_pp;
     TGraphErrors *g_PbPb_sub_pp;
 
-    TString cent_array[5] = {"0_10", "10_20", "20_30", "30_100", "0_100"};
+    TString cent_array[11] = {"0_10", "10_20", "20_30", "30_100", "0_100", "0_6.5", "6.5_14.5", "14.5_26.5", "26.5_100", "0_15", "15_100"};
 
     for (int i = 0; i < n_cent; i++)
     {

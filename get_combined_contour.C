@@ -486,7 +486,7 @@ TEllipse *CombineEllipsesFromVectors(const TVectorD &v1, const TVectorD &v2)
 
 void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Savename, const TVector2 &sys_1, const TVector2 &sys_2, const TVector2 &sys_3,
                             const TVector2 &sys_4, const TVector2 &sys_5, const TVector2 &sys_6, const TVector2 &sys_7, const TVector2 &sys_8, const TVector2 &pp_sys_1, const TVector2 &pp_sys_2, const TVector2 &pp_sys_3, const TVector2 &pp_sys_4, const TVector2 &pp_sys_5,
-                            const TVector2 &pp_sys_6, const TString &type, const TString &name)
+                            const TVector2 &pp_sys_6, const TVector2 &pp_sys_7, const TString &type, const TString &name)
 {
     auto EllipseToVector = [](TEllipse *e) -> TVectorD
     {
@@ -1074,6 +1074,22 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
 
     PrintXYErrorsFromEllipse(pp_6_sys_contour, "pp mass range");
 
+    // 1D_pT
+
+    TMarker *pp_7 = new TMarker(pp_sys_7.X(), pp_sys_7.Y(), 20);
+    pp_7->SetMarkerColor(kCyan + 1);
+    pp_7->SetMarkerSize(1.2);
+    pp_7->Draw("same");
+
+    TEllipse *pp_7_sys_contour = CreateScaledEllipseFromSystematic(pp_sys_7, e2, type);
+    pp_7_sys_contour->SetLineColor(kCyan + 1);
+    pp_7_sys_contour->SetLineWidth(2);
+    pp_7_sys_contour->SetLineStyle(1);
+    pp_7_sys_contour->SetFillStyle(0);
+    pp_7_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(pp_7_sys_contour, "pp 1D pT");
+
     // Create legend in upper-left (adjust coordinates if needed)
     TLegend *leg1 = new TLegend(0.2, 0.65, 0.45, 0.9); // x1,y1,x2,y2 in NDC
     leg1->SetFillStyle(0);                             // Transparent background
@@ -1115,7 +1131,8 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
 
     std::vector<TEllipse *> pp_singles = {
         pp_5_sys_contour, // nobk
-        pp_6_sys_contour  // massrange
+        pp_6_sys_contour, // massrange
+        pp_7_sys_contour  // 1D_pT
     };
 
     TFile *saveTEllipse;
@@ -1180,6 +1197,8 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     TVector2 v2_xy(v2[0], v2[1]);
     TVector2 PbPb_sub_pp_sys_7 = sys_7 - v2_xy;
     TVector2 PbPb_sub_pp_sys_8 = sys_8 - v2_xy;
+    TVector2 v1_xy(v1[0], v1[1]);
+    TVector2 PbPb_sub_pp_sys_9 = v1_xy - pp_sys_7;
 
     // Combined Systematic
 
@@ -1311,6 +1330,22 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
 
     PrintXYErrorsFromEllipse(PbPb_sub_pp_8_sys_contour, "PbPb - pp HFdown");
 
+    // 1D_pT
+
+    TMarker *PbPb_sub_pp_9 = new TMarker(PbPb_sub_pp_sys_9.X(), PbPb_sub_pp_sys_9.Y(), 20);
+    PbPb_sub_pp_9->SetMarkerColor(kBlack);
+    PbPb_sub_pp_9->SetMarkerSize(1.2);
+    PbPb_sub_pp_9->Draw("same");
+
+    TEllipse *PbPb_sub_pp_9_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_9, e3, type);
+    PbPb_sub_pp_9_sys_contour->SetLineColor(kBlack);
+    PbPb_sub_pp_9_sys_contour->SetLineWidth(2);
+    PbPb_sub_pp_9_sys_contour->SetLineStyle(1);
+    PbPb_sub_pp_9_sys_contour->SetFillStyle(0);
+    PbPb_sub_pp_9_sys_contour->Draw("SAME");
+
+    PrintXYErrorsFromEllipse(PbPb_sub_pp_9_sys_contour, "PbPb - pp 1D_pT");
+
     std::vector<std::pair<TEllipse *, TEllipse *>> PbPb_sub_pp_pairs = {
         {PbPb_sub_pp_1_sys_contour, PbPb_sub_pp_2_sys_contour}, // TnP
         {PbPb_sub_pp_3_sys_contour, PbPb_sub_pp_4_sys_contour}  // Aco
@@ -1320,7 +1355,8 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
         PbPb_sub_pp_5_sys_contour, // nobk
         PbPb_sub_pp_6_sys_contour, // massrange
         PbPb_sub_pp_7_sys_contour, // HFup
-        PbPb_sub_pp_8_sys_contour  // HFdown
+        PbPb_sub_pp_8_sys_contour, // HFdown
+        PbPb_sub_pp_9_sys_contour  // 1D_pT
     };
 
     TEllipse *PbPb_sub_pp_envelope = CreateCombinedEnvelope(EllipseToVector(e3), PbPb_sub_pp_pairs, PbPb_sub_pp_singles);
@@ -1368,9 +1404,9 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     double ystart = 0.3;
     double dy = 0.035;
 
-    latex.DrawLatexNDC(0.2, ystart, Form("Ellipse 1: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", v1[0], v1[1], v1[2], v1[3], v1[4]));
-    latex.DrawLatexNDC(0.2, ystart - dy, Form("Ellipse 2: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", v2[0], v2[1], v2[2], v2[3], v2[4]));
-    latex.DrawLatexNDC(0.2, ystart - 2 * dy, Form("Combined: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", e3->GetX1(), e3->GetY1(), e3->GetR1(), e3->GetR2(), e3->GetTheta()));
+    // latex.DrawLatexNDC(0.2, ystart, Form("Ellipse 1: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", v1[0], v1[1], v1[2], v1[3], v1[4]));
+    // latex.DrawLatexNDC(0.2, ystart - dy, Form("Ellipse 2: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", v2[0], v2[1], v2[2], v2[3], v2[4]));
+    // latex.DrawLatexNDC(0.2, ystart - 2 * dy, Form("Combined: x=%.3f, y=%.3f, a=%.3f, b=%.3f, #theta=%.1f^{#circ}", e3->GetX1(), e3->GetY1(), e3->GetR1(), e3->GetR2(), e3->GetTheta()));
 
     c1->Update();
     c1->SaveAs(Savename);
@@ -1402,7 +1438,13 @@ void get_combined_contour(TString type = "degen")
     TVector2 *PbPb_1 = (TVector2 *)f2->Get("PbPb_local_min_cent_1");
     TVector2 *PbPb_2 = (TVector2 *)f2->Get("PbPb_local_min_cent_2");
     TVector2 *PbPb_3 = (TVector2 *)f2->Get("PbPb_local_min_cent_3");
-    TVector2 *PbPb_4 = (TVector2 *)f2->Get("PbPb_local_min_cent_10");
+    TVector2 *PbPb_4 = (TVector2 *)f2->Get("PbPb_local_min_cent_4");
+    TVector2 *PbPb_5 = (TVector2 *)f2->Get("PbPb_local_min_cent_5");
+    TVector2 *PbPb_6 = (TVector2 *)f2->Get("PbPb_local_min_cent_6");
+    TVector2 *PbPb_7 = (TVector2 *)f2->Get("PbPb_local_min_cent_7");
+    TVector2 *PbPb_8 = (TVector2 *)f2->Get("PbPb_local_min_cent_8");
+    TVector2 *PbPb_9 = (TVector2 *)f2->Get("PbPb_local_min_cent_9");
+    TVector2 *PbPb_10 = (TVector2 *)f2->Get("PbPb_local_min_cent_10");
 
     TVector2 *pp_0 = (TVector2 *)f2->Get("pp_local_min_period_22");
 
@@ -1413,87 +1455,174 @@ void get_combined_contour(TString type = "degen")
     TVector2 *pp_0_AcoDown = (TVector2 *)f2->Get("pp_local_min_AcoDown_period_22");
     TVector2 *pp_0_nobk = (TVector2 *)f2->Get("pp_local_min_no_bk_period_22");
     TVector2 *pp_0_massrange = (TVector2 *)f2->Get("pp_local_min_massrange_period_22");
+    TVector2 *pp_0_1D_pT = (TVector2 *)f2->Get("pp_local_min_1D_pT_period_22");
+
+    // Here need to add pT 2D and pT 1D
 
     TVector2 *PbPb_0_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_0");
     TVector2 *PbPb_1_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_1");
     TVector2 *PbPb_2_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_2");
     TVector2 *PbPb_3_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_3");
-    TVector2 *PbPb_4_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_10");
+    TVector2 *PbPb_4_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_4");
+    TVector2 *PbPb_5_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_5");
+    TVector2 *PbPb_6_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_6");
+    TVector2 *PbPb_7_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_7");
+    TVector2 *PbPb_8_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_8");
+    TVector2 *PbPb_9_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_9");
+    TVector2 *PbPb_10_tnpU = (TVector2 *)f2->Get("PbPb_local_min_tnpU_cent_10");
 
     TVector2 *PbPb_0_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_0");
     TVector2 *PbPb_1_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_1");
     TVector2 *PbPb_2_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_2");
     TVector2 *PbPb_3_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_3");
-    TVector2 *PbPb_4_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_10");
+    TVector2 *PbPb_4_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_4");
+    TVector2 *PbPb_5_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_5");
+    TVector2 *PbPb_6_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_6");
+    TVector2 *PbPb_7_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_7");
+    TVector2 *PbPb_8_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_8");
+    TVector2 *PbPb_9_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_9");
+    TVector2 *PbPb_10_tnpD = (TVector2 *)f2->Get("PbPb_local_min_tnpD_cent_10");
 
     TVector2 *PbPb_0_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_0");
     TVector2 *PbPb_1_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_1");
     TVector2 *PbPb_2_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_2");
     TVector2 *PbPb_3_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_3");
-    TVector2 *PbPb_4_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_10");
+    TVector2 *PbPb_4_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_4");
+    TVector2 *PbPb_5_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_5");
+    TVector2 *PbPb_6_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_6");
+    TVector2 *PbPb_7_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_7");
+    TVector2 *PbPb_8_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_8");
+    TVector2 *PbPb_9_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_9");
+    TVector2 *PbPb_10_AcoUp = (TVector2 *)f2->Get("PbPb_local_min_AcoUp_cent_10");
 
     TVector2 *PbPb_0_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_0");
     TVector2 *PbPb_1_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_1");
     TVector2 *PbPb_2_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_2");
     TVector2 *PbPb_3_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_3");
-    TVector2 *PbPb_4_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_10");
+    TVector2 *PbPb_4_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_4");
+    TVector2 *PbPb_5_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_5");
+    TVector2 *PbPb_6_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_6");
+    TVector2 *PbPb_7_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_7");
+    TVector2 *PbPb_8_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_8");
+    TVector2 *PbPb_9_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_9");
+    TVector2 *PbPb_10_AcoDown = (TVector2 *)f2->Get("PbPb_local_min_AcoDown_cent_10");
 
     TVector2 *PbPb_0_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_0");
     TVector2 *PbPb_1_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_1");
     TVector2 *PbPb_2_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_2");
     TVector2 *PbPb_3_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_3");
-    TVector2 *PbPb_4_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_10");
+    TVector2 *PbPb_4_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_4");
+    TVector2 *PbPb_5_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_5");
+    TVector2 *PbPb_6_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_6");
+    TVector2 *PbPb_7_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_7");
+    TVector2 *PbPb_8_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_8");
+    TVector2 *PbPb_9_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_9");
+    TVector2 *PbPb_10_nobk = (TVector2 *)f2->Get("PbPb_local_min_no_bk_cent_10");
 
     TVector2 *PbPb_0_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_0");
     TVector2 *PbPb_1_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_1");
     TVector2 *PbPb_2_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_2");
     TVector2 *PbPb_3_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_3");
-    TVector2 *PbPb_4_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_10");
+    TVector2 *PbPb_4_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_4");
+    TVector2 *PbPb_5_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_5");
+    TVector2 *PbPb_6_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_6");
+    TVector2 *PbPb_7_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_7");
+    TVector2 *PbPb_8_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_8");
+    TVector2 *PbPb_9_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_9");
+    TVector2 *PbPb_10_massrange = (TVector2 *)f2->Get("PbPb_local_min_massrange_cent_10");
 
     TVector2 *PbPb_0_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_0");
     TVector2 *PbPb_1_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_1");
     TVector2 *PbPb_2_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_2");
     TVector2 *PbPb_3_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_3");
-    TVector2 *PbPb_4_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_10");
+    TVector2 *PbPb_4_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_4");
+    TVector2 *PbPb_5_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_5");
+    TVector2 *PbPb_6_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_6");
+    TVector2 *PbPb_7_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_7");
+    TVector2 *PbPb_8_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_8");
+    TVector2 *PbPb_9_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_9");
+    TVector2 *PbPb_10_HFup = (TVector2 *)f2->Get("PbPb_local_min_HFup_cent_10");
 
     TVector2 *PbPb_0_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_0");
     TVector2 *PbPb_1_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_1");
     TVector2 *PbPb_2_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_2");
     TVector2 *PbPb_3_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_3");
-    TVector2 *PbPb_4_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_10");
+    TVector2 *PbPb_4_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_4");
+    TVector2 *PbPb_5_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_5");
+    TVector2 *PbPb_6_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_6");
+    TVector2 *PbPb_7_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_7");
+    TVector2 *PbPb_8_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_8");
+    TVector2 *PbPb_9_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_9");
+    TVector2 *PbPb_10_HFdown = (TVector2 *)f2->Get("PbPb_local_min_HFdown_cent_10");
 
     TVectorD pp_sig1 = doeverything("pp, |#eta| < 2.4, Nominal, Period: (22)", "./contourtest/pp.png", f1, pp_0, 1);
     TVectorD pp_sig2 = doeverything("pp, |#eta| < 2.4, Nominal, Period: (22)", "./contourtest/pp.png", f1, pp_0, 2);
 
-    TVectorD PbPb_sig_1_0 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0-10)", "./contourtest/PbPb_1.png", f1, PbPb_0, 1);
-    TVectorD PbPb_sig_2_0 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0-10)", "./contourtest/PbPb_1.png", f1, PbPb_0, 2);
+    TVectorD PbPb_sig_1_0 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0.0-10.0)", "./contourtest/PbPb_0.png", f1, PbPb_0, 1);
+    TVectorD PbPb_sig_2_0 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0.0-10.0)", "./contourtest/PbPb_0.png", f1, PbPb_0, 2);
 
-    TVectorD PbPb_sig_1_1 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (10-20)", "./contourtest/PbPb_2.png", f1, PbPb_1, 1);
-    TVectorD PbPb_sig_2_1 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (10-20)", "./contourtest/PbPb_2.png", f1, PbPb_1, 2);
+    TVectorD PbPb_sig_1_1 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (10.0-20.0)", "./contourtest/PbPb_1.png", f1, PbPb_1, 1);
+    TVectorD PbPb_sig_2_1 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (10.0-20.0)", "./contourtest/PbPb_1.png", f1, PbPb_1, 2);
 
-    TVectorD PbPb_sig_1_2 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (20-30)", "./contourtest/PbPb_3.png", f1, PbPb_2, 1);
-    TVectorD PbPb_sig_2_2 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (20-30)", "./contourtest/PbPb_3.png", f1, PbPb_2, 2);
+    TVectorD PbPb_sig_1_2 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (20.0-30.0)", "./contourtest/PbPb_2.png", f1, PbPb_2, 1);
+    TVectorD PbPb_sig_2_2 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (20.0-30.0)", "./contourtest/PbPb_2.png", f1, PbPb_2, 2);
 
-    TVectorD PbPb_sig_1_3 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (30-100)", "./contourtest/PbPb_4.png", f1, PbPb_3, 1);
-    TVectorD PbPb_sig_2_3 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (30-100)", "./contourtest/PbPb_4.png", f1, PbPb_3, 2);
+    TVectorD PbPb_sig_1_3 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (30.0-100.0)", "./contourtest/PbPb_3.png", f1, PbPb_3, 1);
+    TVectorD PbPb_sig_2_3 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (30.0-100.0)", "./contourtest/PbPb_3.png", f1, PbPb_3, 2);
 
-    TVectorD PbPb_sig_1_4 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0-100)", "./contourtest/PbPb_5.png", f1, PbPb_4, 1);
-    TVectorD PbPb_sig_2_4 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0-100)", "./contourtest/PbPb_5.png", f1, PbPb_4, 2);
+    TVectorD PbPb_sig_1_4 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0.0-100.0)", "./contourtest/PbPb_4.png", f1, PbPb_4, 1);
+    TVectorD PbPb_sig_2_4 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0.0-100.0)", "./contourtest/PbPb_4.png", f1, PbPb_4, 2);
+
+    TVectorD PbPb_sig_1_5 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0.0-6.5)", "./contourtest/PbPb_5.png", f1, PbPb_5, 1);
+    TVectorD PbPb_sig_2_5 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0.0-6.5)", "./contourtest/PbPb_5.png", f1, PbPb_5, 2);
+
+    TVectorD PbPb_sig_1_6 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (6.5-14.5)", "./contourtest/PbPb_6.png", f1, PbPb_6, 1);
+    TVectorD PbPb_sig_2_6 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (6.5-14.5)", "./contourtest/PbPb_6.png", f1, PbPb_6, 2);
+
+    TVectorD PbPb_sig_1_7 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (14.5-26.5)", "./contourtest/PbPb_7.png", f1, PbPb_7, 1);
+    TVectorD PbPb_sig_2_7 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (14.5-26.5)", "./contourtest/PbPb_7.png", f1, PbPb_7, 2);
+
+    TVectorD PbPb_sig_1_8 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (26.5-100.0)", "./contourtest/PbPb_8.png", f1, PbPb_8, 1);
+    TVectorD PbPb_sig_2_8 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (26.5-100.0)", "./contourtest/PbPb_8.png", f1, PbPb_8, 2);
+
+    TVectorD PbPb_sig_1_9 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0.0-15.0)", "./contourtest/PbPb_9.png", f1, PbPb_9, 1);
+    TVectorD PbPb_sig_2_9 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (0.0-15.0)", "./contourtest/PbPb_9.png", f1, PbPb_9, 2);
+
+    TVectorD PbPb_sig_1_10 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (15.0-100.0)", "./contourtest/PbPb_10.png", f1, PbPb_10, 1);
+    TVectorD PbPb_sig_2_10 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (15.0-100.0)", "./contourtest/PbPb_10.png", f1, PbPb_10, 2);
 
     setTDRStyle();
 
-    DrawEllipsesComparison(PbPb_sig_1_0, pp_sig1, savepath + "PbPb_0_sig_1.png", *PbPb_0_tnpU, *PbPb_0_tnpD, *PbPb_0_AcoUp, *PbPb_0_AcoDown, *PbPb_0_nobk, *PbPb_0_massrange, *PbPb_0_HFup, *PbPb_0_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_0_10");
-    DrawEllipsesComparison(PbPb_sig_2_0, pp_sig2, savepath + "PbPb_0_sig_2.png", *PbPb_0_tnpU, *PbPb_0_tnpD, *PbPb_0_AcoUp, *PbPb_0_AcoDown, *PbPb_0_nobk, *PbPb_0_massrange, *PbPb_0_HFup, *PbPb_0_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_0_10");
+    DrawEllipsesComparison(PbPb_sig_1_0, pp_sig1, savepath + "PbPb_0_sig_1.png", *PbPb_0_tnpU, *PbPb_0_tnpD, *PbPb_0_AcoUp, *PbPb_0_AcoDown, *PbPb_0_nobk, *PbPb_0_massrange, *PbPb_0_HFup, *PbPb_0_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_0_10");
+    DrawEllipsesComparison(PbPb_sig_2_0, pp_sig2, savepath + "PbPb_0_sig_2.png", *PbPb_0_tnpU, *PbPb_0_tnpD, *PbPb_0_AcoUp, *PbPb_0_AcoDown, *PbPb_0_nobk, *PbPb_0_massrange, *PbPb_0_HFup, *PbPb_0_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_0_10");
 
-    DrawEllipsesComparison(PbPb_sig_1_1, pp_sig1, savepath + "PbPb_1_sig_1.png", *PbPb_1_tnpU, *PbPb_1_tnpD, *PbPb_1_AcoUp, *PbPb_1_AcoDown, *PbPb_1_nobk, *PbPb_1_massrange, *PbPb_1_HFup, *PbPb_1_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_10_20");
-    DrawEllipsesComparison(PbPb_sig_2_1, pp_sig2, savepath + "PbPb_1_sig_2.png", *PbPb_1_tnpU, *PbPb_1_tnpD, *PbPb_1_AcoUp, *PbPb_1_AcoDown, *PbPb_1_nobk, *PbPb_1_massrange, *PbPb_1_HFup, *PbPb_1_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_10_20");
+    DrawEllipsesComparison(PbPb_sig_1_1, pp_sig1, savepath + "PbPb_1_sig_1.png", *PbPb_1_tnpU, *PbPb_1_tnpD, *PbPb_1_AcoUp, *PbPb_1_AcoDown, *PbPb_1_nobk, *PbPb_1_massrange, *PbPb_1_HFup, *PbPb_1_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_10_20");
+    DrawEllipsesComparison(PbPb_sig_2_1, pp_sig2, savepath + "PbPb_1_sig_2.png", *PbPb_1_tnpU, *PbPb_1_tnpD, *PbPb_1_AcoUp, *PbPb_1_AcoDown, *PbPb_1_nobk, *PbPb_1_massrange, *PbPb_1_HFup, *PbPb_1_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_10_20");
 
-    DrawEllipsesComparison(PbPb_sig_1_2, pp_sig1, savepath + "PbPb_2_sig_1.png", *PbPb_2_tnpU, *PbPb_2_tnpD, *PbPb_2_AcoUp, *PbPb_2_AcoDown, *PbPb_2_nobk, *PbPb_2_massrange, *PbPb_2_HFup, *PbPb_2_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_20_30");
-    DrawEllipsesComparison(PbPb_sig_2_2, pp_sig2, savepath + "PbPb_2_sig_2.png", *PbPb_2_tnpU, *PbPb_2_tnpD, *PbPb_2_AcoUp, *PbPb_2_AcoDown, *PbPb_2_nobk, *PbPb_2_massrange, *PbPb_2_HFup, *PbPb_2_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_20_30");
+    DrawEllipsesComparison(PbPb_sig_1_2, pp_sig1, savepath + "PbPb_2_sig_1.png", *PbPb_2_tnpU, *PbPb_2_tnpD, *PbPb_2_AcoUp, *PbPb_2_AcoDown, *PbPb_2_nobk, *PbPb_2_massrange, *PbPb_2_HFup, *PbPb_2_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_20_30");
+    DrawEllipsesComparison(PbPb_sig_2_2, pp_sig2, savepath + "PbPb_2_sig_2.png", *PbPb_2_tnpU, *PbPb_2_tnpD, *PbPb_2_AcoUp, *PbPb_2_AcoDown, *PbPb_2_nobk, *PbPb_2_massrange, *PbPb_2_HFup, *PbPb_2_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_20_30");
 
-    DrawEllipsesComparison(PbPb_sig_1_3, pp_sig1, savepath + "PbPb_3_sig_1.png", *PbPb_3_tnpU, *PbPb_3_tnpD, *PbPb_3_AcoUp, *PbPb_3_AcoDown, *PbPb_3_nobk, *PbPb_3_massrange, *PbPb_3_HFup, *PbPb_3_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_30_100");
-    DrawEllipsesComparison(PbPb_sig_2_3, pp_sig2, savepath + "PbPb_3_sig_2.png", *PbPb_3_tnpU, *PbPb_3_tnpD, *PbPb_3_AcoUp, *PbPb_3_AcoDown, *PbPb_3_nobk, *PbPb_3_massrange, *PbPb_3_HFup, *PbPb_3_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_30_100");
-    cout << "Below is 0 - 100 %" << endl;
-    DrawEllipsesComparison(PbPb_sig_1_4, pp_sig1, savepath + "PbPb_4_sig_1.png", *PbPb_4_tnpU, *PbPb_4_tnpD, *PbPb_4_AcoUp, *PbPb_4_AcoDown, *PbPb_4_nobk, *PbPb_4_massrange, *PbPb_4_HFup, *PbPb_4_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_1_0_100");
-    DrawEllipsesComparison(PbPb_sig_2_4, pp_sig2, savepath + "PbPb_4_sig_2.png", *PbPb_4_tnpU, *PbPb_4_tnpD, *PbPb_4_AcoUp, *PbPb_4_AcoDown, *PbPb_4_nobk, *PbPb_4_massrange, *PbPb_4_HFup, *PbPb_4_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, type, "sig_2_0_100");
+    DrawEllipsesComparison(PbPb_sig_1_3, pp_sig1, savepath + "PbPb_3_sig_1.png", *PbPb_3_tnpU, *PbPb_3_tnpD, *PbPb_3_AcoUp, *PbPb_3_AcoDown, *PbPb_3_nobk, *PbPb_3_massrange, *PbPb_3_HFup, *PbPb_3_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_30_100");
+    DrawEllipsesComparison(PbPb_sig_2_3, pp_sig2, savepath + "PbPb_3_sig_2.png", *PbPb_3_tnpU, *PbPb_3_tnpD, *PbPb_3_AcoUp, *PbPb_3_AcoDown, *PbPb_3_nobk, *PbPb_3_massrange, *PbPb_3_HFup, *PbPb_3_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_30_100");
+
+    DrawEllipsesComparison(PbPb_sig_1_4, pp_sig1, savepath + "PbPb_4_sig_1.png", *PbPb_4_tnpU, *PbPb_4_tnpD, *PbPb_4_AcoUp, *PbPb_4_AcoDown, *PbPb_4_nobk, *PbPb_4_massrange, *PbPb_4_HFup, *PbPb_4_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_0_100");
+    DrawEllipsesComparison(PbPb_sig_2_4, pp_sig2, savepath + "PbPb_4_sig_2.png", *PbPb_4_tnpU, *PbPb_4_tnpD, *PbPb_4_AcoUp, *PbPb_4_AcoDown, *PbPb_4_nobk, *PbPb_4_massrange, *PbPb_4_HFup, *PbPb_4_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_0_100");
+
+    DrawEllipsesComparison(PbPb_sig_1_5, pp_sig1, savepath + "PbPb_5_sig_1.png", *PbPb_5_tnpU, *PbPb_5_tnpD, *PbPb_5_AcoUp, *PbPb_5_AcoDown, *PbPb_5_nobk, *PbPb_5_massrange, *PbPb_5_HFup, *PbPb_5_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_0_6.5");
+    DrawEllipsesComparison(PbPb_sig_2_5, pp_sig2, savepath + "PbPb_5_sig_2.png", *PbPb_5_tnpU, *PbPb_5_tnpD, *PbPb_5_AcoUp, *PbPb_5_AcoDown, *PbPb_5_nobk, *PbPb_5_massrange, *PbPb_5_HFup, *PbPb_5_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_0_6.5");
+
+    DrawEllipsesComparison(PbPb_sig_1_6, pp_sig1, savepath + "PbPb_6_sig_1.png", *PbPb_6_tnpU, *PbPb_6_tnpD, *PbPb_6_AcoUp, *PbPb_6_AcoDown, *PbPb_6_nobk, *PbPb_6_massrange, *PbPb_6_HFup, *PbPb_6_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_6.5_14.5");
+    DrawEllipsesComparison(PbPb_sig_2_6, pp_sig2, savepath + "PbPb_6_sig_2.png", *PbPb_6_tnpU, *PbPb_6_tnpD, *PbPb_6_AcoUp, *PbPb_6_AcoDown, *PbPb_6_nobk, *PbPb_6_massrange, *PbPb_6_HFup, *PbPb_6_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_6.5_14.5");
+
+    DrawEllipsesComparison(PbPb_sig_1_7, pp_sig1, savepath + "PbPb_7_sig_1.png", *PbPb_7_tnpU, *PbPb_7_tnpD, *PbPb_7_AcoUp, *PbPb_7_AcoDown, *PbPb_7_nobk, *PbPb_7_massrange, *PbPb_7_HFup, *PbPb_7_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_14.5_26.5");
+    DrawEllipsesComparison(PbPb_sig_2_7, pp_sig2, savepath + "PbPb_7_sig_2.png", *PbPb_7_tnpU, *PbPb_7_tnpD, *PbPb_7_AcoUp, *PbPb_7_AcoDown, *PbPb_7_nobk, *PbPb_7_massrange, *PbPb_7_HFup, *PbPb_7_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_14.5_26.5");
+
+    DrawEllipsesComparison(PbPb_sig_1_8, pp_sig1, savepath + "PbPb_8_sig_1.png", *PbPb_8_tnpU, *PbPb_8_tnpD, *PbPb_8_AcoUp, *PbPb_8_AcoDown, *PbPb_8_nobk, *PbPb_8_massrange, *PbPb_8_HFup, *PbPb_8_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_26.5_100");
+    DrawEllipsesComparison(PbPb_sig_2_8, pp_sig2, savepath + "PbPb_8_sig_2.png", *PbPb_8_tnpU, *PbPb_8_tnpD, *PbPb_8_AcoUp, *PbPb_8_AcoDown, *PbPb_8_nobk, *PbPb_8_massrange, *PbPb_8_HFup, *PbPb_8_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_26.5_100");
+
+    DrawEllipsesComparison(PbPb_sig_1_9, pp_sig1, savepath + "PbPb_9_sig_1.png", *PbPb_9_tnpU, *PbPb_9_tnpD, *PbPb_9_AcoUp, *PbPb_9_AcoDown, *PbPb_9_nobk, *PbPb_9_massrange, *PbPb_9_HFup, *PbPb_9_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_0_15");
+    DrawEllipsesComparison(PbPb_sig_2_9, pp_sig2, savepath + "PbPb_9_sig_2.png", *PbPb_9_tnpU, *PbPb_9_tnpD, *PbPb_9_AcoUp, *PbPb_9_AcoDown, *PbPb_9_nobk, *PbPb_9_massrange, *PbPb_9_HFup, *PbPb_9_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_0_15");
+
+    DrawEllipsesComparison(PbPb_sig_1_10, pp_sig1, savepath + "PbPb_10_sig_1.png", *PbPb_10_tnpU, *PbPb_10_tnpD, *PbPb_10_AcoUp, *PbPb_10_AcoDown, *PbPb_10_nobk, *PbPb_10_massrange, *PbPb_10_HFup, *PbPb_10_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_15_100");
+    DrawEllipsesComparison(PbPb_sig_2_10, pp_sig2, savepath + "PbPb_10_sig_2.png", *PbPb_10_tnpU, *PbPb_10_tnpD, *PbPb_10_AcoUp, *PbPb_10_AcoDown, *PbPb_10_nobk, *PbPb_10_massrange, *PbPb_10_HFup, *PbPb_10_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_15_100");
 }
