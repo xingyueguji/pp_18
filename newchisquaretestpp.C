@@ -1,7 +1,6 @@
 #include "chisquaretest.h"
 void newchisquaretestpp(int type = 1, int version = 2, bool firsttime = 0)
 {
-
 	// type 1 = nominal
 	// type 2 = tnpU
 	// type 3 = tnpD
@@ -9,7 +8,7 @@ void newchisquaretestpp(int type = 1, int version = 2, bool firsttime = 0)
 	// type 5 = AcoDown
 	// type 6 = Nominal_no_bk
 	// type 7 = massrange
-
+	
 	bool isbk = true;
 
 	if (type == 6)

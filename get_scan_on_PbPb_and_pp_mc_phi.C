@@ -468,6 +468,7 @@ void get_scan_on_PbPb_and_pp_mc_phi()
 {
 
     gStyle->SetEndErrorSize(0);
+    gStyle->SetFrameLineWidth(2);
 
     const int number_phi_bins = 16;
     const int number_phi_bins_plot = 17;
@@ -684,11 +685,11 @@ void get_scan_on_PbPb_and_pp_mc_phi()
     gStyle->SetOptStat(0);
     gStyle->SetTitleFont(42, "XYZ");
     gStyle->SetLabelFont(42, "XYZ");
-    gStyle->SetTitleSize(0.045, "XYZ");
+    gStyle->SetTitleSize(0.05, "XYZ");
     gStyle->SetLabelSize(0.04, "XYZ");
     gStyle->SetPadTickX(1);
     gStyle->SetPadTickY(1);
-    gStyle->SetFrameLineWidth(2);
+    gStyle->SetFrameLineWidth(3);
 
     // --- Separate canvas: Mass shift ---
 
@@ -700,6 +701,8 @@ void get_scan_on_PbPb_and_pp_mc_phi()
     TCanvas *cMass = new TCanvas("cMass", "Mass shift vs phi", 800, 800);
     gMass_ppPbPb->SetLineColor(kRed + 1);
     gMass_PbPbPbPb->SetLineColor(kBlue + 1);
+    gMass_PbPbPbPb->GetXaxis()->SetTitleSize(0.05);
+    gMass_PbPbPbPb->GetYaxis()->SetTitleSize(0.05);
     gMass_pp_no_pT->SetLineColor(kGreen + 2);
     gMass_ppPbPb->SetMarkerColor(kRed + 1);
     gMass_PbPbPbPb->SetMarkerColor(kBlue + 1);
@@ -710,9 +713,9 @@ void get_scan_on_PbPb_and_pp_mc_phi()
     gMass_ppPbPb->Draw("Psame");
     gMass_pp_no_pT->Draw("Psame");
     auto legM = new TLegend(0.2, 0.75, 0.45, 0.9);
-    legM->AddEntry(gMass_ppPbPb, "pp#rightarrowPbPb", "lp");
-    legM->AddEntry(gMass_PbPbPbPb, "PbPb#rightarrowPbPb", "lp");
-    legM->AddEntry(gMass_pp_no_pT, "pp no p_{T} reweight", "lp");
+    legM->AddEntry(gMass_ppPbPb, "p+p MC sample", "lp");
+    legM->AddEntry(gMass_PbPbPbPb, "Pb+Pb MC sample", "lp");
+    legM->AddEntry(gMass_pp_no_pT, "pp no reweight", "lp");
     legM->SetBorderSize(0);
     legM->SetTextFont(42);
     legM->Draw();
@@ -734,13 +737,15 @@ void get_scan_on_PbPb_and_pp_mc_phi()
     gWidth_pp_no_pT->SetMarkerColor(kGreen + 2);
     gWidth_PbPbPbPb->GetYaxis()->SetRangeUser(-0.5, 0.8);
     gWidth_PbPbPbPb->SetTitle(";#phi (rad); dWidth (GeV)");
+    gWidth_PbPbPbPb->GetXaxis()->SetTitleSize(0.05);
+    gWidth_PbPbPbPb->GetYaxis()->SetTitleSize(0.05);
     gWidth_PbPbPbPb->Draw("AP");
     gWidth_ppPbPb->Draw("Psame");
     gWidth_pp_no_pT->Draw("Psame");
     auto legW = new TLegend(0.2, 0.75, 0.45, 0.9);
-    legW->AddEntry(gWidth_ppPbPb, "pp#rightarrowPbPb", "lp");
-    legW->AddEntry(gWidth_PbPbPbPb, "PbPb#rightarrowPbPb", "lp");
-    legW->AddEntry(gWidth_pp_no_pT, "pp no p_{T} reweight", "lp");
+    legW->AddEntry(gWidth_ppPbPb, "p+p MC sample", "lp");
+    legW->AddEntry(gWidth_PbPbPbPb, "Pb+Pb MC sample", "lp");
+    legW->AddEntry(gWidth_pp_no_pT, "pp no reweight", "lp");
     legW->SetBorderSize(0);
     legW->SetTextFont(42);
     legW->Draw();
@@ -829,7 +834,7 @@ void get_scan_on_PbPb_and_pp_mc_phi()
 
     auto legMD = new TLegend(0.2, 0.75, 0.45, 0.9);
     legMD->AddEntry(gMass_diff_pp, "PbPb - pp", "lp");
-    legMD->AddEntry(gMass_diff_ppNoPT, "PbPb - pp (no p_{T})", "lp");
+    legMD->AddEntry(gMass_diff_ppNoPT, "PbPb - pp (no reweight)", "lp");
     legMD->SetBorderSize(0);
     legMD->SetTextFont(42);
     legMD->Draw();
@@ -845,7 +850,7 @@ void get_scan_on_PbPb_and_pp_mc_phi()
 
     auto legWD = new TLegend(0.2, 0.75, 0.45, 0.9);
     legWD->AddEntry(gWidth_diff_pp, "PbPb - pp", "lp");
-    legWD->AddEntry(gWidth_diff_ppNoPT, "PbPb - pp (no p_{T})", "lp");
+    legWD->AddEntry(gWidth_diff_ppNoPT, "PbPb - pp (no reweight)", "lp");
     legWD->SetBorderSize(0);
     legWD->SetTextFont(42);
     legWD->Draw();

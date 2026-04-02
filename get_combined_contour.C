@@ -262,7 +262,7 @@ TVectorD doeverything(TString canvasname, TString savename, TFile *f1, TVector2 
     TVectorD conic_2 = fit_ellipse(g2);
     TVectorD ellipse_1 = ConicToParametric(coinc_1);
     TVectorD ellipse_2 = ConicToParametric(conic_2);
-    c1->cd();
+
     TEllipse *e = new TEllipse(ellipse_1[0], ellipse_1[1], // "x0", "y0"
                                ellipse_1[2], ellipse_1[3], // "a", "b"
                                0, 360,
@@ -295,13 +295,13 @@ TVectorD doeverything(TString canvasname, TString savename, TFile *f1, TVector2 
     latex1.SetTextSize(0.02);
     latex1.SetTextAlign(12); // left-aligned, vertically centered
 
-    for (int i = 0; i < g->GetN(); ++i)
+    /*for (int i = 0; i < g->GetN(); ++i)
     {
         double x, y;
         g->GetPoint(i, x, y);
         TString label = Form("%.3f, %.3f", x, y);
         latex1.DrawLatex(x + 0.01, y + 0.1, label);
-    }
+    }*/
 
     TGraph *g_1 = new TGraph();
     g_1->SetPoint(0, ellipse_1[0], ellipse_1[1]);
@@ -310,12 +310,12 @@ TVectorD doeverything(TString canvasname, TString savename, TFile *f1, TVector2 
     g_1->SetMarkerColor(kBlue);
     g_1->Draw("P SAME");
 
-    TGraph *g_2 = new TGraph();
+    /*TGraph *g_2 = new TGraph();
     g_2->SetPoint(0, ellipse_2[0], ellipse_2[1]);
     g_2->SetMarkerStyle(20); // Solid circle
     g_2->SetMarkerSize(1.5);
     g_2->SetMarkerColor(kOrange);
-    g_2->Draw("P SAME");
+    g_2->Draw("P SAME");*/
 
     /*double theta_deg = 84.143;
 
@@ -508,7 +508,7 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
         auto line = new TLine(-length * dx, -length * dy, length * dx, length * dy);
         line->SetLineStyle(2); // dashed
         line->SetLineColor(kGray + 2);
-        line->SetLineWidth(1);
+        line->SetLineWidth(2);
         return line;
     };
 
@@ -755,6 +755,8 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
         std::cout << "Ellipse center (x,y) = (" << xc << ", " << yc << ")\n";
         std::cout << "Uncertainty in x (sigx) = " << sig_x / 1.515 << "\n";
         std::cout << "Uncertainty in y (sigy) = " << sig_y / 1.515 << "\n";
+        std::cout << "\n"
+                  << endl;
     };
 
     // Reuse the previous function
@@ -813,7 +815,7 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     y_max = y_center + range_half;
 
     TCanvas *c1 = new TCanvas("c1", "Ellipse Comparison", 800, 800);
-    c1->DrawFrame(x_min, y_min, x_max, y_max, "Contours;M(GeV);Width(GeV)");
+    c1->DrawFrame(x_min, y_min, x_max, y_max, "Contours;#DeltaM(GeV);#DeltaWidth(GeV)");
 
     e1->Draw("same");
     e2->Draw("same");
@@ -828,8 +830,10 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     auto perp_b = CreatePerpendicularLine(x0, y0, theta + 90.0);
     perp_a->SetLineColor(kRed + 2);
     perp_a->SetLineStyle(3);
+    perp_a->SetLineWidth(3);
     perp_b->SetLineColor(kRed + 2);
     perp_b->SetLineStyle(3);
+    perp_b->SetLineWidth(3);
     perp_a->Draw("same");
     perp_b->Draw("same");
 
@@ -1077,12 +1081,12 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     // 1D_pT
 
     TMarker *pp_7 = new TMarker(pp_sys_7.X(), pp_sys_7.Y(), 20);
-    pp_7->SetMarkerColor(kCyan + 1);
+    pp_7->SetMarkerColor(kCyan + 3);
     pp_7->SetMarkerSize(1.2);
     pp_7->Draw("same");
 
     TEllipse *pp_7_sys_contour = CreateScaledEllipseFromSystematic(pp_sys_7, e2, type);
-    pp_7_sys_contour->SetLineColor(kCyan + 1);
+    pp_7_sys_contour->SetLineColor(kCyan + 3);
     pp_7_sys_contour->SetLineWidth(2);
     pp_7_sys_contour->SetLineStyle(1);
     pp_7_sys_contour->SetFillStyle(0);
@@ -1106,6 +1110,7 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     leg1->AddEntry(PbPb_6_sys_contour, "Mass range", "l");
     leg1->AddEntry(PbPb_7_sys_contour, "HF Up", "l");
     leg1->AddEntry(PbPb_8_sys_contour, "HF Down", "l");
+    leg1->AddEntry(pp_7_sys_contour, "1D pT", "l");
 
     // Draw legend
     leg1->Draw();
@@ -1333,12 +1338,12 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
     // 1D_pT
 
     TMarker *PbPb_sub_pp_9 = new TMarker(PbPb_sub_pp_sys_9.X(), PbPb_sub_pp_sys_9.Y(), 20);
-    PbPb_sub_pp_9->SetMarkerColor(kBlack);
+    PbPb_sub_pp_9->SetMarkerColor(kCyan + 3);
     PbPb_sub_pp_9->SetMarkerSize(1.2);
     PbPb_sub_pp_9->Draw("same");
 
     TEllipse *PbPb_sub_pp_9_sys_contour = CreateScaledEllipseFromSystematic(PbPb_sub_pp_sys_9, e3, type);
-    PbPb_sub_pp_9_sys_contour->SetLineColor(kBlack);
+    PbPb_sub_pp_9_sys_contour->SetLineColor(kCyan + 3);
     PbPb_sub_pp_9_sys_contour->SetLineWidth(2);
     PbPb_sub_pp_9_sys_contour->SetLineStyle(1);
     PbPb_sub_pp_9_sys_contour->SetFillStyle(0);
@@ -1418,6 +1423,7 @@ void DrawEllipsesComparison(const TVectorD &v1, const TVectorD &v2, TString Save
 
 void get_combined_contour(TString type = "degen")
 {
+
     TFile *f1 = new TFile("./contourrootfile/everything.root", "READ");
     TFile *f2 = new TFile("./bestfittemplaterootfile/template.root", "READ");
 
@@ -1592,6 +1598,7 @@ void get_combined_contour(TString type = "degen")
     TVectorD PbPb_sig_2_10 = doeverything("PbPb, |#eta| < 2.4, Nominal, centrality: (15.0-100.0)", "./contourtest/PbPb_10.png", f1, PbPb_10, 2);
 
     setTDRStyle();
+    gStyle->SetFrameLineWidth(3);
 
     DrawEllipsesComparison(PbPb_sig_1_0, pp_sig1, savepath + "PbPb_0_sig_1.png", *PbPb_0_tnpU, *PbPb_0_tnpD, *PbPb_0_AcoUp, *PbPb_0_AcoDown, *PbPb_0_nobk, *PbPb_0_massrange, *PbPb_0_HFup, *PbPb_0_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_0_10");
     DrawEllipsesComparison(PbPb_sig_2_0, pp_sig2, savepath + "PbPb_0_sig_2.png", *PbPb_0_tnpU, *PbPb_0_tnpD, *PbPb_0_AcoUp, *PbPb_0_AcoDown, *PbPb_0_nobk, *PbPb_0_massrange, *PbPb_0_HFup, *PbPb_0_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_0_10");

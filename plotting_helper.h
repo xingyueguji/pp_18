@@ -38,13 +38,13 @@ void plotting_helper::areanormalize(TH1 *h_1)
     return;
   }
   double normalization_factor = h_1->Integral("width");
-  h_1->Scale(1 / normalization_factor);
+  h_1->Scale(1.0 / normalization_factor);
 }
 
 void plotting_helper::areanormalize_TH1(TH1 *h_1)
 {
   double normalization_factor = h_1->Integral("width");
-  h_1->Scale(1 / normalization_factor);
+  h_1->Scale(1.0 / normalization_factor);
 }
 
 void plotting_helper::luminormalize(TH1D *h_1, int opt, double weight)

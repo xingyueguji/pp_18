@@ -2977,9 +2977,10 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	TCanvas *temp_c1 = new TCanvas("temp_c1", "", 1000, 1000);
 	temp_c1->cd();
 	temp_c1->SetTitle("");
-	temp_c1->SetTopMargin(0.06);
+	temp_c1->SetTopMargin(0.07);
 	temp_c1->SetRightMargin(0.05);
 	temp_c1->SetLeftMargin(0.14);
+	temp_c1->SetBottomMargin(0.12);
 	temp_c1->SetFrameLineWidth(5);
 	temp_c1->SetTickx(1);
 	temp_c1->SetTicky(1);
@@ -3001,7 +3002,7 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 			onesig_left->GetXaxis()->SetRangeUser(raw_pp_mass_shift_low_without_bk, raw_pp_mass_shift_high_without_bk);
 			onesig_left->GetYaxis()->SetRangeUser(raw_pp_smear_low_without_bk, raw_pp_smear_high_without_bk);
 		}
-		if (typeofpp == 7)
+		else if (typeofpp == 7)
 		{
 			onesig_left->GetXaxis()->SetLimits(raw_pp_mass_shift_low_mass_range, raw_pp_mass_shift_high_mass_range);
 			onesig_left->GetYaxis()->SetLimits(raw_pp_smear_low_mass_range, raw_pp_smear_high_mass_range);
@@ -3032,6 +3033,12 @@ void chisquaretest::drawcontour(TGraph *onesig_left, TGraph *onesig_right, TGrap
 	onesig_left->SetLineColor(kBlue - 3); // Set line color to blue
 	onesig_left->SetLineStyle(2);
 	onesig_left->SetMarkerStyle(21);
+	onesig_left->GetXaxis()->SetTitleSize(0.05);
+	onesig_left->GetYaxis()->SetTitleSize(0.05);
+	onesig_left->GetYaxis()->SetTitleOffset(1.4);
+
+	onesig_left->GetXaxis()->SetLabelSize(0.04);
+	onesig_left->GetYaxis()->SetLabelSize(0.04);
 
 	onesig_right->SetMarkerSize(2);
 	onesig_right->SetMarkerColor(kGreen);

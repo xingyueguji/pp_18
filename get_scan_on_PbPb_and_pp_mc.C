@@ -35,13 +35,6 @@ void outputresult(TH2D *h)
     // Get axis coordinates of that bin
     double x_center = h->GetXaxis()->GetBinCenter(ix);
     double y_center = h->GetYaxis()->GetBinCenter(iy);
-
-    cout << "==============================" << endl;
-    cout << "Minimum bin content: " << minVal << endl;
-    cout << "Bin indices: ix = " << ix << ", iy = " << iy << endl;
-    cout << "Coordinates: x = " << x_center
-         << ", y = " << y_center << endl;
-    cout << "==============================" << endl;
 }
 
 std::vector<std::pair<double, double>> getContour(TH2D *h1)
@@ -314,7 +307,15 @@ void get_scan_on_PbPb_and_pp_mc()
     {
         if (!((i < 4) || (i == 10)))
             continue;
-        h_PbPb_mc[i] = (TH1D *)PbPb_mc->Get(Form("FA_nominal_%i", i));
+        if (i == 10)
+        {
+            h_PbPb_mc[i] = (TH1D *)PbPb_mc->Get(Form("FA_nominal_%i", 4));
+        }
+        else
+        {
+            h_PbPb_mc[i] = (TH1D *)PbPb_mc->Get(Form("FA_nominal_%i", i));
+        }
+
         areanormalize(h_PbPb_mc[i]);
     }
     TH1D *pp_mc_nominal_inclusive = (TH1D *)pp_mc->Get("pp_mc_FA_nominal_phi_plus_inclusive");
@@ -353,6 +354,8 @@ void get_scan_on_PbPb_and_pp_mc()
     {
         if (!((cent < 4) || (cent == 10)))
             continue;
+
+        // Here's still old cent binning choice since special, I never re-run it.
 
         for (int i = 0; i < 42; i++)
         {
@@ -663,7 +666,7 @@ void get_scan_on_PbPb_and_pp_mc()
     gWidth_diff_pp1DPT->SetLineWidth(2);
 
     TCanvas *cMassDiff = new TCanvas("cMassDiff", "Mass difference vs phi", 800, 800);
-    gMass_diff_pp->SetTitle("#Centrality; #Delta Mass (PbPb - pp) (GeV)");
+    gMass_diff_pp->SetTitle(";Centrality; #Delta Mass (PbPb - pp) (GeV)");
     gMass_diff_pp->GetYaxis()->SetRangeUser(-0.05, 0.05);
     gMass_diff_pp->GetXaxis()->SetLimits(-0.5, 4.5);
     gMass_diff_pp->Draw("AP");
@@ -683,7 +686,7 @@ void get_scan_on_PbPb_and_pp_mc()
     cMassDiff->SaveAs("./PbPb_pp_mc_compare/PbPb_-_pp_dM.pdf");
 
     TCanvas *cWidthDiff = new TCanvas("cWidthDiff", "Width difference vs phi", 800, 800);
-    gWidth_diff_pp->SetTitle("#Centrality; #Delta Width (PbPb - pp) (GeV)");
+    gWidth_diff_pp->SetTitle(";Centrality; #Delta Width (PbPb - pp) (GeV)");
     gWidth_diff_pp->GetYaxis()->SetRangeUser(-0.05, 0.05);
     gWidth_diff_pp->GetXaxis()->SetLimits(-0.5, 4.5);
     gWidth_diff_pp->Draw("AP");

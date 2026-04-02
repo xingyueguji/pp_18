@@ -148,7 +148,7 @@ void FitAndAnnotateThreeGraphs(TCanvas *c, bool isflattened, TString isMass = ""
     TLatex latex;
     latex.SetNDC(true);
     latex.SetTextFont(42);
-    latex.SetTextSize(0.017);
+    latex.SetTextSize(0.02);
 
     double x0 = 0.5;
     double y0 = 0.87;
@@ -479,7 +479,7 @@ BuildMassAndWidthShiftGraphs(std::vector<TH2D *> &h_chi2_maps)
     return {gMass, gWidth};
 }
 
-void get_scan_on_PbPb_and_pp_data(bool isflattened = 0)
+void get_scan_on_PbPb_and_pp_data(bool isflattened = 1)
 {
     gStyle->SetOptStat(0);
     gStyle->SetEndErrorSize(0);
@@ -763,11 +763,11 @@ void get_scan_on_PbPb_and_pp_data(bool isflattened = 0)
     gStyle->SetOptStat(0);
     gStyle->SetTitleFont(42, "XYZ");
     gStyle->SetLabelFont(42, "XYZ");
-    gStyle->SetTitleSize(0.045, "XYZ");
+    gStyle->SetTitleSize(0.05, "XYZ");
     gStyle->SetLabelSize(0.04, "XYZ");
     gStyle->SetPadTickX(1);
     gStyle->SetPadTickY(1);
-    gStyle->SetFrameLineWidth(2);
+    gStyle->SetFrameLineWidth(3);
 
     // --- Separate canvas: Mass shift ---
 

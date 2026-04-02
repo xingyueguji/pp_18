@@ -1,12 +1,15 @@
 #include "tdrStyle.C"
 #include "CMS_lumi.C"
-void cosmetic(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, TGraphErrors *g8, TGraphErrors *g9, bool isdM, bool isdiff = false)
+void cosmetic(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, TGraphErrors *g8, TGraphErrors *g9, TGraphErrors *g10, bool isdM, bool isdiff = false)
 {
     const double scale = 1.515; // reduce error by this factor
 
-    auto reduceErrors = [&](TGraphErrors *g) {
-        if (!g) return;
-        for (int i = 0; i < g->GetN(); ++i) {
+    auto reduceErrors = [&](TGraphErrors *g)
+    {
+        if (!g)
+            return;
+        for (int i = 0; i < g->GetN(); ++i)
+        {
             double x, y;
             g->GetPoint(i, x, y);
             double ex = g->GetErrorX(i);
@@ -24,7 +27,8 @@ void cosmetic(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors
     reduceErrors(g7);
     reduceErrors(g8);
     reduceErrors(g9);
-    
+    reduceErrors(g10);
+
     g1->SetMarkerStyle(20); // Circle marker
     g1->SetMarkerSize(1.2);
     g1->SetLineWidth(2);
@@ -133,15 +137,22 @@ void cosmetic(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors
     g9->SetLineColor(kGray + 2);
     g9->SetMarkerColor(kGray + 2);
 
+    g10->SetMarkerStyle(32);
+    g10->SetMarkerSize(1.4);
+    g10->SetLineWidth(2);
+    g10->SetLineColor(kBrownCyan);
+    g10->SetMarkerColor(kBrownCyan);
+
     // Define small shifts for each graph
-    double shift2 = 0.1;  // Small right shift for g2
-    double shift3 = -0.1; // Slightly more shift for g3
-    double shift4 = 0.2;  // More shift for g4
-    double shift5 = -0.2; // Largest shift for g5
-    double shift7 = -0.3; // 6
-    double shift6 = 0.3;  // 7
-    double shift8 = 0.4;
-    double shift9 = -0.4;
+    double shift2 = 0.075;  // Small right shift for g2
+    double shift3 = -0.075; // Slightly more shift for g3
+    double shift4 = 0.15;   // More shift for g4
+    double shift5 = -0.15;  // Largest shift for g5
+    double shift7 = -0.225; // 6
+    double shift6 = 0.225;  // 7
+    double shift8 = 0.3;
+    double shift9 = -0.3;
+    double shift10 = 0.375;
 
     // Function to apply X shifts to a TGraphErrors
     auto shiftX = [](TGraphErrors *g, double shift)
@@ -163,9 +174,10 @@ void cosmetic(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors
     shiftX(g7, shift7);
     shiftX(g8, shift8);
     shiftX(g9, shift9);
+    shiftX(g10, shift10);
 }
 
-void cosmeticpp(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, bool isdM)
+void cosmeticpp(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, TGraphErrors *g8, bool isdM)
 {
     g1->SetMarkerStyle(20); // Circle marker
     g1->SetMarkerSize(1.2);
@@ -192,7 +204,7 @@ void cosmeticpp(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErro
     for (int i = 1; i <= 22; i++)
     {
         if (i == 22)
-            g1->GetXaxis()->ChangeLabel(i, 0, 0.04, 11, -1, -1, "inclusive");
+            g1->GetXaxis()->ChangeLabel(i, 0, 0.04, 11, -1, -1, " All");
         else if (i >= 10)
         {
             g1->GetXaxis()->ChangeLabel(i, 0, 0.04, 11, -1, -1, Form("  %i", i));
@@ -239,6 +251,12 @@ void cosmeticpp(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErro
     g7->SetLineColor(kOrange + 7);
     g7->SetMarkerColor(kOrange + 7);
 
+    g8->SetMarkerStyle(32);
+    g8->SetMarkerSize(1.4);
+    g8->SetLineWidth(2);
+    g8->SetLineColor(kBrownCyan);
+    g8->SetMarkerColor(kBrownCyan);
+
     // Define small shifts for each graph
     double shift2 = 0.1;  // Small right shift for g2
     double shift3 = -0.1; // Slightly more shift for g3
@@ -246,6 +264,7 @@ void cosmeticpp(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErro
     double shift5 = -0.2; // Largest shift for g5
     double shift7 = -0.3;
     double shift6 = 0.3;
+    double shift8 = 0.4;
 
     // Function to apply X shifts to a TGraphErrors
     auto shiftX = [](TGraphErrors *g, double shift)
@@ -265,6 +284,7 @@ void cosmeticpp(TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErro
     shiftX(g5, shift5);
     shiftX(g6, shift6);
     shiftX(g7, shift7);
+    shiftX(g8, shift8);
 }
 
 TGraphErrors *mergeGraphs(TGraphErrors *g1, TGraphErrors *g2)
@@ -302,17 +322,10 @@ TGraphErrors *mergeGraphs(TGraphErrors *g1, TGraphErrors *g2)
 
     return g_merged;
 }
-void draw(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, TGraphErrors *g8, TGraphErrors *g9, bool isdM, bool iseta)
+void draw(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, TGraphErrors *g8, TGraphErrors *g9, TGraphErrors *g10, bool isdM, bool iseta)
 {
     c1->cd();
-    /*if (isdM && !iseta)
-        g1->GetYaxis()->SetRangeUser(-0.28, 0.1);
-    if (isdM && iseta)
-        g1->GetYaxis()->SetRangeUser(-0.4, 0.08);
-    if (!isdM && !iseta)
-        g1->GetYaxis()->SetRangeUser(-0.5, 0.8);
-    if (!isdM && iseta)
-        g1->GetYaxis()->SetRangeUser(-0.25, 0.6);*/
+    gPad->SetFrameLineWidth(3);
 
     if (isdM)
         g1->GetYaxis()->SetRangeUser(-0.4, 0.2);
@@ -331,8 +344,12 @@ void draw(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGr
         g8->Draw("P SAME");
         g9->Draw("P SAME");
     }
+    if (g10 != nullptr)
+    {
+        g10->Draw("P SAME");
+    }
 
-    TLegend *legend = new TLegend(0.2, 0.7, 0.4, 0.9);
+    TLegend *legend = new TLegend(0.2, 0.6, 0.5, 0.9);
     legend->AddEntry(g1, "Nominal", "PL");
     legend->AddEntry(g2, "tnpU", "PL");
     legend->AddEntry(g3, "tnpD", "PL");
@@ -344,6 +361,10 @@ void draw(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGr
     {
         legend->AddEntry(g8, "HF up", "PL");
         legend->AddEntry(g9, "HF down", "PL");
+    }
+    if (g10 != nullptr)
+    {
+        legend->AddEntry(g10, "1D_pT", "PL");
     }
 
     legend->SetTextSize(0.03);              // Set text size
@@ -365,7 +386,7 @@ void draw(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGr
         pave->AddText("|#eta| < 2.4");
     pave->Draw("same");
 }
-void drawdiff(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, TGraphErrors *g8, TGraphErrors *g9, bool isdM, bool iseta)
+void drawdiff(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, TGraphErrors *g8, TGraphErrors *g9, TGraphErrors *g10, bool isdM, bool iseta)
 {
     c1->cd();
 
@@ -395,6 +416,10 @@ void drawdiff(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3,
         g8->Draw("P SAME");
         g9->Draw("P SAME");
     }
+    if (g10 != nullptr)
+    {
+        g10->Draw("P SAME");
+    }
 
     TLegend *legend = new TLegend(0.2, 0.7, 0.4, 0.9);
     legend->AddEntry(g1, "Nominal", "PL");
@@ -408,6 +433,10 @@ void drawdiff(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3,
     {
         legend->AddEntry(g8, "HF up", "PL");
         legend->AddEntry(g9, "HF down", "PL");
+    }
+    if (g10 != nullptr)
+    {
+        legend->AddEntry(g10, "1D_pT", "PL");
     }
 
     legend->SetTextSize(0.03);              // Set text size
@@ -508,6 +537,7 @@ void get_systematic(int version = 2)
     TGraphErrors *pp_dM_chi2_raw_nominal_no_bk = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_nominal_no_bk");
     TGraphErrors *pp_dM_chi2_raw_nominal_uniform_rebin = nullptr;
     TGraphErrors *pp_dM_chi2_raw_nominal_mass_range = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_nominal_mass_range");
+    TGraphErrors *pp_dM_chi2_raw_nominal_1D_pT = (TGraphErrors *)f1->Get("pp_dM_chi2_raw_nominal_1D_pT");
 
     TGraphErrors *pp_dWidth_chi2_raw_nominal = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_nominal");
     TGraphErrors *pp_dWidth_chi2_raw_tnpU = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_tnpU");
@@ -517,6 +547,7 @@ void get_systematic(int version = 2)
     TGraphErrors *pp_dWidth_chi2_raw_nominal_no_bk = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_nominal_no_bk");
     TGraphErrors *pp_dWidth_chi2_raw_nominal_uniform_rebin = nullptr;
     TGraphErrors *pp_dWidth_chi2_raw_nominal_mass_range = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_nominal_mass_range");
+    TGraphErrors *pp_dWidth_chi2_raw_nominal_1D_pT = (TGraphErrors *)f1->Get("pp_dWidth_chi2_raw_nominal_1D_pT");
 
     TCanvas *c_FA_dM = new TCanvas("c_FA_dM", "", 800, 800);
     TCanvas *c_FA_dW = new TCanvas("c_FA_dW", "", 800, 800);
@@ -524,8 +555,8 @@ void get_systematic(int version = 2)
     TCanvas *c_FA_dM_diff = new TCanvas("c_FA_dM_diff", "", 800, 800);
     TCanvas *c_FA_dW_diff = new TCanvas("c_FA_dW_diff", "", 800, 800);
 
-    TCanvas *c_pp_FA_dM = new TCanvas("c_pp_FA_dM", "", 1600, 800);
-    TCanvas *c_pp_FA_dW = new TCanvas("c_pp_FA_dW", "", 1600, 800);
+    TCanvas *c_pp_FA_dM = new TCanvas("c_pp_FA_dM", "", 1200, 800);
+    TCanvas *c_pp_FA_dW = new TCanvas("c_pp_FA_dW", "", 1200, 800);
 
     c_pp_FA_dM->SetLeftMargin(0.12);
     c_pp_FA_dW->SetLeftMargin(0.12);
@@ -540,6 +571,7 @@ void get_systematic(int version = 2)
     TGraphErrors *HI_pp_dM_chi2_raw_nominal_mass_range = mergeGraphs(HI_dM_chi2_raw_nominal_mass_range, pp_dM_chi2_raw_nominal_mass_range);
     TGraphErrors *HI_pp_dM_chi2_raw_HF_up = mergeGraphs(HI_dM_chi2_raw_HF_up, pp_dM_chi2_raw_nominal);
     TGraphErrors *HI_pp_dM_chi2_raw_HF_down = mergeGraphs(HI_dM_chi2_raw_HF_down, pp_dM_chi2_raw_nominal);
+    TGraphErrors *HI_pp_dM_chi2_raw_1D_pT = mergeGraphs(HI_dM_chi2_raw_nominal, pp_dM_chi2_raw_nominal_1D_pT);
 
     TGraphErrors *HI_sub_pp_dM_chi2_raw_nominal = getdiffplot(HI_pp_dM_chi2_raw_nominal);
     TGraphErrors *HI_sub_pp_dM_chi2_raw_tnpU = getdiffplot(HI_pp_dM_chi2_raw_tnpU);
@@ -550,18 +582,19 @@ void get_systematic(int version = 2)
     TGraphErrors *HI_sub_pp_dM_chi2_raw_nominal_mass_range = getdiffplot(HI_pp_dM_chi2_raw_nominal_mass_range);
     TGraphErrors *HI_sub_pp_dM_chi2_raw_HF_up = getdiffplot(HI_pp_dM_chi2_raw_HF_up);
     TGraphErrors *HI_sub_pp_dM_chi2_raw_HF_down = getdiffplot(HI_pp_dM_chi2_raw_HF_down);
+    TGraphErrors *HI_sub_pp_dM_chi2_raw_1D_pT = getdiffplot(HI_pp_dM_chi2_raw_1D_pT);
 
     cosmetic(HI_pp_dM_chi2_raw_nominal, HI_pp_dM_chi2_raw_tnpU, HI_pp_dM_chi2_raw_tnpD, HI_pp_dM_chi2_raw_acoup, HI_pp_dM_chi2_raw_acodown, HI_pp_dM_chi2_raw_nominal_no_bk,
-             HI_pp_dM_chi2_raw_nominal_mass_range, HI_pp_dM_chi2_raw_HF_up, HI_pp_dM_chi2_raw_HF_down, 1);
+             HI_pp_dM_chi2_raw_nominal_mass_range, HI_pp_dM_chi2_raw_HF_up, HI_pp_dM_chi2_raw_HF_down, HI_pp_dM_chi2_raw_1D_pT, 1);
 
     draw(c_FA_dM, HI_pp_dM_chi2_raw_nominal, HI_pp_dM_chi2_raw_tnpU, HI_pp_dM_chi2_raw_tnpD, HI_pp_dM_chi2_raw_acoup, HI_pp_dM_chi2_raw_acodown, HI_pp_dM_chi2_raw_nominal_no_bk,
-         HI_pp_dM_chi2_raw_nominal_mass_range, HI_pp_dM_chi2_raw_HF_up, HI_pp_dM_chi2_raw_HF_down, 1, 0);
+         HI_pp_dM_chi2_raw_nominal_mass_range, HI_pp_dM_chi2_raw_HF_up, HI_pp_dM_chi2_raw_HF_down, HI_pp_dM_chi2_raw_1D_pT, 1, 0);
 
     cosmetic(HI_sub_pp_dM_chi2_raw_nominal, HI_sub_pp_dM_chi2_raw_tnpU, HI_sub_pp_dM_chi2_raw_tnpD, HI_sub_pp_dM_chi2_raw_acoup, HI_sub_pp_dM_chi2_raw_acodown, HI_sub_pp_dM_chi2_raw_nominal_no_bk,
-             HI_sub_pp_dM_chi2_raw_nominal_mass_range, HI_sub_pp_dM_chi2_raw_HF_up, HI_sub_pp_dM_chi2_raw_HF_down, 1, 1);
+             HI_sub_pp_dM_chi2_raw_nominal_mass_range, HI_sub_pp_dM_chi2_raw_HF_up, HI_sub_pp_dM_chi2_raw_HF_down, HI_sub_pp_dM_chi2_raw_1D_pT, 1, 1);
 
     drawdiff(c_FA_dM_diff, HI_sub_pp_dM_chi2_raw_nominal, HI_sub_pp_dM_chi2_raw_tnpU, HI_sub_pp_dM_chi2_raw_tnpD, HI_sub_pp_dM_chi2_raw_acoup, HI_sub_pp_dM_chi2_raw_acodown, HI_sub_pp_dM_chi2_raw_nominal_no_bk,
-             HI_sub_pp_dM_chi2_raw_nominal_mass_range, HI_sub_pp_dM_chi2_raw_HF_up, HI_sub_pp_dM_chi2_raw_HF_down, 1, 0);
+             HI_sub_pp_dM_chi2_raw_nominal_mass_range, HI_sub_pp_dM_chi2_raw_HF_up, HI_sub_pp_dM_chi2_raw_HF_down, HI_sub_pp_dM_chi2_raw_1D_pT, 1, 0);
 
     // dW, FA, HI
     TGraphErrors *HI_pp_dWidth_chi2_raw_nominal = mergeGraphs(HI_dWidth_chi2_raw_nominal, pp_dWidth_chi2_raw_nominal);
@@ -573,6 +606,7 @@ void get_systematic(int version = 2)
     TGraphErrors *HI_pp_dWidth_chi2_raw_nominal_mass_range = mergeGraphs(HI_dWidth_chi2_raw_nominal_mass_range, pp_dWidth_chi2_raw_nominal_mass_range);
     TGraphErrors *HI_pp_dWidth_chi2_raw_HF_up = mergeGraphs(HI_dWidth_chi2_raw_HF_up, pp_dWidth_chi2_raw_nominal);
     TGraphErrors *HI_pp_dWidth_chi2_raw_HF_down = mergeGraphs(HI_dWidth_chi2_raw_HF_down, pp_dWidth_chi2_raw_nominal);
+    TGraphErrors *HI_pp_dWidth_chi2_raw_1D_pT = mergeGraphs(HI_dWidth_chi2_raw_nominal, pp_dWidth_chi2_raw_nominal_1D_pT);
 
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_nominal = getdiffplot(HI_pp_dWidth_chi2_raw_nominal);
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_tnpU = getdiffplot(HI_pp_dWidth_chi2_raw_tnpU);
@@ -583,28 +617,29 @@ void get_systematic(int version = 2)
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_nominal_mass_range = getdiffplot(HI_pp_dWidth_chi2_raw_nominal_mass_range);
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_HF_up = getdiffplot(HI_pp_dWidth_chi2_raw_HF_up);
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_HF_down = getdiffplot(HI_pp_dWidth_chi2_raw_HF_down);
+    TGraphErrors *HI_sub_pp_dWidth_chi2_raw_1D_pT = getdiffplot(HI_pp_dWidth_chi2_raw_1D_pT);
 
     cosmetic(HI_pp_dWidth_chi2_raw_nominal, HI_pp_dWidth_chi2_raw_tnpU, HI_pp_dWidth_chi2_raw_tnpD, HI_pp_dWidth_chi2_raw_acoup, HI_pp_dWidth_chi2_raw_acodown, HI_pp_dWidth_chi2_raw_nominal_no_bk,
-             HI_pp_dWidth_chi2_raw_nominal_mass_range, HI_pp_dWidth_chi2_raw_HF_up, HI_pp_dWidth_chi2_raw_HF_down, 0);
+             HI_pp_dWidth_chi2_raw_nominal_mass_range, HI_pp_dWidth_chi2_raw_HF_up, HI_pp_dWidth_chi2_raw_HF_down, HI_pp_dWidth_chi2_raw_1D_pT, 0);
     draw(c_FA_dW, HI_pp_dWidth_chi2_raw_nominal, HI_pp_dWidth_chi2_raw_tnpU, HI_pp_dWidth_chi2_raw_tnpD, HI_pp_dWidth_chi2_raw_acoup, HI_pp_dWidth_chi2_raw_acodown, HI_pp_dWidth_chi2_raw_nominal_no_bk,
-         HI_pp_dWidth_chi2_raw_nominal_mass_range, HI_pp_dWidth_chi2_raw_HF_up, HI_pp_dWidth_chi2_raw_HF_down, 0, 0);
+         HI_pp_dWidth_chi2_raw_nominal_mass_range, HI_pp_dWidth_chi2_raw_HF_up, HI_pp_dWidth_chi2_raw_HF_down, HI_pp_dWidth_chi2_raw_1D_pT, 0, 0);
 
     cosmetic(HI_sub_pp_dWidth_chi2_raw_nominal, HI_sub_pp_dWidth_chi2_raw_tnpU, HI_sub_pp_dWidth_chi2_raw_tnpD, HI_sub_pp_dWidth_chi2_raw_acoup, HI_sub_pp_dWidth_chi2_raw_acodown, HI_sub_pp_dWidth_chi2_raw_nominal_no_bk,
-             HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dWidth_chi2_raw_HF_up, HI_sub_pp_dWidth_chi2_raw_HF_down, 0, 1);
+             HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dWidth_chi2_raw_HF_up, HI_sub_pp_dWidth_chi2_raw_HF_down, HI_sub_pp_dWidth_chi2_raw_1D_pT, 0, 1);
     drawdiff(c_FA_dW_diff, HI_sub_pp_dWidth_chi2_raw_nominal, HI_sub_pp_dWidth_chi2_raw_tnpU, HI_sub_pp_dWidth_chi2_raw_tnpD, HI_sub_pp_dWidth_chi2_raw_acoup, HI_sub_pp_dWidth_chi2_raw_acodown, HI_sub_pp_dWidth_chi2_raw_nominal_no_bk,
-             HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dWidth_chi2_raw_HF_up, HI_sub_pp_dWidth_chi2_raw_HF_down, 0, 0);
+             HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dWidth_chi2_raw_HF_up, HI_sub_pp_dWidth_chi2_raw_HF_down, HI_sub_pp_dWidth_chi2_raw_1D_pT, 0, 0);
 
     // dM, FA, pp
 
-    cosmeticpp(pp_dM_chi2_raw_nominal, pp_dM_chi2_raw_tnpU, pp_dM_chi2_raw_tnpD, pp_dM_chi2_raw_acoup, pp_dM_chi2_raw_acodown, pp_dM_chi2_raw_nominal_no_bk, pp_dM_chi2_raw_nominal_mass_range, 1);
+    cosmeticpp(pp_dM_chi2_raw_nominal, pp_dM_chi2_raw_tnpU, pp_dM_chi2_raw_tnpD, pp_dM_chi2_raw_acoup, pp_dM_chi2_raw_acodown, pp_dM_chi2_raw_nominal_no_bk, pp_dM_chi2_raw_nominal_mass_range, pp_dM_chi2_raw_nominal_1D_pT, 1);
 
-    draw(c_pp_FA_dM, pp_dM_chi2_raw_nominal, pp_dM_chi2_raw_tnpU, pp_dM_chi2_raw_tnpD, pp_dM_chi2_raw_acoup, pp_dM_chi2_raw_acodown, pp_dM_chi2_raw_nominal_no_bk, pp_dM_chi2_raw_nominal_mass_range, nullptr, nullptr, 1, 0);
+    draw(c_pp_FA_dM, pp_dM_chi2_raw_nominal, pp_dM_chi2_raw_tnpU, pp_dM_chi2_raw_tnpD, pp_dM_chi2_raw_acoup, pp_dM_chi2_raw_acodown, pp_dM_chi2_raw_nominal_no_bk, pp_dM_chi2_raw_nominal_mass_range, nullptr, nullptr, pp_dM_chi2_raw_nominal_1D_pT, 1, 0);
 
     // dW, FA, pp
 
-    cosmeticpp(pp_dWidth_chi2_raw_nominal, pp_dWidth_chi2_raw_tnpU, pp_dWidth_chi2_raw_tnpD, pp_dWidth_chi2_raw_acoup, pp_dWidth_chi2_raw_acodown, pp_dWidth_chi2_raw_nominal_no_bk, pp_dWidth_chi2_raw_nominal_mass_range, 0);
+    cosmeticpp(pp_dWidth_chi2_raw_nominal, pp_dWidth_chi2_raw_tnpU, pp_dWidth_chi2_raw_tnpD, pp_dWidth_chi2_raw_acoup, pp_dWidth_chi2_raw_acodown, pp_dWidth_chi2_raw_nominal_no_bk, pp_dWidth_chi2_raw_nominal_mass_range, pp_dWidth_chi2_raw_nominal_1D_pT, 0);
 
-    draw(c_pp_FA_dW, pp_dWidth_chi2_raw_nominal, pp_dWidth_chi2_raw_tnpU, pp_dWidth_chi2_raw_tnpD, pp_dWidth_chi2_raw_acoup, pp_dWidth_chi2_raw_acodown, pp_dWidth_chi2_raw_nominal_no_bk, pp_dWidth_chi2_raw_nominal_mass_range, nullptr, nullptr, 0, 0);
+    draw(c_pp_FA_dW, pp_dWidth_chi2_raw_nominal, pp_dWidth_chi2_raw_tnpU, pp_dWidth_chi2_raw_tnpD, pp_dWidth_chi2_raw_acoup, pp_dWidth_chi2_raw_acodown, pp_dWidth_chi2_raw_nominal_no_bk, pp_dWidth_chi2_raw_nominal_mass_range, nullptr, nullptr, pp_dWidth_chi2_raw_nominal_1D_pT, 0, 0);
 
     c_FA_dM->SaveAs("./systematic/FA_dM.png");
     c_FA_dM_diff->SaveAs("./systematic/FA_dM_diff.png");
@@ -626,6 +661,7 @@ void get_systematic(int version = 2)
     HI_sub_pp_dM_chi2_raw_nominal_mass_range->Write("HI_sub_pp_dM_chi2_raw_nominal_mass_range", 2);
     HI_sub_pp_dM_chi2_raw_HF_up->Write("HI_sub_pp_dM_chi2_raw_HF_up", 2);
     HI_sub_pp_dM_chi2_raw_HF_down->Write("HI_sub_pp_dM_chi2_raw_HF_down", 2);
+    HI_sub_pp_dM_chi2_raw_1D_pT->Write("HI_sub_pp_dM_chi2_raw_1D_pT", 2);
 
     HI_pp_dM_chi2_raw_nominal->Write("HI_pp_dM_chi2_raw_nominal", 2);
     HI_pp_dM_chi2_raw_tnpU->Write("HI_pp_dM_chi2_raw_tnpU", 2);
@@ -636,6 +672,7 @@ void get_systematic(int version = 2)
     HI_pp_dM_chi2_raw_nominal_mass_range->Write("HI_pp_dM_chi2_raw_nominal_mass_range", 2);
     HI_pp_dM_chi2_raw_HF_up->Write("HI_pp_dM_chi2_raw_HF_up", 2);
     HI_pp_dM_chi2_raw_HF_down->Write("HI_pp_dM_chi2_raw_HF_down", 2);
+    HI_pp_dM_chi2_raw_1D_pT->Write("HI_pp_dM_chi2_raw_1D_pT", 2);
 
     HI_sub_pp_dWidth_chi2_raw_nominal->Write("HI_sub_pp_dWidth_chi2_raw_nominal", 2);
     HI_sub_pp_dWidth_chi2_raw_tnpU->Write("HI_sub_pp_dWidth_chi2_raw_tnpU", 2);
@@ -646,6 +683,7 @@ void get_systematic(int version = 2)
     HI_sub_pp_dWidth_chi2_raw_nominal_mass_range->Write("HI_sub_pp_dWidth_chi2_raw_nominal_mass_range", 2);
     HI_sub_pp_dWidth_chi2_raw_HF_up->Write("HI_sub_pp_dWidth_chi2_raw_HF_up", 2);
     HI_sub_pp_dWidth_chi2_raw_HF_down->Write("HI_sub_pp_dWidth_chi2_raw_HF_down", 2);
+    HI_sub_pp_dWidth_chi2_raw_1D_pT->Write("HI_sub_pp_dWidth_chi2_raw_1D_pT", 2);
 
     HI_pp_dWidth_chi2_raw_nominal->Write("HI_pp_dWidth_chi2_raw_nominal", 2);
     HI_pp_dWidth_chi2_raw_tnpU->Write("HI_pp_dWidth_chi2_raw_tnpU", 2);
@@ -656,4 +694,5 @@ void get_systematic(int version = 2)
     HI_pp_dWidth_chi2_raw_nominal_mass_range->Write("HI_pp_dWidth_chi2_raw_nominal_mass_range", 2);
     HI_pp_dWidth_chi2_raw_HF_up->Write("HI_pp_dWidth_chi2_raw_HF_up", 2);
     HI_pp_dWidth_chi2_raw_HF_down->Write("HI_pp_dWidth_chi2_raw_HF_down", 2);
+    HI_pp_dWidth_chi2_raw_1D_pT->Write("HI_pp_dWidth_chi2_raw_1D_pT", 2);
 }

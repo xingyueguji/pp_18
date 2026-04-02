@@ -31,7 +31,7 @@ TH1D *convertGraphToHist(TGraphErrors *graph, const char *histName)
 
 void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors *tnpU, TGraphErrors *tnpD,
                                TGraphErrors *acoup, TGraphErrors *acodown, TGraphErrors *no_bk,
-                               TGraphErrors *mass_range, TGraphErrors *HFup, TGraphErrors *HFdown, bool isdM, bool iseta)
+                               TGraphErrors *mass_range, TGraphErrors *HFup, TGraphErrors *HFdown, TGraphErrors *h_1D_pT, bool isdM, bool iseta)
 {
     // Convert all TGraphErrors to TH1D
     TH1D *h_nominal = convertGraphToHist(nominal, "h_nominal");
@@ -43,6 +43,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     TH1D *h_mass_range = convertGraphToHist(mass_range, "h_mass_range");
     TH1D *h_mass_HFup = convertGraphToHist(HFup, "h_mass_HFup");
     TH1D *h_mass_HFdown = convertGraphToHist(HFdown, "h_mass_HFdown");
+    TH1D *h_mass_1D_pT = convertGraphToHist(h_1D_pT, "h_1D_pT");
 
     h_nominal->SetDirectory(0);
     h_tnpU->SetDirectory(0);
@@ -53,6 +54,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     h_mass_range->SetDirectory(0);
     h_mass_HFup->SetDirectory(0);
     h_mass_HFdown->SetDirectory(0);
+    h_mass_1D_pT->SetDirectory(0);
 
     // Create a histogram for total systematic uncertainty
     TH1D *h_nominalStat = (TH1D *)h_nominal->Clone("h_nominalStat");
@@ -64,6 +66,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     TH1D *h_no_bkSyst = (TH1D *)h_no_bk->Clone("h_no_bkSyst");
     TH1D *h_mass_rangeSyst = (TH1D *)h_mass_range->Clone("h_mass_rangeSyst");
     TH1D *h_mass_HFSyst = (TH1D *)h_mass_HFup->Clone("h_mass_HFupSyst");
+    TH1D *h_mass_1DSyst = (TH1D *)h_mass_1D_pT->Clone("h_mass_1DSyst");
 
     h_nominalStat->Reset();
     h_totalSyst->Reset(); // Clear bin contents
@@ -74,6 +77,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     h_no_bkSyst->Reset();
     h_mass_rangeSyst->Reset();
     h_mass_HFSyst->Reset();
+    h_mass_1DSyst->Reset();
 
     // Compute total systematic uncertainty bin by bin using quadrature sum
     for (int i = 1; i <= h_nominal->GetNbinsX(); i++)
@@ -88,6 +92,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
         double mass_rangevalue = abs(nominalvalue - h_mass_range->GetBinContent(i));
         double HF_upvalue = abs(nominalvalue - h_mass_HFup->GetBinContent(i));
         double HF_downvalue = abs(nominalvalue - h_mass_HFdown->GetBinContent(i));
+        double pp_1D_pT_value = abs(nominalvalue - h_mass_1D_pT->GetBinContent(i));
 
         double FinalHF;
         double FinalTnP;
@@ -134,6 +139,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
         h_no_bkSyst->SetBinContent(i, no_bkvalue);
         h_mass_rangeSyst->SetBinContent(i, mass_rangevalue);
         h_mass_HFSyst->SetBinContent(i, FinalHF);
+        h_mass_1DSyst->SetBinContent(i, pp_1D_pT_value);
     }
 
     c1->cd();
@@ -219,6 +225,10 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     h_mass_HFSyst->SetLineColor(kGray + 2);
     h_mass_HFSyst->SetMarkerColor(kGray + 2);
 
+    h_mass_1DSyst->SetLineWidth(2);
+    h_mass_1DSyst->SetLineColor(kBrownCyan);
+    h_mass_1DSyst->SetMarkerColor(kBrownCyan);
+
     h_tnpUSyst->Draw("L SAME");
     h_tnpDSyst->Draw("L SAME");
     h_acoupSyst->Draw("L SAME");
@@ -226,6 +236,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     h_no_bkSyst->Draw("L SAME");
     h_mass_rangeSyst->Draw("L SAME");
     h_mass_HFSyst->Draw("L SAME");
+    h_mass_1DSyst->Draw("L SAME");
 
     // Add legend
     TLegend *legend = new TLegend(0.6, 0.6, 0.88, 0.88);
@@ -239,6 +250,7 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     legend->AddEntry(h_no_bkSyst, "bk_off", "L");
     legend->AddEntry(h_mass_rangeSyst, "Mass range", "L");
     legend->AddEntry(h_mass_HFSyst, "HF", "L");
+    legend->AddEntry(h_mass_1DSyst, "1D_pT", "L");
     legend->SetTextSize(0.03);              // Set text size
     legend->SetTextFont(42);                // Use a modern, clean font
     legend->SetBorderSize(0);               // Set border size (0 for no border)
@@ -277,6 +289,7 @@ void get_systematic_stack()
     TGraphErrors *HI_sub_pp_dM_chi2_raw_nominal_mass_range = (TGraphErrors *)f1->Get("HI_sub_pp_dM_chi2_raw_nominal_mass_range");
     TGraphErrors *HI_sub_pp_dM_chi2_raw_HF_up = (TGraphErrors *)f1->Get("HI_sub_pp_dM_chi2_raw_HF_up");
     TGraphErrors *HI_sub_pp_dM_chi2_raw_HF_down = (TGraphErrors *)f1->Get("HI_sub_pp_dM_chi2_raw_HF_down");
+    TGraphErrors *HI_sub_pp_dM_chi2_raw_1D_pT = (TGraphErrors *)f1->Get("HI_sub_pp_dM_chi2_raw_1D_pT");
 
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_nominal = (TGraphErrors *)f1->Get("HI_sub_pp_dWidth_chi2_raw_nominal");
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_tnpU = (TGraphErrors *)f1->Get("HI_sub_pp_dWidth_chi2_raw_tnpU");
@@ -287,16 +300,17 @@ void get_systematic_stack()
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_nominal_mass_range = (TGraphErrors *)f1->Get("HI_sub_pp_dWidth_chi2_raw_nominal_mass_range");
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_HF_up = (TGraphErrors *)f1->Get("HI_sub_pp_dWidth_chi2_raw_HF_up");
     TGraphErrors *HI_sub_pp_dWidth_chi2_raw_HF_down = (TGraphErrors *)f1->Get("HI_sub_pp_dWidth_chi2_raw_HF_down");
+    TGraphErrors *HI_sub_pp_dWidth_chi2_raw_1D_pT = (TGraphErrors *)f1->Get("HI_sub_pp_dWidth_chi2_raw_1D_pT");
 
     TCanvas *c_HI_sub_pp_dM_chi2_raw_stack = new TCanvas("c_HI_sub_pp_dM_chi2_raw_stack", "", 800, 800);
     TCanvas *c_HI_sub_pp_dWidth_chi2_raw_stack = new TCanvas("c_HI_sub_pp_dWidth_chi2_raw_stack", "", 800, 800);
 
     plotSystematicUncertainty(c_HI_sub_pp_dM_chi2_raw_stack, HI_sub_pp_dM_chi2_raw_nominal, HI_sub_pp_dM_chi2_raw_tnpU, HI_sub_pp_dM_chi2_raw_tnpD, HI_sub_pp_dM_chi2_raw_acoup, HI_sub_pp_dM_chi2_raw_acodown,
-                              HI_sub_pp_dM_chi2_raw_nominal_no_bk, HI_sub_pp_dM_chi2_raw_nominal_mass_range, HI_sub_pp_dM_chi2_raw_HF_up, HI_sub_pp_dM_chi2_raw_HF_down, 1, 0);
+                              HI_sub_pp_dM_chi2_raw_nominal_no_bk, HI_sub_pp_dM_chi2_raw_nominal_mass_range, HI_sub_pp_dM_chi2_raw_HF_up, HI_sub_pp_dM_chi2_raw_HF_down,HI_sub_pp_dM_chi2_raw_1D_pT, 1, 0);
     CMS_lumi(c_HI_sub_pp_dM_chi2_raw_stack, 13, 10);
 
     plotSystematicUncertainty(c_HI_sub_pp_dWidth_chi2_raw_stack, HI_sub_pp_dWidth_chi2_raw_nominal, HI_sub_pp_dWidth_chi2_raw_tnpU, HI_sub_pp_dWidth_chi2_raw_tnpD, HI_sub_pp_dWidth_chi2_raw_acoup, HI_sub_pp_dWidth_chi2_raw_acodown,
-                              HI_sub_pp_dWidth_chi2_raw_nominal_no_bk, HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dWidth_chi2_raw_HF_up, HI_sub_pp_dWidth_chi2_raw_HF_down, 0, 0);
+                              HI_sub_pp_dWidth_chi2_raw_nominal_no_bk, HI_sub_pp_dWidth_chi2_raw_nominal_mass_range, HI_sub_pp_dWidth_chi2_raw_HF_up, HI_sub_pp_dWidth_chi2_raw_HF_down,HI_sub_pp_dWidth_chi2_raw_1D_pT, 0, 0);
     CMS_lumi(c_HI_sub_pp_dWidth_chi2_raw_stack, 13, 10);
 
     c_HI_sub_pp_dM_chi2_raw_stack->SaveAs("./systematic/FA_dM_diff_stack.png");

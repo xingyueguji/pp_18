@@ -1,0 +1,3642 @@
+   ------------------------------------------------------------------
+  | Welcome to ROOT 6.32.06                        https://root.cern |
+  | (c) 1995-2024, The ROOT Team; conception: R. Brun, F. Rademakers |
+  | Built for macosxarm64 on Sep 21 2024, 18:21:53                   |
+  | From tags/6-32-06@6-32-06                                        |
+  | With Apple clang version 16.0.0 (clang-1600.0.26.3)              |
+  | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+   ------------------------------------------------------------------
+
+
+Processing get_combined_contour.C...
+Info in <TCanvas::Print>: png file ./contourtest/pp.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/pp.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_0.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_0.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_1.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_1.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_2.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_2.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_3.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_3.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_4.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_4.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_5.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_5.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_6.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_6.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_7.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_7.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_8.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_8.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_9.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_9.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_10.png has been created
+Info in <TCanvas::Print>: png file ./contourtest/PbPb_10.png has been created
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.000668959
+Uncertainty in y (sigy) = 0.00171574
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.000659872
+Uncertainty in y (sigy) = 0.000654261
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.000733956
+Uncertainty in y (sigy) = 0.00218915
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.00126336
+Uncertainty in y (sigy) = 0.00148507
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.00152289
+Uncertainty in y (sigy) = 0.0216689
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.000670386
+Uncertainty in y (sigy) = 0.00674454
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.0032281
+Uncertainty in y (sigy) = 0.000660241
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.000638401
+Uncertainty in y (sigy) = 0.000614016
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.135319, 0.070235)
+Uncertainty in x (sigx) = 0.00381877
+Uncertainty in y (sigy) = 0.0228819
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.000659336
+Uncertainty in y (sigy) = 0.000541266
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.000609011
+Uncertainty in y (sigy) = 0.000388477
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.000727703
+Uncertainty in y (sigy) = 0.00183661
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.00127707
+Uncertainty in y (sigy) = 0.00159488
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.000701573
+Uncertainty in y (sigy) = 0.00209039
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.000791366
+Uncertainty in y (sigy) = 0.00660005
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.0032281
+Uncertainty in y (sigy) = 0.000660241
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.000638401
+Uncertainty in y (sigy) = 0.000614016
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0446183, 0.0157818)
+Uncertainty in x (sigx) = 0.00368556
+Uncertainty in y (sigy) = 0.0083419
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_0_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.000662977
+Uncertainty in y (sigy) = 0.00279484
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.00065622
+Uncertainty in y (sigy) = 0.000446624
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.000762731
+Uncertainty in y (sigy) = 0.00326744
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.00111833
+Uncertainty in y (sigy) = 0.000718536
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.00157152
+Uncertainty in y (sigy) = 0.0205893
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.000663127
+Uncertainty in y (sigy) = 0.00782418
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.00318116
+Uncertainty in y (sigy) = 0.00123453
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.000675721
+Uncertainty in y (sigy) = 0.000695825
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.135401, 0.0718707)
+Uncertainty in x (sigx) = 0.00380881
+Uncertainty in y (sigy) = 0.0224863
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.000661418
+Uncertainty in y (sigy) = 0.00162745
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.000660809
+Uncertainty in y (sigy) = 0.00135377
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.000775738
+Uncertainty in y (sigy) = 0.00292321
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.0011033
+Uncertainty in y (sigy) = 0.000759516
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.000739532
+Uncertainty in y (sigy) = 0.00317847
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.000844803
+Uncertainty in y (sigy) = 0.00768881
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.00318116
+Uncertainty in y (sigy) = 0.00123453
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.000675721
+Uncertainty in y (sigy) = 0.000695825
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0447554, 0.0174313)
+Uncertainty in x (sigx) = 0.00368457
+Uncertainty in y (sigy) = 0.00997061
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_0_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.000735233
+Uncertainty in y (sigy) = 0.003071
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.000357869
+Uncertainty in y (sigy) = 0.000649847
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.00132428
+Uncertainty in y (sigy) = 0.0012194
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.000712061
+Uncertainty in y (sigy) = 0.00216371
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.000660563
+Uncertainty in y (sigy) = 0.0226048
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.00136279
+Uncertainty in y (sigy) = 0.00670785
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.0068505
+Uncertainty in y (sigy) = 0.0107714
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.000843766
+Uncertainty in y (sigy) = 0.00104169
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.193856, 0.228942)
+Uncertainty in x (sigx) = 0.00730157
+Uncertainty in y (sigy) = 0.0261699
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.000703076
+Uncertainty in y (sigy) = 0.00189569
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.000699918
+Uncertainty in y (sigy) = 0.000874969
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.00135405
+Uncertainty in y (sigy) = 0.00153092
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.000709499
+Uncertainty in y (sigy) = 0.00228225
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.00123989
+Uncertainty in y (sigy) = 0.00124356
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.00186728
+Uncertainty in y (sigy) = 0.00685343
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.0068505
+Uncertainty in y (sigy) = 0.0107714
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.000843766
+Uncertainty in y (sigy) = 0.00104169
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.103155, 0.174488)
+Uncertainty in x (sigx) = 0.00750374
+Uncertainty in y (sigy) = 0.0137609
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_1_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.000664204
+Uncertainty in y (sigy) = 0.0038671
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.000660861
+Uncertainty in y (sigy) = 0.000730887
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.000874295
+Uncertainty in y (sigy) = 0.000694782
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.000905258
+Uncertainty in y (sigy) = 0.00139702
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.000762052
+Uncertainty in y (sigy) = 0.0218079
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.00172637
+Uncertainty in y (sigy) = 0.00591248
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.00725604
+Uncertainty in y (sigy) = 0.0115678
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.000694038
+Uncertainty in y (sigy) = 0.00177623
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.194472, 0.230149)
+Uncertainty in x (sigx) = 0.00769621
+Uncertainty in y (sigy) = 0.0257515
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.000684072
+Uncertainty in y (sigy) = 0.0027
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.000666795
+Uncertainty in y (sigy) = 0.00164564
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.000915011
+Uncertainty in y (sigy) = 0.000837933
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.000929444
+Uncertainty in y (sigy) = 0.00150273
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.000939592
+Uncertainty in y (sigy) = 0.00197177
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.0022835
+Uncertainty in y (sigy) = 0.00604965
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.00725604
+Uncertainty in y (sigy) = 0.0115678
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.000694038
+Uncertainty in y (sigy) = 0.00177623
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.103827, 0.175709)
+Uncertainty in x (sigx) = 0.00788578
+Uncertainty in y (sigy) = 0.0142502
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_1_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.000667647
+Uncertainty in y (sigy) = 0.00227725
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.000319998
+Uncertainty in y (sigy) = 0.000633286
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.00115311
+Uncertainty in y (sigy) = 0.00522454
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.000704948
+Uncertainty in y (sigy) = 0.015007
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.00133641
+Uncertainty in y (sigy) = 0.0224706
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.00245287
+Uncertainty in y (sigy) = 0.0252571
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.0095735
+Uncertainty in y (sigy) = 0.0120678
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.0031173
+Uncertainty in y (sigy) = 0.00464827
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.191939, 0.0225034)
+Uncertainty in x (sigx) = 0.0108303
+Uncertainty in y (sigy) = 0.0391574
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.000675528
+Uncertainty in y (sigy) = 0.00110552
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.000680682
+Uncertainty in y (sigy) = 0.000851061
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.00115923
+Uncertainty in y (sigy) = 0.00487096
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.000708013
+Uncertainty in y (sigy) = 0.0151259
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.000660953
+Uncertainty in y (sigy) = 0.00128738
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.00192293
+Uncertainty in y (sigy) = 0.0251124
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.0095735
+Uncertainty in y (sigy) = 0.0120678
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.0031173
+Uncertainty in y (sigy) = 0.00464827
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.101238, -0.0319499)
+Uncertainty in x (sigx) = 0.0107532
+Uncertainty in y (sigy) = 0.0322173
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_2_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.000755518
+Uncertainty in y (sigy) = 0.00459821
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.000660311
+Uncertainty in y (sigy) = 0.00224099
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.00095033
+Uncertainty in y (sigy) = 0.00754429
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.000660334
+Uncertainty in y (sigy) = 0.0126862
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.0015735
+Uncertainty in y (sigy) = 0.0201498
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.00219747
+Uncertainty in y (sigy) = 0.0275779
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.00930519
+Uncertainty in y (sigy) = 0.00975067
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.00286785
+Uncertainty in y (sigy) = 0.00695919
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.192343, 0.0260195)
+Uncertainty in x (sigx) = 0.0102196
+Uncertainty in y (sigy) = 0.0386112
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.000811862
+Uncertainty in y (sigy) = 0.00343167
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.000661653
+Uncertainty in y (sigy) = 0.00315839
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.000930295
+Uncertainty in y (sigy) = 0.00719951
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.000661721
+Uncertainty in y (sigy) = 0.0127959
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.000741277
+Uncertainty in y (sigy) = 0.00361773
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.00164163
+Uncertainty in y (sigy) = 0.0274424
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.00930519
+Uncertainty in y (sigy) = 0.00975067
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.00286785
+Uncertainty in y (sigy) = 0.00695919
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.101698, -0.0284199)
+Uncertainty in x (sigx) = 0.01006
+Uncertainty in y (sigy) = 0.0331787
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_2_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.000665385
+Uncertainty in y (sigy) = 0.00223573
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.000661672
+Uncertainty in y (sigy) = 0.000773761
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.000384183
+Uncertainty in y (sigy) = 0.000596759
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.000794144
+Uncertainty in y (sigy) = 0.00725821
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.00241047
+Uncertainty in y (sigy) = 0.0236793
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.00154691
+Uncertainty in y (sigy) = 0.0212584
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.00361625
+Uncertainty in y (sigy) = 0.00276709
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.00297051
+Uncertainty in y (sigy) = 0.00153867
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.121572, 0.321477)
+Uncertainty in x (sigx) = 0.00848969
+Uncertainty in y (sigy) = 0.0322403
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.000672193
+Uncertainty in y (sigy) = 0.00106365
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.000577938
+Uncertainty in y (sigy) = 0.000356423
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.000636248
+Uncertainty in y (sigy) = 0.000560444
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.000798974
+Uncertainty in y (sigy) = 0.00737708
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.00119734
+Uncertainty in y (sigy) = 0.000663316
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.00107051
+Uncertainty in y (sigy) = 0.0211137
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.00361625
+Uncertainty in y (sigy) = 0.00276709
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.00297051
+Uncertainty in y (sigy) = 0.00153867
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0308713, 0.267024)
+Uncertainty in x (sigx) = 0.00608324
+Uncertainty in y (sigy) = 0.0227585
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_3_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.000747637
+Uncertainty in y (sigy) = 0.00425015
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.000727403
+Uncertainty in y (sigy) = 0.00125722
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.000917127
+Uncertainty in y (sigy) = 0.00190578
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.00109988
+Uncertainty in y (sigy) = 0.00524504
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.00198788
+Uncertainty in y (sigy) = 0.0216651
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.00195689
+Uncertainty in y (sigy) = 0.0232726
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.00315428
+Uncertainty in y (sigy) = 0.000953054
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.00251809
+Uncertainty in y (sigy) = 0.000875731
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.120901, 0.324529)
+Uncertainty in x (sigx) = 0.00531045
+Uncertainty in y (sigy) = 0.0324943
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.000702218
+Uncertainty in y (sigy) = 0.00308278
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.000730137
+Uncertainty in y (sigy) = 0.00216372
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.00088801
+Uncertainty in y (sigy) = 0.00156882
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.00107799
+Uncertainty in y (sigy) = 0.00535465
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.00100285
+Uncertainty in y (sigy) = 0.00211468
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.00141301
+Uncertainty in y (sigy) = 0.0231371
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.00315428
+Uncertainty in y (sigy) = 0.000953054
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.00251809
+Uncertainty in y (sigy) = 0.000875731
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0302552, 0.270089)
+Uncertainty in x (sigx) = 0.00502179
+Uncertainty in y (sigy) = 0.024353
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_3_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.00068963
+Uncertainty in y (sigy) = 0.00125029
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.000689471
+Uncertainty in y (sigy) = 0.00124105
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.000483471
+Uncertainty in y (sigy) = 0.000627394
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.00069982
+Uncertainty in y (sigy) = 0.00569931
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.0015052
+Uncertainty in y (sigy) = 0.0232683
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.00150438
+Uncertainty in y (sigy) = 0.0160798
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.000467647
+Uncertainty in y (sigy) = 0.000552115
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.000467647
+Uncertainty in y (sigy) = 0.000552115
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.155119, 0.184407)
+Uncertainty in x (sigx) = 0.00569599
+Uncertainty in y (sigy) = 0.0284274
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.000302659
+Uncertainty in y (sigy) = 0.00061193
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.000582797
+Uncertainty in y (sigy) = 0.000511525
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.000481357
+Uncertainty in y (sigy) = 0.000631806
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.000702728
+Uncertainty in y (sigy) = 0.00581818
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.000640109
+Uncertainty in y (sigy) = 0.00056461
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.00103393
+Uncertainty in y (sigy) = 0.0159351
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.000467647
+Uncertainty in y (sigy) = 0.000552115
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.000467647
+Uncertainty in y (sigy) = 0.000552115
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0644177, 0.129954)
+Uncertainty in x (sigx) = 0.00562267
+Uncertainty in y (sigy) = 0.0166638
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_4_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.000667505
+Uncertainty in y (sigy) = 0.00225586
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.000607544
+Uncertainty in y (sigy) = 0.000356907
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.000697591
+Uncertainty in y (sigy) = 0.00120185
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.000668036
+Uncertainty in y (sigy) = 0.00468794
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.00162309
+Uncertainty in y (sigy) = 0.022257
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.00138879
+Uncertainty in y (sigy) = 0.0170911
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.000665737
+Uncertainty in y (sigy) = 0.00119448
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.000665737
+Uncertainty in y (sigy) = 0.00119448
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.155316, 0.185939)
+Uncertainty in x (sigx) = 0.00271421
+Uncertainty in y (sigy) = 0.0285722
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000660084
+Uncertainty in y (sigy) = 0.0010882
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000660527
+Uncertainty in y (sigy) = 0.000697473
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000678992
+Uncertainty in y (sigy) = 0.00086716
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000664336
+Uncertainty in y (sigy) = 0.00479767
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000751922
+Uncertainty in y (sigy) = 0.00151931
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000911949
+Uncertainty in y (sigy) = 0.0169556
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000665737
+Uncertainty in y (sigy) = 0.00119448
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000665737
+Uncertainty in y (sigy) = 0.00119448
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0646703, 0.1315)
+Uncertainty in x (sigx) = 0.00235168
+Uncertainty in y (sigy) = 0.0182257
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_4_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.000729323
+Uncertainty in y (sigy) = 0.00189858
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.000651521
+Uncertainty in y (sigy) = 0.000637414
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.000698176
+Uncertainty in y (sigy) = 0.00241444
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.000698535
+Uncertainty in y (sigy) = 0.00257625
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.0017793
+Uncertainty in y (sigy) = 0.0207194
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.00150244
+Uncertainty in y (sigy) = 0.00361991
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.0021289
+Uncertainty in y (sigy) = 0.00811749
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.00279018
+Uncertainty in y (sigy) = 0.00347472
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.137244, 0.0710907)
+Uncertainty in x (sigx) = 0.00433216
+Uncertainty in y (sigy) = 0.0230347
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.000672522
+Uncertainty in y (sigy) = 0.000752141
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.000726458
+Uncertainty in y (sigy) = 0.00145094
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.0006945
+Uncertainty in y (sigy) = 0.00206095
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.000696063
+Uncertainty in y (sigy) = 0.00269499
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.000839185
+Uncertainty in y (sigy) = 0.00304062
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.00201386
+Uncertainty in y (sigy) = 0.00376901
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.0021289
+Uncertainty in y (sigy) = 0.00811749
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.00279018
+Uncertainty in y (sigy) = 0.00347472
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0465427, 0.0166375)
+Uncertainty in x (sigx) = 0.00434685
+Uncertainty in y (sigy) = 0.0112942
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_5_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.00069884
+Uncertainty in y (sigy) = 0.00321374
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.000695569
+Uncertainty in y (sigy) = 0.00185485
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.000736615
+Uncertainty in y (sigy) = 0.00373223
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.000719446
+Uncertainty in y (sigy) = 0.00126861
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.00186838
+Uncertainty in y (sigy) = 0.0194012
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.00156757
+Uncertainty in y (sigy) = 0.0023215
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.00203979
+Uncertainty in y (sigy) = 0.00943503
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.00270838
+Uncertainty in y (sigy) = 0.00477931
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.137389, 0.0730878)
+Uncertainty in x (sigx) = 0.00429827
+Uncertainty in y (sigy) = 0.0227578
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.000670493
+Uncertainty in y (sigy) = 0.00204632
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.000689877
+Uncertainty in y (sigy) = 0.00277082
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.00074869
+Uncertainty in y (sigy) = 0.00338771
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.000732892
+Uncertainty in y (sigy) = 0.0013774
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.000930172
+Uncertainty in y (sigy) = 0.00436694
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.00211933
+Uncertainty in y (sigy) = 0.00246683
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.00203979
+Uncertainty in y (sigy) = 0.00943503
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.00270838
+Uncertainty in y (sigy) = 0.00477931
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0467432, 0.0186484)
+Uncertainty in x (sigx) = 0.00430997
+Uncertainty in y (sigy) = 0.0131596
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_5_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.00070963
+Uncertainty in y (sigy) = 0.00252059
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.000692669
+Uncertainty in y (sigy) = 0.00102981
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.00146282
+Uncertainty in y (sigy) = 0.000952219
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.000708537
+Uncertainty in y (sigy) = 0.00219571
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.00196862
+Uncertainty in y (sigy) = 0.0269419
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.00248341
+Uncertainty in y (sigy) = 0.0243212
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.00128951
+Uncertainty in y (sigy) = 0.00435784
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.0023577
+Uncertainty in y (sigy) = 0.00495169
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.140057, 0.144593)
+Uncertainty in x (sigx) = 0.00465741
+Uncertainty in y (sigy) = 0.0369953
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.000682003
+Uncertainty in y (sigy) = 0.00134641
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.000366149
+Uncertainty in y (sigy) = 0.000625082
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.0014327
+Uncertainty in y (sigy) = 0.00074995
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.000712046
+Uncertainty in y (sigy) = 0.00231444
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.000974896
+Uncertainty in y (sigy) = 0.0031875
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.00195274
+Uncertainty in y (sigy) = 0.0241765
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.00128951
+Uncertainty in y (sigy) = 0.00435784
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.0023577
+Uncertainty in y (sigy) = 0.00495169
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0493562, 0.0901396)
+Uncertainty in x (sigx) = 0.00426374
+Uncertainty in y (sigy) = 0.0256457
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_6_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.000684294
+Uncertainty in y (sigy) = 0.00330074
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.000551076
+Uncertainty in y (sigy) = 0.000470189
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.00158688
+Uncertainty in y (sigy) = 0.00160157
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.000679952
+Uncertainty in y (sigy) = 0.00141588
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.00204949
+Uncertainty in y (sigy) = 0.026161
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.00240099
+Uncertainty in y (sigy) = 0.0251021
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.00121311
+Uncertainty in y (sigy) = 0.00357852
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.00243453
+Uncertainty in y (sigy) = 0.0041758
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.140187, 0.145776)
+Uncertainty in x (sigx) = 0.00451112
+Uncertainty in y (sigy) = 0.036854
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.000663815
+Uncertainty in y (sigy) = 0.0021332
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.00066212
+Uncertainty in y (sigy) = 0.000698243
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.0015955
+Uncertainty in y (sigy) = 0.00129812
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.000674943
+Uncertainty in y (sigy) = 0.00152453
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.00105696
+Uncertainty in y (sigy) = 0.00240428
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.0018382
+Uncertainty in y (sigy) = 0.0249666
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.00121311
+Uncertainty in y (sigy) = 0.00357852
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.00243453
+Uncertainty in y (sigy) = 0.0041758
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0495414, 0.0913365)
+Uncertainty in x (sigx) = 0.00394726
+Uncertainty in y (sigy) = 0.0261262
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_6_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.00068854
+Uncertainty in y (sigy) = 0.00277254
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.000515425
+Uncertainty in y (sigy) = 0.000641312
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.0019241
+Uncertainty in y (sigy) = 0.00167118
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.000689897
+Uncertainty in y (sigy) = 0.00645917
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.000677062
+Uncertainty in y (sigy) = 0.0190294
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.00165695
+Uncertainty in y (sigy) = 0.0125929
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.0026363
+Uncertainty in y (sigy) = 0.00147416
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.00124449
+Uncertainty in y (sigy) = 0.00112218
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.236816, 0.158068)
+Uncertainty in x (sigx) = 0.00605114
+Uncertainty in y (sigy) = 0.023443
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.000670324
+Uncertainty in y (sigy) = 0.00159642
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.000727184
+Uncertainty in y (sigy) = 0.00081544
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.00191924
+Uncertainty in y (sigy) = 0.00135686
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.000692447
+Uncertainty in y (sigy) = 0.00657804
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.00116725
+Uncertainty in y (sigy) = 0.00473031
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.00116835
+Uncertainty in y (sigy) = 0.0124481
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.0026363
+Uncertainty in y (sigy) = 0.00147416
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.00124449
+Uncertainty in y (sigy) = 0.00112218
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.146115, 0.103615)
+Uncertainty in x (sigx) = 0.0065348
+Uncertainty in y (sigy) = 0.0146155
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_7_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.00067238
+Uncertainty in y (sigy) = 0.00338079
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.000646168
+Uncertainty in y (sigy) = 0.000472339
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.0016356
+Uncertainty in y (sigy) = 0.00223458
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.000672702
+Uncertainty in y (sigy) = 0.00585059
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.00081783
+Uncertainty in y (sigy) = 0.0184208
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.0013591
+Uncertainty in y (sigy) = 0.0132013
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.00295559
+Uncertainty in y (sigy) = 0.000981362
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.00102047
+Uncertainty in y (sigy) = 0.00164131
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.23732, 0.15899)
+Uncertainty in x (sigx) = 0.00493157
+Uncertainty in y (sigy) = 0.0234903
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.000698951
+Uncertainty in y (sigy) = 0.00221438
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.000665705
+Uncertainty in y (sigy) = 0.00135279
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.00159966
+Uncertainty in y (sigy) = 0.00190375
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.000678625
+Uncertainty in y (sigy) = 0.00596034
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.000890896
+Uncertainty in y (sigy) = 0.00534664
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.000889122
+Uncertainty in y (sigy) = 0.0130657
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.00295559
+Uncertainty in y (sigy) = 0.000981362
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.00102047
+Uncertainty in y (sigy) = 0.00164131
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.146674, 0.104551)
+Uncertainty in x (sigx) = 0.0051982
+Uncertainty in y (sigy) = 0.015696
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_7_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.000666481
+Uncertainty in y (sigy) = 0.00212054
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.000647715
+Uncertainty in y (sigy) = 0.000586581
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.00133499
+Uncertainty in y (sigy) = 0.00117542
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.00072864
+Uncertainty in y (sigy) = 0.00829266
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.00193129
+Uncertainty in y (sigy) = 0.0273863
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.00115356
+Uncertainty in y (sigy) = 0.0139935
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.00141507
+Uncertainty in y (sigy) = 0.00424318
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.00120885
+Uncertainty in y (sigy) = 0.000802713
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.121292, 0.260559)
+Uncertainty in x (sigx) = 0.00704247
+Uncertainty in y (sigy) = 0.0315855
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.000660281
+Uncertainty in y (sigy) = 0.000943881
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.000613982
+Uncertainty in y (sigy) = 0.000498724
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.00131408
+Uncertainty in y (sigy) = 0.000912745
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.000732325
+Uncertainty in y (sigy) = 0.00841153
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.000948897
+Uncertainty in y (sigy) = 0.00363054
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.000766763
+Uncertainty in y (sigy) = 0.0138488
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.00141507
+Uncertainty in y (sigy) = 0.00424318
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.00120885
+Uncertainty in y (sigy) = 0.000802713
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0305911, 0.206105)
+Uncertainty in x (sigx) = 0.00776741
+Uncertainty in y (sigy) = 0.0160759
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_8_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.000690227
+Uncertainty in y (sigy) = 0.00395167
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.000667375
+Uncertainty in y (sigy) = 0.00130448
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.00149731
+Uncertainty in y (sigy) = 0.00290602
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.000779692
+Uncertainty in y (sigy) = 0.00646156
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.00183049
+Uncertainty in y (sigy) = 0.0255551
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.00124345
+Uncertainty in y (sigy) = 0.0158247
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.00151687
+Uncertainty in y (sigy) = 0.00607192
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.00122768
+Uncertainty in y (sigy) = 0.00237818
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.121129, 0.263333)
+Uncertainty in x (sigx) = 0.00415352
+Uncertainty in y (sigy) = 0.0315581
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.00066643
+Uncertainty in y (sigy) = 0.00278415
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.000673869
+Uncertainty in y (sigy) = 0.00222099
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.00146662
+Uncertainty in y (sigy) = 0.00256599
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.000765266
+Uncertainty in y (sigy) = 0.00657128
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.000880548
+Uncertainty in y (sigy) = 0.0018012
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.000805243
+Uncertainty in y (sigy) = 0.0156892
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.00151687
+Uncertainty in y (sigy) = 0.00607192
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.00122768
+Uncertainty in y (sigy) = 0.00237818
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0304836, 0.208893)
+Uncertainty in x (sigx) = 0.00402096
+Uncertainty in y (sigy) = 0.0187253
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_8_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.000672144
+Uncertainty in y (sigy) = 0.00224423
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.000641053
+Uncertainty in y (sigy) = 0.000453769
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.000964224
+Uncertainty in y (sigy) = 0.00173457
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.000774043
+Uncertainty in y (sigy) = 0.00199821
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.00149355
+Uncertainty in y (sigy) = 0.0221577
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.000785377
+Uncertainty in y (sigy) = 0.00735065
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.00115692
+Uncertainty in y (sigy) = 0.00126255
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.000964224
+Uncertainty in y (sigy) = 0.00173457
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.135065, 0.142843)
+Uncertainty in x (sigx) = 0.00256953
+Uncertainty in y (sigy) = 0.023626
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.000661706
+Uncertainty in y (sigy) = 0.00106793
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.000651063
+Uncertainty in y (sigy) = 0.000534431
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.000941827
+Uncertainty in y (sigy) = 0.00139659
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.000779687
+Uncertainty in y (sigy) = 0.00211649
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.000689323
+Uncertainty in y (sigy) = 0.00160266
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.000672481
+Uncertainty in y (sigy) = 0.00720593
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.00115692
+Uncertainty in y (sigy) = 0.00126255
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.000964224
+Uncertainty in y (sigy) = 0.00173457
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.044364, 0.0883901)
+Uncertainty in x (sigx) = 0.00238768
+Uncertainty in y (sigy) = 0.00899086
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_9_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.000673524
+Uncertainty in y (sigy) = 0.00284743
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.000559922
+Uncertainty in y (sigy) = 0.000425107
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.000975441
+Uncertainty in y (sigy) = 0.0023264
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.000764307
+Uncertainty in y (sigy) = 0.0014038
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.00148903
+Uncertainty in y (sigy) = 0.0215543
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.000788232
+Uncertainty in y (sigy) = 0.00795399
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.00118684
+Uncertainty in y (sigy) = 0.0018185
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.000975441
+Uncertainty in y (sigy) = 0.0023264
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.135057, 0.143757)
+Uncertainty in x (sigx) = 0.00256977
+Uncertainty in y (sigy) = 0.0234541
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.000660554
+Uncertainty in y (sigy) = 0.00167983
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.000666
+Uncertainty in y (sigy) = 0.00111819
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.000988346
+Uncertainty in y (sigy) = 0.00198748
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.000754752
+Uncertainty in y (sigy) = 0.0015096
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.000701694
+Uncertainty in y (sigy) = 0.00221392
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.000679223
+Uncertainty in y (sigy) = 0.00781843
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.00118684
+Uncertainty in y (sigy) = 0.0018185
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.000975441
+Uncertainty in y (sigy) = 0.0023264
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0444118, 0.0893181)
+Uncertainty in x (sigx) = 0.00232956
+Uncertainty in y (sigy) = 0.00992526
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_9_sig_2.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.000735304
+Uncertainty in y (sigy) = 0.00190671
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.00066164
+Uncertainty in y (sigy) = 0.000664357
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.00179486
+Uncertainty in y (sigy) = 0.00121682
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.000744076
+Uncertainty in y (sigy) = 0.00773555
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.000957355
+Uncertainty in y (sigy) = 0.0242211
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.0021475
+Uncertainty in y (sigy) = 0.0188009
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.00122807
+Uncertainty in y (sigy) = 0.00082437
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.00122807
+Uncertainty in y (sigy) = 0.00082437
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00066287
+Uncertainty in y (sigy) = 0.0011773
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000660092
+Uncertainty in y (sigy) = 0.000908279
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000659927
+Uncertainty in y (sigy) = 0.000354281
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.0006584
+Uncertainty in y (sigy) = 0.000128064
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00130196
+Uncertainty in y (sigy) = 0.0237578
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00058072
+Uncertainty in y (sigy) = 0.000655009
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.178475, 0.213522)
+Uncertainty in x (sigx) = 0.00726677
+Uncertainty in y (sigy) = 0.0310129
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0907008, 0.0544533)
+Uncertainty in x (sigx) = 0.00188977
+Uncertainty in y (sigy) = 0.0241514
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.00067524
+Uncertainty in y (sigy) = 0.000762285
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.000577364
+Uncertainty in y (sigy) = 0.000584595
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.00178763
+Uncertainty in y (sigy) = 0.000947925
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.00074809
+Uncertainty in y (sigy) = 0.00785442
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.000646972
+Uncertainty in y (sigy) = 0.000644771
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.00162726
+Uncertainty in y (sigy) = 0.0186562
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.00122807
+Uncertainty in y (sigy) = 0.00082437
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.00122807
+Uncertainty in y (sigy) = 0.00082437
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.000814874
+Uncertainty in y (sigy) = 0.00411272
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.0877745, 0.159069)
+Uncertainty in x (sigx) = 0.00775906
+Uncertainty in y (sigy) = 0.0194056
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_10_sig_1.png has been created
+Warning in <TCanvas::Constructor>: Deleting canvas with same name: c1
+This is PbPb TnP U
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.000707073
+Uncertainty in y (sigy) = 0.00248909
+
+
+This is PbPb TnP D
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.000265598
+Uncertainty in y (sigy) = 0.000659129
+
+
+This is PbPb Aco Up
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.0017426
+Uncertainty in y (sigy) = 0.00172866
+
+
+This is PbPb Aco Down
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.000710051
+Uncertainty in y (sigy) = 0.00715049
+
+
+This is PbPb nobk
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.00101821
+Uncertainty in y (sigy) = 0.023636
+
+
+This is PbPb mass range
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.00206983
+Uncertainty in y (sigy) = 0.0193859
+
+
+This is PbPb HF up
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.00111289
+Uncertainty in y (sigy) = 0.000660181
+
+
+This is PbPb HF down
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.00111289
+Uncertainty in y (sigy) = 0.000660181
+
+
+This is pp TnP U
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00066631
+Uncertainty in y (sigy) = 0.0011691
+
+
+This is pp TnP D
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000660353
+Uncertainty in y (sigy) = 0.000917609
+
+
+This is pp Aco Up
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000658496
+Uncertainty in y (sigy) = 0.000348901
+
+
+This is pp Aco Down
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000640195
+Uncertainty in y (sigy) = 0.000196631
+
+
+This is pp nobk
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00127056
+Uncertainty in y (sigy) = 0.023767
+
+
+This is pp mass range
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000611025
+Uncertainty in y (sigy) = 0.000657597
+
+
+This is pp 1D pT
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb total syst
+Ellipse center (x,y) = (-0.178599, 0.214409)
+Uncertainty in x (sigx) = 0.00586116
+Uncertainty in y (sigy) = 0.0310986
+
+
+This is pp total syst
+Ellipse center (x,y) = (-0.0906454, 0.0544394)
+Uncertainty in x (sigx) = 0.00188816
+Uncertainty in y (sigy) = 0.0241615
+
+
+This is PbPb - pp TnP U
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.000673246
+Uncertainty in y (sigy) = 0.00132284
+
+
+This is PbPb - pp TnP D
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.000681804
+Uncertainty in y (sigy) = 0.000946496
+
+
+This is PbPb - pp Aco Up
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.00170214
+Uncertainty in y (sigy) = 0.0014163
+
+
+This is PbPb - pp Aco Down
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.000700267
+Uncertainty in y (sigy) = 0.00726022
+
+
+This is PbPb - pp no bk
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.000402725
+Uncertainty in y (sigy) = 0.000622131
+
+
+This is PbPb - pp mass range
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.00151983
+Uncertainty in y (sigy) = 0.0192504
+
+
+This is PbPb - pp HFup
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.00111289
+Uncertainty in y (sigy) = 0.000660181
+
+
+This is PbPb - pp HFdown
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.00111289
+Uncertainty in y (sigy) = 0.000660181
+
+
+This is PbPb - pp 1D_pT
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.000836599
+Uncertainty in y (sigy) = 0.00412195
+
+
+This is PbPb - pp total syst
+Ellipse center (x,y) = (-0.087954, 0.159969)
+Uncertainty in x (sigx) = 0.00620384
+Uncertainty in y (sigy) = 0.0202828
+
+
+Info in <TCanvas::Print>: png file ./contourtest/degen/PbPb_10_sig_2.png has been created

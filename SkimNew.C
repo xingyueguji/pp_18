@@ -149,11 +149,11 @@ void SkimNew::Loop()
 
    TFile *eff_f1 = new TFile("../ZBoson_18/rootfile/mc_eff.root", "READ");
 
-   e = (TEfficiency *)eff_f1->Get("eff_0_100");
-   e_up = (TEfficiency *)eff_f1->Get("eff_U_0_100");
-   e_down = (TEfficiency *)eff_f1->Get("eff_D_0_100");
-   e_acoup = (TEfficiency *)eff_f1->Get("eff_Acoup_0_100");
-   e_acodown = (TEfficiency *)eff_f1->Get("eff_Acodown_0_100");
+   e = (TEfficiency *)eff_f1->Get("eff_0.0_100.0");
+   e_up = (TEfficiency *)eff_f1->Get("eff_U_0.0_100.0");
+   e_down = (TEfficiency *)eff_f1->Get("eff_D_0.0_100.0");
+   e_acoup = (TEfficiency *)eff_f1->Get("eff_Acoup_0.0_100.0");
+   e_acodown = (TEfficiency *)eff_f1->Get("eff_Acodown_0.0_100.0");
 
    TFile *pT_PbPb_weight = new TFile("../ZBoson_18/rootfile/pT_file.root", "READ");
 
