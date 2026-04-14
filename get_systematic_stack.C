@@ -90,6 +90,8 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
         double acodownvalue = abs(nominalvalue - h_acodown->GetBinContent(i));
         double no_bkvalue = abs(nominalvalue - h_no_bk->GetBinContent(i));
         double mass_rangevalue = abs(nominalvalue - h_mass_range->GetBinContent(i));
+        cout << "nominal is " << nominalvalue << "mass range point is " << h_mass_range->GetBinContent(i) << endl;
+        cout << "mass_rangevalue " << mass_rangevalue << endl;
         double HF_upvalue = abs(nominalvalue - h_mass_HFup->GetBinContent(i));
         double HF_downvalue = abs(nominalvalue - h_mass_HFdown->GetBinContent(i));
         double pp_1D_pT_value = abs(nominalvalue - h_mass_1D_pT->GetBinContent(i));
@@ -125,13 +127,12 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
             FinalHF = HF_downvalue;
         }
 
-        cout << "Syst are up: " << acoupvalue << " and down " << acodownvalue << endl;
-
         double totalSyst = FinalTnP * FinalTnP + FinalAco * FinalAco + no_bkvalue * no_bkvalue + mass_rangevalue * mass_rangevalue + FinalHF * FinalHF;
         totalSyst = sqrt(totalSyst);
 
         h_nominalStat->SetBinContent(i, nominalerror / 1.515);
         h_totalSyst->SetBinContent(i, totalSyst);
+        cout << "total syst is " << totalSyst << endl;
         h_tnpUSyst->SetBinContent(i, tnpUvalue);
         h_tnpDSyst->SetBinContent(i, tnpDvalue);
         h_acoupSyst->SetBinContent(i, acoupvalue);

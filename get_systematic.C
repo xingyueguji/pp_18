@@ -328,7 +328,7 @@ void draw(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGr
     gPad->SetFrameLineWidth(3);
 
     if (isdM)
-        g1->GetYaxis()->SetRangeUser(-0.4, 0.2);
+        g1->GetYaxis()->SetRangeUser(-0.4, 0.25);
     if (!isdM)
         g1->GetYaxis()->SetRangeUser(-0.5, 1.0);
 
@@ -389,6 +389,7 @@ void draw(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGr
 void drawdiff(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3, TGraphErrors *g4, TGraphErrors *g5, TGraphErrors *g6, TGraphErrors *g7, TGraphErrors *g8, TGraphErrors *g9, TGraphErrors *g10, bool isdM, bool iseta)
 {
     c1->cd();
+    gPad->SetFrameLineWidth(3);
 
     /*if (isdM && !iseta)
         g1->GetYaxis()->SetRangeUser(-0.28, 0.1);
@@ -400,7 +401,7 @@ void drawdiff(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3,
         g1->GetYaxis()->SetRangeUser(-0.25, 0.6);*/
 
     if (isdM)
-        g1->GetYaxis()->SetRangeUser(-0.4, 0.2);
+        g1->GetYaxis()->SetRangeUser(-0.4, 0.25);
     if (!isdM)
         g1->GetYaxis()->SetRangeUser(-0.5, 1.0);
 
@@ -421,7 +422,7 @@ void drawdiff(TCanvas *c1, TGraphErrors *g1, TGraphErrors *g2, TGraphErrors *g3,
         g10->Draw("P SAME");
     }
 
-    TLegend *legend = new TLegend(0.2, 0.7, 0.4, 0.9);
+    TLegend *legend = new TLegend(0.2, 0.6, 0.5, 0.9);
     legend->AddEntry(g1, "Nominal", "PL");
     legend->AddEntry(g2, "tnpU", "PL");
     legend->AddEntry(g3, "tnpD", "PL");
