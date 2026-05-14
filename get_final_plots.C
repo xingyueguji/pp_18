@@ -97,7 +97,7 @@ SubsetPlotOut DrawSubsetPlot(
     bool useX, // true: use ellipse X (dM); false: use ellipse Y (dGamma)
     double yMin, double yMax,
     double halfWidth = 0.35,
-    double magicScale = 1.515)
+    double magicScale = std::sqrt(2.3))
 {
     SubsetPlotOut out;
     const int n = (int)idx.size();

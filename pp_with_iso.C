@@ -1,19 +1,49 @@
-#define SkimNew_cxx
-#include "SkimNew.h"
+#define pp_with_iso_cxx
+#include "pp_with_iso.h"
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <TLorentzVector.h>
+#include <TVector2.h>
+#include <TEfficiency.h>
+#include <TF1.h>
+#include <TMath.h>
+#include <iostream>
+#include <bitset>
+
+using std::cout;
+using std::endl;
 
 double getWeightFromHist(TF1 *weightfucntion, double pt)
 {
-   double ratio = weightfucntion->Eval(pt); // Find the corresponding bin for pT
-
+   double ratio = weightfucntion->Eval(pt);
    return ratio;
+}
+
+// Relative PF isolation for muon at index i.
+// Adapted from the std::vector<float>* version to work with the
+// fixed-size arrays in this tree (Reco_mu_PF*Iso[Reco_mu_size]).
+// pt is passed in directly since this tree stores muon kinematics
+// inside a TClonesArray (Reco_mu_4mom), not a Float_t pT array.
+// Returns (chargedHad + neutralHad + photon) / pt.
+static double RelIsoPF(int i,
+                       double pt,
+                       const Float_t *muPFChIso,
+                       const Float_t *muPFNeuIso,
+                       const Float_t *muPFPhoIso,
+                       const Float_t *muPFPUIso)
+{
+   if (!muPFChIso || !muPFNeuIso || !muPFPhoIso || !muPFPUIso)
+      return 999.0;
+   if (pt <= 0)
+      return 999.0;
+   const double neutralSum = muPFNeuIso[i] + muPFPhoIso[i] - 0.5 * muPFPUIso[i];
+   const double isoAbs = muPFChIso[i] + std::max(0.0, neutralSum);
+   return isoAbs / pt;
 }
 
 Int_t GetPhiBin(double phi, const int numberofphibins)
 {
-   // wrap phi into [-pi, pi]
    while (phi <= -TMath::Pi())
       phi += 2 * TMath::Pi();
    while (phi > TMath::Pi())
@@ -25,7 +55,6 @@ Int_t GetPhiBin(double phi, const int numberofphibins)
 
    int bin = static_cast<int>((phi - xmin) / width);
 
-   // safety clamp
    if (bin < 0)
       bin = 0;
    if (bin >= numberofphibins)
@@ -33,35 +62,38 @@ Int_t GetPhiBin(double phi, const int numberofphibins)
       bin = numberofphibins - 1;
       cout << "Max range exceeded? you should not able to see this" << endl;
    }
-
    return bin;
 }
 
-void SkimNew::Loop()
+// Helper used to be in SkimNew.h; here we put it in the .C since
+// pp_with_iso.h was auto-generated and doesn't declare it.
+static double getEfficiency(TEfficiency *e, double y, double pt)
 {
-   //   In a ROOT session, you can do:
-   //      root> .L SkimNew.C
-   //      root> SkimNew t
-   //      root> t.GetEntry(12); // Fill t data members with entry number 12
-   //      root> t.Show();       // Show values of entry 12
-   //      root> t.Show(16);     // Read and show values of entry 16
-   //      root> t.Loop();       // Loop on all entries
-   //
+   double originalPt = pt;
+   if (pt >= 200)
+      pt = 199.9;
 
-   //     This is the loop skeleton where:
-   //    jentry is the global entry number in the chain
-   //    ientry is the entry number in the current Tree
-   //  Note that the argument to GetEntry must be:
-   //    jentry for TChain::GetEntry
-   //    ientry for TTree::GetEntry and TBranch::GetEntry
-   //
-   //       To read only selected branches, Insert statements like:
-   // METHOD1:
-   //    fChain->SetBranchStatus("*",0);  // disable all branches
-   //    fChain->SetBranchStatus("branchname",1);  // activate branchname
-   // METHOD2: replace line
-   //    fChain->GetEntry(jentry);       //read all branches
-   // by  b_branchname->GetEntry(ientry); //read only this branch
+   int bin = e->FindFixBin(y, pt);
+   float efficiency = e->GetEfficiency(bin);
+
+   if (efficiency > 0 && efficiency <= 1)
+      return efficiency;
+   std::cout << "efficiency not in the range [0,1], returning 1!" << std::endl;
+   std::cout << "Rapidity: " << y << " Pt: " << originalPt << std::endl;
+   return 1;
+}
+
+static Bool_t CheckTrigBit(ULong64_t num, int bitPosition)
+{
+   return ((num >> bitPosition) & 1ULL) == 1ULL;
+}
+
+void pp_with_iso::Loop(bool useIsolation)
+{
+   // Standard CMS tight-muon PF relative-isolation working point.
+   // Tweak this if you want a different threshold.
+   const double kRelIsoCut = 0.2;
+
    if (fChain == 0)
       return;
    Long64_t nentries = fChain->GetEntriesFast();
@@ -80,6 +112,10 @@ void SkimNew::Loop()
    TH1D *FA_mass_range[22];
    TH1D *FA_1D_pT[22];
    TH1D *FA_nominal_inclusive = new TH1D("FA_nominal_inclusive", "", 120, 60, 120);
+   TH1D *FA_nominal_inclusive_antiiso = new TH1D("FA_nominal_inclusive_antiiso", "", 120, 60, 120);
+   TH1D *FA_nominal_inclusive_without_eff = new TH1D("FA_nominal_inclusive_without_eff", "", 120, 60, 120);
+   TH1D *FA_nominal_inclusive_antiiso_without_eff = new TH1D("FA_nominal_inclusive_antiiso_without_eff", "", 120, 60, 120);
+
    TH1D *FA_nominal_inclusive_1D_pT = new TH1D("FA_nominal_inclusive_1D_pT", "", 120, 60, 120);
    TH1D *FA_nominal_inclusive_no_pT = new TH1D("FA_nominal_inclusive_no_pT", "", 120, 60, 120);
    TH1D *FA_AcoUp_inclusive = new TH1D("FA_AcoUp_inclusive", "", 120, 60, 120);
@@ -91,10 +127,7 @@ void SkimNew::Loop()
    TH1D *pT_spec_pp_FA = new TH1D("pT_spec_pp_FA", "", 200, 0, 200);
    double x_edges[] = {-2.4, -2.1, -1.8, -1.5, -1.2, -0.9, -0.6, -0.3,
                        0.0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4};
-
    double y_edges[] = {0.0, 1.0, 3.0, 5.0, 10.0, 20.0, 40.0, 70.0, 200.0};
-
-   // n_bins = (#edges - 1)
    int nx = sizeof(x_edges) / sizeof(double) - 1;
    int ny = sizeof(y_edges) / sizeof(double) - 1;
 
@@ -115,7 +148,7 @@ void SkimNew::Loop()
    TH1D *FA_nominal_inclusive_1D_pT_flattened = new TH1D("FA_nominal_inclusive_1D_pT_flattened", "", 120, 60, 120);
    TH1D *FA_nominal_inclusive_no_pT_flattened = new TH1D("FA_nominal_inclusive_no_pT_flattened", "", 120, 60, 120);
 
-   TFile *f_fit_function = new TFile("../pp_18/cos_fit_save/data.root", "READ");
+   TFile *f_fit_function = new TFile("./cos_fit_save/data.root", "READ");
    TF1 *t_pp_PbPb_data = (TF1 *)f_fit_function->Get("pp_PbPb_data");
    TF1 *t_pp_PbPb_no_pT_data = (TF1 *)f_fit_function->Get("pp_PbPb_no_pT_data");
    TF1 *t_pp_PbPb_1D_pT_data = (TF1 *)f_fit_function->Get("pp_PbPb_1D_pT_data");
@@ -141,14 +174,9 @@ void SkimNew::Loop()
       FA_nominal_phi_plus_without_pT_reweight_flattened[i] = new TH1D(Form("pp_FA_nominal_phi_plus_without_pT_reweight_flattened_%i", i), "", 120, 60, 120);
    }
 
-   TEfficiency *e;
-   TEfficiency *e_up;
-   TEfficiency *e_down;
-   TEfficiency *e_acoup;
-   TEfficiency *e_acodown;
+   TEfficiency *e, *e_up, *e_down, *e_acoup, *e_acodown;
 
    TFile *eff_f1 = new TFile("../ZBoson_18/rootfile/mc_eff.root", "READ");
-
    e = (TEfficiency *)eff_f1->Get("eff_0.0_100.0");
    e_up = (TEfficiency *)eff_f1->Get("eff_U_0.0_100.0");
    e_down = (TEfficiency *)eff_f1->Get("eff_D_0.0_100.0");
@@ -156,9 +184,7 @@ void SkimNew::Loop()
    e_acodown = (TEfficiency *)eff_f1->Get("eff_Acodown_0.0_100.0");
 
    TFile *pT_PbPb_weight = new TFile("../ZBoson_18/rootfile/pT_file.root", "READ");
-
    TF1 *pTweight_FA = (TF1 *)pT_PbPb_weight->Get("FA_ratio_fit");
-
    TH2D *pT_y_weight_FA = (TH2D *)pT_PbPb_weight->Get("FA_2D_ratio_data");
 
    for (Long64_t jentry = 0; jentry < nentries; jentry++)
@@ -168,38 +194,27 @@ void SkimNew::Loop()
          break;
       nb = fChain->GetEntry(jentry);
       nbytes += nb;
-      // if (Cut(ientry) < 0) continue;
 
       double percentage = 100.0 * jentry / nentries;
       if (jentry % 100000 == 0)
          std::cout << "Progress: " << percentage << "% completed\r" << std::flush;
 
-      // Event selection:
-
       if (abs(zVtx) > 15)
          continue;
-      // if (!(CheckTrigBit(HLTriggers, 5)))
-      //    continue;
-      //  if ((CheckTrigBit(HLTriggers,8))) cout << "For this event we have HLT 6 == 1" << endl;
-      //  cout << " HLT for event is " << std::bitset<18>(HLTriggers) << endl;
 
-      // Now looping through all reco dimuon pairs
       for (int znum = 0; znum < Reco_QQ_size; znum++)
       {
-
-         // Get Two candidate muons index first
          Int_t muonindexplus = Reco_QQ_mupl_idx[znum];
          Int_t muonindexminus = Reco_QQ_mumi_idx[znum];
 
-         // Get TLorentzvectors
          Int_t nZs = Reco_QQ_4mom->GetEntriesFast();
          if (nZs != Reco_QQ_size)
-            cout << "Error: " << " Not Sure why Reco_QQ_Size != Size of TCloneArray" << endl;
+            cout << "Error: Not Sure why Reco_QQ_Size != Size of TCloneArray" << endl;
+
          TLorentzVector *Z_momentum = (TLorentzVector *)Reco_QQ_4mom->At(znum);
          TLorentzVector *muonplus_momentum = (TLorentzVector *)Reco_mu_4mom->At(muonindexplus);
          TLorentzVector *muonminus_momentum = (TLorentzVector *)Reco_mu_4mom->At(muonindexminus);
 
-         // Apply cuts
          // Cut on Z
          if (Z_momentum->M() < 60 || Z_momentum->M() > 120)
             continue;
@@ -214,17 +229,6 @@ void SkimNew::Loop()
          if (abs(muonplus_momentum->Eta()) > 2.4 || abs(muonminus_momentum->Eta()) > 2.4)
             continue;
 
-         // if (Reco_mu_isTightCutBased[muonindexplus])
-         //  Cut on Trigger of two candidate muons
-         //  Bool_t isDaughter1Trigger = CheckTrigBit(Reco_mu_trig[muonindexplus], 5);
-         //  Bool_t isDaughter2Trigger = CheckTrigBit(Reco_mu_trig[muonindexminus], 5);
-         //  if (!(isDaughter1Trigger || isDaughter2Trigger))
-         //    continue;
-         /*if ((isDaughter1Trigger||isDaughter2Trigger)){
-            cout << " We have one dimuon pair with HLT 6 or == 1 " << endl;
-            cout << " Trigger Bit is * and * " << Reco_mu_trig[muonindexplus] << " " << Reco_mu_trig[muonindexminus] << endl;
-         }*/
-
          // Cut on Charge
          Bool_t isOppositeSign = Reco_mu_charge[muonindexplus] != Reco_mu_charge[muonindexminus];
          if (!isOppositeSign)
@@ -235,18 +239,13 @@ void SkimNew::Loop()
          }
 
          if (Reco_mu_isTightCutBased[muonindexplus] != 1 || Reco_mu_isTightCutBased[muonindexminus] != 1)
-         {
             cout << "we have a case that does not pass tightID selection" << endl;
-         }
 
-         // Eta < 1 cut I will apply this later when filling
+         // ------------------------------------------------------------
+
          Bool_t isEtacutPassed = (abs(muonplus_momentum->Eta()) < 1) && (abs(muonminus_momentum->Eta()) < 1);
-
-         // Get Mass for easier fill
-
          Double_t ZMass = Z_momentum->M();
 
-         // Fill the incluive one first
          double efficiency = getEfficiency(e, Z_momentum->Rapidity(), Z_momentum->Pt());
          double efficiency_U = getEfficiency(e_up, Z_momentum->Rapidity(), Z_momentum->Pt());
          double efficiency_D = getEfficiency(e_down, Z_momentum->Rapidity(), Z_momentum->Pt());
@@ -265,139 +264,70 @@ void SkimNew::Loop()
          double FA_pTweight_1D = getWeightFromHist(pTweight_FA, Z_momentum->Pt());
          double FA_pTweight_2D = pT_y_weight_FA->GetBinContent(pT_y_weight_FA->FindBin(Z_momentum->Rapidity(), Z_momentum->Pt()));
 
-         // Here for inclusive
+         bool passisolation = true;
+
+         // ----- Optional PF relative-isolation cut on both muons -----
+         if (useIsolation)
+         {
+            double relIsoPlus = RelIsoPF(muonindexplus,
+                                         muonplus_momentum->Pt(),
+                                         Reco_mu_PFChIso,
+                                         Reco_mu_PFNeuIso,
+                                         Reco_mu_PFPhoIso,
+                                         Reco_mu_PFPUIso);
+            double relIsoMinus = RelIsoPF(muonindexminus,
+                                          muonminus_momentum->Pt(),
+                                          Reco_mu_PFChIso,
+                                          Reco_mu_PFNeuIso,
+                                          Reco_mu_PFPhoIso,
+                                          Reco_mu_PFPUIso);
+            if (relIsoPlus >= kRelIsoCut || relIsoMinus >= kRelIsoCut)
+               passisolation = false;
+         }
+
          if (passesAco[0])
          {
             Int_t phibin = GetPhiBin(muonplus_momentum->Phi(), numberofphibins);
-            // Get ratio
+
             pT_spec_pp_FA->Fill(Z_momentum->Pt(), 1.0 / efficiency);
             pT_y_spec_pp_FA->Fill(Z_momentum->Rapidity(), Z_momentum->Pt(), 1.0 / efficiency);
 
-            FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
-            FA_tnpU_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_U);
-            FA_tnpD_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_D);
-            FA_mass_range_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
-            FA_nominal_inclusive_1D_pT->Fill(ZMass, 1.0 * FA_pTweight_1D / efficiency);
-            FA_nominal_inclusive_no_pT->Fill(ZMass, 1.0 / efficiency);
-
-            FA_nominal_phi_plus[phibin]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
-            FA_nominal_phi_plus_1D_pT[phibin]->Fill(ZMass, 1.0 * FA_pTweight_1D / efficiency);
-            FA_nominal_phi_plus_without_pT_reweight[phibin]->Fill(ZMass, 1.0 / efficiency);
-
-            double phi = TVector2::Phi_mpi_pi(muonplus_momentum->Phi());
-
-            // read parameters explicitly
-            double a = t_pp_PbPb_data->GetParameter(0);
-            double b = t_pp_PbPb_data->GetParameter(1);
-            double phi0 = t_pp_PbPb_data->GetParameter(2);
-
-            // evaluate the fitted modulation
-            double fphi = a + b * cos(phi - phi0);
-
-            // subtract only the oscillatory component (keep the mean)
-            double mass_corr = ZMass - (fphi - a);
-
-            FA_nominal_phi_plus_flattened[phibin]->Fill(mass_corr, FA_pTweight_2D / efficiency);
-            FA_nominal_inclusive_flattened->Fill(mass_corr, FA_pTweight_2D / efficiency);
-
-            double a_no = t_pp_PbPb_no_pT_data->GetParameter(0);
-            double b_no = t_pp_PbPb_no_pT_data->GetParameter(1);
-            double phi0_no = t_pp_PbPb_no_pT_data->GetParameter(2);
-
-            double fphi_no = a_no + b_no * cos(phi - phi0_no);
-            double mass_corr_no_pT = ZMass - (fphi_no - a_no);
-            FA_nominal_phi_plus_without_pT_reweight_flattened[phibin]->Fill(mass_corr_no_pT, 1.0 / efficiency);
-            FA_nominal_inclusive_no_pT_flattened->Fill(mass_corr_no_pT, 1.0 / efficiency);
-
-            double a_1D = t_pp_PbPb_1D_pT_data->GetParameter(0);
-            double b_1D = t_pp_PbPb_1D_pT_data->GetParameter(1);
-            double phi0_1D = t_pp_PbPb_1D_pT_data->GetParameter(2);
-
-            double fphi_1D = a_1D + b_1D * cos(phi - phi0_1D);
-            double mass_corr_1D_pT = ZMass - (fphi_1D - a_1D);
-            FA_nominal_phi_plus_1D_pT_flattened[phibin]->Fill(mass_corr_1D_pT, 1.0 / efficiency);
-            FA_nominal_inclusive_1D_pT_flattened->Fill(mass_corr_1D_pT, 1.0 / efficiency);
-         }
-         if (passesAco[1])
-         {
-            FA_AcoUp_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_acoup);
-         }
-         if (passesAco[2])
-         {
-            FA_AcoDown_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_acodown);
-         }
-
-         // Fill the run number based then
-
-         for (int runindex = 0; runindex < 22; ++runindex)
-         {
-            if (runNb >= runlowerlimit[runindex] && runNb <= runupperlimit[runindex])
+            if (passisolation)
+               FA_nominal_inclusive->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
+            else
             {
-               if (passesAco[0])
-               {
-                  FA_nominal[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
-                  FA_tnpU[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_U);
-                  FA_tnpD[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_D);
-                  FA_mass_range[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
-                  FA_1D_pT[runindex]->Fill(ZMass, 1.0 * FA_pTweight_1D / efficiency);
-               }
-               if (passesAco[1])
-               {
-                  FA_AcoUp[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_acoup);
-               }
-               if (passesAco[2])
-               {
-                  FA_AcoDown[runindex]->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency_acodown);
-               }
+               FA_nominal_inclusive_antiiso->Fill(ZMass, 1.0 * FA_pTweight_2D / efficiency);
             }
-         }
-      } // End of QQ loop
-   } // End of tree loop
 
-   TFile *writeout = new TFile("./new_pp_data_file_stability_readonly.root", "UPDATE");
+            if (passisolation)
+               FA_nominal_inclusive_without_eff->Fill(ZMass, 1.0 * FA_pTweight_2D);
+            else
+            {
+               FA_nominal_inclusive_antiiso_without_eff->Fill(ZMass, 1.0 * FA_pTweight_2D);
+            }
+         } // end QQ loop
+      }
+   } // end tree loop
+
+   // ----- output filename depends on whether iso cut was applied -----
+   const char *outputFileName = useIsolation
+                                    ? Form("./new_pp_data_file_with_iso_%.2f.root",kRelIsoCut)
+                                    : "./new_pp_data_file_no_iso.root";
+   TFile *writeout = new TFile(outputFileName, "UPDATE");
    writeout->cd();
 
    FA_nominal_inclusive->Write("", 2);
-   FA_AcoUp_inclusive->Write("", 2);
-   FA_AcoDown_inclusive->Write("", 2);
-   FA_tnpU_inclusive->Write("", 2);
-   FA_tnpD_inclusive->Write("", 2);
-   FA_mass_range_inclusive->Write("", 2);
-   FA_nominal_inclusive_1D_pT->Write("", 2);
-   FA_nominal_inclusive_no_pT->Write("", 2);
-
-   for (int Z = 0; Z < numberofphibins; Z++)
-   {
-      FA_nominal_phi_plus[Z]->Write("", 2);
-      FA_nominal_phi_plus_1D_pT[Z]->Write("", 2);
-      FA_nominal_phi_plus_without_pT_reweight[Z]->Write("", 2);
-      FA_nominal_phi_plus_flattened[Z]->Write("", 2);
-      FA_nominal_phi_plus_1D_pT_flattened[Z]->Write("", 2);
-      FA_nominal_phi_plus_without_pT_reweight_flattened[Z]->Write("", 2);
-   }
-
-   FA_nominal_inclusive_flattened->Write("", 2);
-   FA_nominal_inclusive_1D_pT_flattened->Write("", 2);
-   FA_nominal_inclusive_no_pT_flattened->Write("", 2);
-
-   for (int j = 0; j < 22; j++)
-   {
-      FA_nominal[j]->Write("", 2);
-      FA_AcoUp[j]->Write("", 2);
-      FA_AcoDown[j]->Write("", 2);
-      FA_tnpU[j]->Write("", 2);
-      FA_tnpD[j]->Write("", 2);
-      FA_mass_range[j]->Write("", 2);
-      FA_1D_pT[j]->Write("", 2);
-   }
+   FA_nominal_inclusive_without_eff->Write("", 2);
+   FA_nominal_inclusive_antiiso_without_eff->Write("", 2);
+   FA_nominal_inclusive_antiiso->Write("", 2);
 
    writeout->Close();
 
-   TFile *pt_File = new TFile("../ZBoson_18/rootfile/pT_file.root", "UPDATE");
+   // pT spectra still go to the shared pT_file.root, as in skimnew.C.
+   // If you want them gated on the iso flag too, change the path here.
+   /*TFile *pt_File = new TFile("../ZBoson_18/rootfile/pT_file.root", "UPDATE");
    pt_File->cd();
-
    pT_spec_pp_FA->Write("", 2);
    pT_y_spec_pp_FA->Write("", 2);
-
-   pt_File->Close();
+   pt_File->Close();*/
 }

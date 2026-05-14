@@ -188,11 +188,11 @@ void plotSystematicUncertainty(TCanvas *c1, TGraphErrors *nominal, TGraphErrors 
     {
         if (isdM)
         {
-            h_totalSyst->GetYaxis()->SetRangeUser(0, 0.2);
+            h_totalSyst->GetYaxis()->SetRangeUser(0, 0.08);
         }
         else
         {
-            h_totalSyst->GetYaxis()->SetRangeUser(0, 0.3);
+            h_totalSyst->GetYaxis()->SetRangeUser(0, 0.13);
         }
     }
     h_totalSyst->Draw("L");
@@ -279,7 +279,7 @@ void get_systematic_stack()
 {
     setTDRStyle();
 
-    TFile *f1 = new TFile("./nominal_syst_tgraph.root", "UPDATE");
+    TFile *f1 = new TFile("./nominal_syst_tgraph.root", "READ");
 
     TGraphErrors *HI_sub_pp_dM_chi2_raw_nominal = (TGraphErrors *)f1->Get("HI_sub_pp_dM_chi2_raw_nominal");
     TGraphErrors *HI_sub_pp_dM_chi2_raw_tnpU = (TGraphErrors *)f1->Get("HI_sub_pp_dM_chi2_raw_tnpU");

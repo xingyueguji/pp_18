@@ -259,9 +259,9 @@ void ppmc::Loop()
    std::cout << "Entries   = " << FA_nominal_inclusive->GetEntries() << std::endl;
    std::cout << "Integral  = " << FA_nominal_inclusive->Integral() << std::endl;
 
-   TFile *pT_File = new TFile("../ZBoson_18/rootfile/mc_pTratio.root", "UPDATE");
+   /*TFile *pT_File = new TFile("../ZBoson_18/rootfile/mc_pTratio.root", "UPDATE");
    pT_File->cd();
    pT_spec_pp_FA->Write("mc_pp_pT", 2);
    pT_y_spec_pp_FA->Write("mc_pp_pT_y", 2);
-   pT_File->Close();
+   pT_File->Close();*/
 }

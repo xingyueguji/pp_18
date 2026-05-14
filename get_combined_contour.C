@@ -1,5 +1,329 @@
 #include "tdrStyle.C"
 
+TEllipse *CreateScaledEllipseFromSystematic(const TVector2 &syst_point,
+                                            TEllipse *nominal_ellipse,
+                                            const TString &type)
+{
+    // Extract nominal center and axes
+    double x0 = nominal_ellipse->GetX1();
+    double y0 = nominal_ellipse->GetY1();
+    double a0 = nominal_ellipse->GetR1();
+    double b0 = nominal_ellipse->GetR2();
+    double theta = nominal_ellipse->GetTheta();
+
+    if (type == "normal")
+    {
+        // Shift systematic point relative to nominal center
+        double dx = syst_point.X() - x0;
+        double dy = syst_point.Y() - y0;
+
+        // Convert angle to radians
+        double theta_rad = theta * TMath::DegToRad();
+
+        // Rotate the point into the ellipse's local frame
+        double x_rot = dx * std::cos(theta_rad) + dy * std::sin(theta_rad);
+        double y_rot = -dx * std::sin(theta_rad) + dy * std::cos(theta_rad);
+
+        // Compute distance in ellipse units
+        double u = x_rot / a0;
+        double v = y_rot / b0;
+        double scaling = std::sqrt(u * u + v * v);
+
+        auto *new_ellipse = new TEllipse(x0, y0, a0 * scaling, b0 * scaling, 0, 360, theta);
+        new_ellipse->SetLineStyle(2);
+        new_ellipse->SetLineColor(kBlue + 2);
+        new_ellipse->SetLineWidth(2);
+        new_ellipse->SetFillStyle(0);
+
+        return new_ellipse;
+    }
+    else if (type == "degen")
+    {
+        // Direction vector from nominal to systematic
+        double dx = syst_point.X() - x0;
+        double dy = syst_point.Y() - y0;
+
+        double half_length = std::sqrt(dx * dx + dy * dy);
+        double angle_deg = std::atan2(dy, dx) * TMath::RadToDeg();
+
+        auto *new_ellipse = new TEllipse(x0, y0, half_length, 0.001, 0, 360, angle_deg);
+        new_ellipse->SetLineStyle(2);
+        new_ellipse->SetLineColor(kRed + 1);
+        new_ellipse->SetLineWidth(2);
+        new_ellipse->SetFillStyle(0);
+
+        return new_ellipse;
+    }
+    else
+    {
+        Error("CreateScaledEllipseFromSystematic", "Unknown type '%s'", type.Data());
+        return nullptr;
+    }
+}
+
+double GetSigmaXFromEllipse(const TVectorD &v, double scale = std::sqrt(2.30))
+{
+    double a = v[2];
+    double b = v[3];
+    double th = v[4] * TMath::DegToRad();
+
+    double c = std::cos(th);
+    double s = std::sin(th);
+
+    double sigxx = c * c * a * a + s * s * b * b;
+    return std::sqrt(std::max(0.0, sigxx)) / scale;
+}
+
+double GetSigmaYFromEllipse(const TVectorD &v, double scale = std::sqrt(2.30))
+{
+    double a = v[2];
+    double b = v[3];
+    double th = v[4] * TMath::DegToRad();
+
+    double c = std::cos(th);
+    double s = std::sin(th);
+
+    double sigyy = s * s * a * a + c * c * b * b;
+    return std::sqrt(std::max(0.0, sigyy)) / scale;
+}
+
+TVectorD EllipseToVector(TEllipse *e)
+{
+    TVectorD v(5);
+    v[0] = e->GetX1();
+    v[1] = e->GetY1();
+    v[2] = e->GetR1();
+    v[3] = e->GetR2();
+    v[4] = e->GetTheta();
+    return v;
+}
+
+TGraphErrors *MakeCentralityTGraph(const char *name,
+                                   const std::vector<TVectorD> &statEllipses,
+                                   const std::vector<TVectorD> &systEllipses,
+                                   bool useX)
+{
+    static const char *centLabels[5] = {
+        "0-100%", "0-10%", "10-20%", "20-30%", "30-100%"};
+
+    int n = statEllipses.size();
+    auto *g = new TGraphErrors(n);
+    g->SetName(name);
+
+    std::cout << "==============================" << std::endl;
+    std::cout << "This is " << name << std::endl;
+
+    for (int i = 0; i < n; ++i)
+    {
+        double stat = useX ? GetSigmaXFromEllipse(statEllipses[i])
+                           : GetSigmaYFromEllipse(statEllipses[i]);
+        double syst = useX ? GetSigmaXFromEllipse(systEllipses[i])
+                           : GetSigmaYFromEllipse(systEllipses[i]);
+
+        double val = syst; // <-- this is the key change
+
+        g->SetPoint(i, i, val);
+        g->SetPointError(i, 0.0, stat);
+
+        std::cout << centLabels[i] << " : value = " << val << std::endl;
+        std::cout << centLabels[i] << " : stat  = " << stat << std::endl;
+        std::cout << centLabels[i] << " : syst  = " << syst << std::endl;
+    }
+
+    std::cout << std::endl;
+    return g;
+}
+
+std::vector<TVectorD> BuildSystematicEllipseSet(const std::vector<TVector2 *> &systPts,
+                                                const std::vector<TVectorD> &nominalEllipses,
+                                                const TString &type)
+{
+    std::vector<TVectorD> out;
+    out.reserve(systPts.size());
+
+    for (size_t i = 0; i < systPts.size(); ++i)
+    {
+        TEllipse nominal(nominalEllipses[i][0],
+                         nominalEllipses[i][1],
+                         nominalEllipses[i][2],
+                         nominalEllipses[i][3],
+                         0, 360,
+                         nominalEllipses[i][4]);
+
+        TEllipse *esys = CreateScaledEllipseFromSystematic(*systPts[i], &nominal, type);
+        out.push_back(EllipseToVector(esys));
+        delete esys;
+    }
+
+    return out;
+}
+
+std::vector<TVectorD> BuildZeroSystematicEllipseSet(const std::vector<TVectorD> &nominalEllipses)
+{
+    std::vector<TVectorD> out;
+    out.reserve(nominalEllipses.size());
+
+    for (const auto &v : nominalEllipses)
+    {
+        TVectorD z(5);
+        z[0] = v[0];
+        z[1] = v[1];
+        z[2] = 0.0;
+        z[3] = 0.0;
+        z[4] = v[4];
+        out.push_back(z);
+    }
+
+    return out;
+}
+
+void SaveAllCentralityTGraphs(const TString &outfile,
+                              const TString &type,
+
+                              const std::vector<TVectorD> &pbpbEll,
+                              const std::vector<TVectorD> &ppEll,
+                              const std::vector<TVectorD> &subEll,
+
+                              const std::vector<TVector2 *> &pbpb_nominal,
+                              const std::vector<TVector2 *> &pbpb_tnpU,
+                              const std::vector<TVector2 *> &pbpb_tnpD,
+                              const std::vector<TVector2 *> &pbpb_acoup,
+                              const std::vector<TVector2 *> &pbpb_acodown,
+                              const std::vector<TVector2 *> &pbpb_nobk,
+                              const std::vector<TVector2 *> &pbpb_massrange,
+                              const std::vector<TVector2 *> &pbpb_HFup,
+                              const std::vector<TVector2 *> &pbpb_HFdown,
+                              const std::vector<TVector2 *> &pbpb_1DpT,
+
+                              const std::vector<TVector2 *> &pp_nominal,
+                              const std::vector<TVector2 *> &pp_tnpU,
+                              const std::vector<TVector2 *> &pp_tnpD,
+                              const std::vector<TVector2 *> &pp_acoup,
+                              const std::vector<TVector2 *> &pp_acodown,
+                              const std::vector<TVector2 *> &pp_nobk,
+                              const std::vector<TVector2 *> &pp_massrange,
+                              const std::vector<TVector2 *> &pp_HFup,
+                              const std::vector<TVector2 *> &pp_HFdown,
+                              const std::vector<TVector2 *> &pp_1DpT,
+
+                              const std::vector<TVector2 *> &sub_nominal,
+                              const std::vector<TVector2 *> &sub_tnpU,
+                              const std::vector<TVector2 *> &sub_tnpD,
+                              const std::vector<TVector2 *> &sub_acoup,
+                              const std::vector<TVector2 *> &sub_acodown,
+                              const std::vector<TVector2 *> &sub_nobk,
+                              const std::vector<TVector2 *> &sub_massrange,
+                              const std::vector<TVector2 *> &sub_HFup,
+                              const std::vector<TVector2 *> &sub_HFdown,
+                              const std::vector<TVector2 *> &sub_1DpT)
+{
+    TFile *fout = new TFile(outfile, "RECREATE");
+
+    // ---- build systematic ellipse sets ----
+    auto pbpb_nominal_syst = BuildZeroSystematicEllipseSet(pbpbEll);
+    auto pbpb_tnpU_syst = BuildSystematicEllipseSet(pbpb_tnpU, pbpbEll, type);
+    auto pbpb_tnpD_syst = BuildSystematicEllipseSet(pbpb_tnpD, pbpbEll, type);
+    auto pbpb_acoup_syst = BuildSystematicEllipseSet(pbpb_acoup, pbpbEll, type);
+    auto pbpb_acodown_syst = BuildSystematicEllipseSet(pbpb_acodown, pbpbEll, type);
+    auto pbpb_nobk_syst = BuildSystematicEllipseSet(pbpb_nobk, pbpbEll, type);
+    auto pbpb_massrange_syst = BuildSystematicEllipseSet(pbpb_massrange, pbpbEll, type);
+    auto pbpb_HFup_syst = BuildSystematicEllipseSet(pbpb_HFup, pbpbEll, type);
+    auto pbpb_HFdown_syst = BuildSystematicEllipseSet(pbpb_HFdown, pbpbEll, type);
+    auto pbpb_1DpT_syst = BuildSystematicEllipseSet(pbpb_1DpT, pbpbEll, type);
+
+    auto pp_nominal_syst = BuildZeroSystematicEllipseSet(ppEll);
+    auto pp_tnpU_syst = BuildSystematicEllipseSet(pp_tnpU, ppEll, type);
+    auto pp_tnpD_syst = BuildSystematicEllipseSet(pp_tnpD, ppEll, type);
+    auto pp_acoup_syst = BuildSystematicEllipseSet(pp_acoup, ppEll, type);
+    auto pp_acodown_syst = BuildSystematicEllipseSet(pp_acodown, ppEll, type);
+    auto pp_nobk_syst = BuildSystematicEllipseSet(pp_nobk, ppEll, type);
+    auto pp_massrange_syst = BuildSystematicEllipseSet(pp_massrange, ppEll, type);
+    auto pp_HFup_syst = BuildSystematicEllipseSet(pp_HFup, ppEll, type);
+    auto pp_HFdown_syst = BuildSystematicEllipseSet(pp_HFdown, ppEll, type);
+    auto pp_1DpT_syst = BuildSystematicEllipseSet(pp_1DpT, ppEll, type);
+
+    auto sub_nominal_syst = BuildZeroSystematicEllipseSet(subEll);
+    auto sub_tnpU_syst = BuildSystematicEllipseSet(sub_tnpU, subEll, type);
+    auto sub_tnpD_syst = BuildSystematicEllipseSet(sub_tnpD, subEll, type);
+    auto sub_acoup_syst = BuildSystematicEllipseSet(sub_acoup, subEll, type);
+    auto sub_acodown_syst = BuildSystematicEllipseSet(sub_acodown, subEll, type);
+    auto sub_nobk_syst = BuildSystematicEllipseSet(sub_nobk, subEll, type);
+    auto sub_massrange_syst = BuildSystematicEllipseSet(sub_massrange, subEll, type);
+    auto sub_HFup_syst = BuildSystematicEllipseSet(sub_HFup, subEll, type);
+    auto sub_HFdown_syst = BuildSystematicEllipseSet(sub_HFdown, subEll, type);
+    auto sub_1DpT_syst = BuildSystematicEllipseSet(sub_1DpT, subEll, type);
+
+    // ---------- dM ----------
+    MakeCentralityTGraph("HI_dM_chi2_raw_nominal", pbpbEll, pbpb_nominal_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_tnpU", pbpbEll, pbpb_tnpU_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_tnpD", pbpbEll, pbpb_tnpD_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_acoup", pbpbEll, pbpb_acoup_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_acodown", pbpbEll, pbpb_acodown_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_nominal_no_bk", pbpbEll, pbpb_nobk_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_nominal_mass_range", pbpbEll, pbpb_massrange_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_HF_up", pbpbEll, pbpb_HFup_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_HF_down", pbpbEll, pbpb_HFdown_syst, true)->Write();
+    MakeCentralityTGraph("HI_dM_chi2_raw_1D_pT", pbpbEll, pbpb_1DpT_syst, true)->Write();
+
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_nominal", ppEll, pp_nominal_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_tnpU", ppEll, pp_tnpU_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_tnpD", ppEll, pp_tnpD_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_acoup", ppEll, pp_acoup_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_acodown", ppEll, pp_acodown_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_nominal_no_bk", ppEll, pp_nobk_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_nominal_mass_range", ppEll, pp_massrange_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_HF_up", ppEll, pp_HFup_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_HF_down", ppEll, pp_HFdown_syst, true)->Write();
+    MakeCentralityTGraph("HI_pp_dM_chi2_raw_1D_pT", ppEll, pp_1DpT_syst, true)->Write();
+
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_nominal", subEll, sub_nominal_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_tnpU", subEll, sub_tnpU_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_tnpD", subEll, sub_tnpD_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_acoup", subEll, sub_acoup_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_acodown", subEll, sub_acodown_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_nominal_no_bk", subEll, sub_nobk_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_nominal_mass_range", subEll, sub_massrange_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_HF_up", subEll, sub_HFup_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_HF_down", subEll, sub_HFdown_syst, true)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dM_chi2_raw_1D_pT", subEll, sub_1DpT_syst, true)->Write();
+
+    // ---------- dWidth ----------
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_nominal", pbpbEll, pbpb_nominal_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_tnpU", pbpbEll, pbpb_tnpU_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_tnpD", pbpbEll, pbpb_tnpD_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_acoup", pbpbEll, pbpb_acoup_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_acodown", pbpbEll, pbpb_acodown_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_nominal_no_bk", pbpbEll, pbpb_nobk_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_nominal_mass_range", pbpbEll, pbpb_massrange_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_HF_up", pbpbEll, pbpb_HFup_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_HF_down", pbpbEll, pbpb_HFdown_syst, false)->Write();
+    MakeCentralityTGraph("HI_dWidth_chi2_raw_1D_pT", pbpbEll, pbpb_1DpT_syst, false)->Write();
+
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_nominal", ppEll, pp_nominal_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_tnpU", ppEll, pp_tnpU_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_tnpD", ppEll, pp_tnpD_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_acoup", ppEll, pp_acoup_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_acodown", ppEll, pp_acodown_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_nominal_no_bk", ppEll, pp_nobk_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_nominal_mass_range", ppEll, pp_massrange_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_HF_up", ppEll, pp_HFup_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_HF_down", ppEll, pp_HFdown_syst, false)->Write();
+    MakeCentralityTGraph("HI_pp_dWidth_chi2_raw_1D_pT", ppEll, pp_1DpT_syst, false)->Write();
+
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_nominal", subEll, sub_nominal_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_tnpU", subEll, sub_tnpU_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_tnpD", subEll, sub_tnpD_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_acoup", subEll, sub_acoup_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_acodown", subEll, sub_acodown_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_nominal_no_bk", subEll, sub_nobk_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_nominal_mass_range", subEll, sub_massrange_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_HF_up", subEll, sub_HFup_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_HF_down", subEll, sub_HFdown_syst, false)->Write();
+    MakeCentralityTGraph("HI_sub_pp_dWidth_chi2_raw_1D_pT", subEll, sub_1DpT_syst, false)->Write();
+
+    fout->Close();
+}
+
 TVectorD fit_ellipse(TGraph *g)
 {
     TVectorD ellipse;
@@ -1632,4 +1956,105 @@ void get_combined_contour(TString type = "degen")
 
     DrawEllipsesComparison(PbPb_sig_1_10, pp_sig1, savepath + "PbPb_10_sig_1.png", *PbPb_10_tnpU, *PbPb_10_tnpD, *PbPb_10_AcoUp, *PbPb_10_AcoDown, *PbPb_10_nobk, *PbPb_10_massrange, *PbPb_10_HFup, *PbPb_10_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_1_15_100");
     DrawEllipsesComparison(PbPb_sig_2_10, pp_sig2, savepath + "PbPb_10_sig_2.png", *PbPb_10_tnpU, *PbPb_10_tnpD, *PbPb_10_AcoUp, *PbPb_10_AcoDown, *PbPb_10_nobk, *PbPb_10_massrange, *PbPb_10_HFup, *PbPb_10_HFdown, *pp_0_tnpU, *pp_0_tnpD, *pp_0_AcoUp, *pp_0_AcoDown, *pp_0_nobk, *pp_0_massrange, *pp_0_1D_pT, type, "sig_2_15_100");
+
+    std::vector<TVectorD> pbpbEll5 = {
+        PbPb_sig_1_4, PbPb_sig_1_0, PbPb_sig_1_1, PbPb_sig_1_2, PbPb_sig_1_3};
+
+    std::vector<TVectorD> ppEll5 = {
+        pp_sig1, pp_sig1, pp_sig1, pp_sig1, pp_sig1};
+
+    auto EllipseToVector = [](TEllipse *e)
+    {
+        TVectorD v(5);
+        v[0] = e->GetX1();
+        v[1] = e->GetY1();
+        v[2] = e->GetR1();
+        v[3] = e->GetR2();
+        v[4] = e->GetTheta();
+        return v;
+    };
+
+    std::vector<TVectorD> subEll5;
+    {
+        TEllipse *e0 = CombineEllipsesFromVectors(PbPb_sig_1_4, pp_sig1);
+        TEllipse *e1 = CombineEllipsesFromVectors(PbPb_sig_1_0, pp_sig1);
+        TEllipse *e2 = CombineEllipsesFromVectors(PbPb_sig_1_1, pp_sig1);
+        TEllipse *e3 = CombineEllipsesFromVectors(PbPb_sig_1_2, pp_sig1);
+        TEllipse *e4 = CombineEllipsesFromVectors(PbPb_sig_1_3, pp_sig1);
+
+        subEll5 = {
+            EllipseToVector(e0),
+            EllipseToVector(e1),
+            EllipseToVector(e2),
+            EllipseToVector(e3),
+            EllipseToVector(e4)};
+
+        delete e0;
+        delete e1;
+        delete e2;
+        delete e3;
+        delete e4;
+    }
+
+    std::vector<TVector2 *> pbpb_nominal5 = {PbPb_4, PbPb_0, PbPb_1, PbPb_2, PbPb_3};
+    std::vector<TVector2 *> pbpb_tnpU5 = {PbPb_4_tnpU, PbPb_0_tnpU, PbPb_1_tnpU, PbPb_2_tnpU, PbPb_3_tnpU};
+    std::vector<TVector2 *> pbpb_tnpD5 = {PbPb_4_tnpD, PbPb_0_tnpD, PbPb_1_tnpD, PbPb_2_tnpD, PbPb_3_tnpD};
+    std::vector<TVector2 *> pbpb_acoup5 = {PbPb_4_AcoUp, PbPb_0_AcoUp, PbPb_1_AcoUp, PbPb_2_AcoUp, PbPb_3_AcoUp};
+    std::vector<TVector2 *> pbpb_acodown5 = {PbPb_4_AcoDown, PbPb_0_AcoDown, PbPb_1_AcoDown, PbPb_2_AcoDown, PbPb_3_AcoDown};
+    std::vector<TVector2 *> pbpb_nobk5 = {PbPb_4_nobk, PbPb_0_nobk, PbPb_1_nobk, PbPb_2_nobk, PbPb_3_nobk};
+    std::vector<TVector2 *> pbpb_massrange5 = {PbPb_4_massrange, PbPb_0_massrange, PbPb_1_massrange, PbPb_2_massrange, PbPb_3_massrange};
+    std::vector<TVector2 *> pbpb_HFup5 = {PbPb_4_HFup, PbPb_0_HFup, PbPb_1_HFup, PbPb_2_HFup, PbPb_3_HFup};
+    std::vector<TVector2 *> pbpb_HFdown5 = {PbPb_4_HFdown, PbPb_0_HFdown, PbPb_1_HFdown, PbPb_2_HFdown, PbPb_3_HFdown};
+    std::vector<TVector2 *> pbpb_1DpT5 = {PbPb_4, PbPb_0, PbPb_1, PbPb_2, PbPb_3}; // no PbPb 1D_pT in your current inputs, so keep nominal or replace later
+
+    std::vector<TVector2 *> pp_nominal5 = {pp_0, pp_0, pp_0, pp_0, pp_0};
+    std::vector<TVector2 *> pp_tnpU5 = {pp_0_tnpU, pp_0_tnpU, pp_0_tnpU, pp_0_tnpU, pp_0_tnpU};
+    std::vector<TVector2 *> pp_tnpD5 = {pp_0_tnpD, pp_0_tnpD, pp_0_tnpD, pp_0_tnpD, pp_0_tnpD};
+    std::vector<TVector2 *> pp_acoup5 = {pp_0_AcoUp, pp_0_AcoUp, pp_0_AcoUp, pp_0_AcoUp, pp_0_AcoUp};
+    std::vector<TVector2 *> pp_acodown5 = {pp_0_AcoDown, pp_0_AcoDown, pp_0_AcoDown, pp_0_AcoDown, pp_0_AcoDown};
+    std::vector<TVector2 *> pp_nobk5 = {pp_0_nobk, pp_0_nobk, pp_0_nobk, pp_0_nobk, pp_0_nobk};
+    std::vector<TVector2 *> pp_massrange5 = {pp_0_massrange, pp_0_massrange, pp_0_massrange, pp_0_massrange, pp_0_massrange};
+    std::vector<TVector2 *> pp_HFup5 = {pp_0, pp_0, pp_0, pp_0, pp_0}; // pp has no HF syst in current inputs
+    std::vector<TVector2 *> pp_HFdown5 = {pp_0, pp_0, pp_0, pp_0, pp_0};
+    std::vector<TVector2 *> pp_1DpT5 = {pp_0_1D_pT, pp_0_1D_pT, pp_0_1D_pT, pp_0_1D_pT, pp_0_1D_pT};
+
+    std::vector<TVector2 *> sub_nominal5;
+    std::vector<TVector2 *> sub_tnpU5;
+    std::vector<TVector2 *> sub_tnpD5;
+    std::vector<TVector2 *> sub_acoup5;
+    std::vector<TVector2 *> sub_acodown5;
+    std::vector<TVector2 *> sub_nobk5;
+    std::vector<TVector2 *> sub_massrange5;
+    std::vector<TVector2 *> sub_HFup5;
+    std::vector<TVector2 *> sub_HFdown5;
+    std::vector<TVector2 *> sub_1DpT5;
+
+    auto makeDiff = [](TVector2 *a, TVector2 *b)
+    {
+        return new TVector2(a->X() - b->X(), a->Y() - b->Y());
+    };
+
+    sub_nominal5 = {makeDiff(PbPb_4, pp_0), makeDiff(PbPb_0, pp_0), makeDiff(PbPb_1, pp_0), makeDiff(PbPb_2, pp_0), makeDiff(PbPb_3, pp_0)};
+    sub_tnpU5 = {makeDiff(PbPb_4_tnpU, pp_0_tnpU), makeDiff(PbPb_0_tnpU, pp_0_tnpU), makeDiff(PbPb_1_tnpU, pp_0_tnpU), makeDiff(PbPb_2_tnpU, pp_0_tnpU), makeDiff(PbPb_3_tnpU, pp_0_tnpU)};
+    sub_tnpD5 = {makeDiff(PbPb_4_tnpD, pp_0_tnpD), makeDiff(PbPb_0_tnpD, pp_0_tnpD), makeDiff(PbPb_1_tnpD, pp_0_tnpD), makeDiff(PbPb_2_tnpD, pp_0_tnpD), makeDiff(PbPb_3_tnpD, pp_0_tnpD)};
+    sub_acoup5 = {makeDiff(PbPb_4_AcoUp, pp_0_AcoUp), makeDiff(PbPb_0_AcoUp, pp_0_AcoUp), makeDiff(PbPb_1_AcoUp, pp_0_AcoUp), makeDiff(PbPb_2_AcoUp, pp_0_AcoUp), makeDiff(PbPb_3_AcoUp, pp_0_AcoUp)};
+    sub_acodown5 = {makeDiff(PbPb_4_AcoDown, pp_0_AcoDown), makeDiff(PbPb_0_AcoDown, pp_0_AcoDown), makeDiff(PbPb_1_AcoDown, pp_0_AcoDown), makeDiff(PbPb_2_AcoDown, pp_0_AcoDown), makeDiff(PbPb_3_AcoDown, pp_0_AcoDown)};
+    sub_nobk5 = {makeDiff(PbPb_4_nobk, pp_0_nobk), makeDiff(PbPb_0_nobk, pp_0_nobk), makeDiff(PbPb_1_nobk, pp_0_nobk), makeDiff(PbPb_2_nobk, pp_0_nobk), makeDiff(PbPb_3_nobk, pp_0_nobk)};
+    sub_massrange5 = {makeDiff(PbPb_4_massrange, pp_0_massrange), makeDiff(PbPb_0_massrange, pp_0_massrange), makeDiff(PbPb_1_massrange, pp_0_massrange), makeDiff(PbPb_2_massrange, pp_0_massrange), makeDiff(PbPb_3_massrange, pp_0_massrange)};
+    sub_HFup5 = {makeDiff(PbPb_4_HFup, pp_0), makeDiff(PbPb_0_HFup, pp_0), makeDiff(PbPb_1_HFup, pp_0), makeDiff(PbPb_2_HFup, pp_0), makeDiff(PbPb_3_HFup, pp_0)};
+    sub_HFdown5 = {makeDiff(PbPb_4_HFdown, pp_0), makeDiff(PbPb_0_HFdown, pp_0), makeDiff(PbPb_1_HFdown, pp_0), makeDiff(PbPb_2_HFdown, pp_0), makeDiff(PbPb_3_HFdown, pp_0)};
+    sub_1DpT5 = {makeDiff(PbPb_4, pp_0_1D_pT), makeDiff(PbPb_0, pp_0_1D_pT), makeDiff(PbPb_1, pp_0_1D_pT), makeDiff(PbPb_2, pp_0_1D_pT), makeDiff(PbPb_3, pp_0_1D_pT)};
+
+    SaveAllCentralityTGraphs("./nominal_syst_tgraph.root",
+                             type,
+                             pbpbEll5, ppEll5, subEll5,
+
+                             pbpb_nominal5, pbpb_tnpU5, pbpb_tnpD5, pbpb_acoup5, pbpb_acodown5,
+                             pbpb_nobk5, pbpb_massrange5, pbpb_HFup5, pbpb_HFdown5, pbpb_1DpT5,
+
+                             pp_nominal5, pp_tnpU5, pp_tnpD5, pp_acoup5, pp_acodown5,
+                             pp_nobk5, pp_massrange5, pp_HFup5, pp_HFdown5, pp_1DpT5,
+
+                             sub_nominal5, sub_tnpU5, sub_tnpD5, sub_acoup5, sub_acodown5,
+                             sub_nobk5, sub_massrange5, sub_HFup5, sub_HFdown5, sub_1DpT5);
 }
